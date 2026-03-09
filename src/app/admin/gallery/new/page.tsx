@@ -12,6 +12,8 @@ export default function NewGalleryItemPage() {
   const [preview, setPreview] = useState<string | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
 
+  const router = useRouter()
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -29,7 +31,15 @@ export default function NewGalleryItemPage() {
 
     try {
       const formData = new FormData(e.currentTarget)
-      await addGalleryItem(formData) 
+      const res = await addGalleryItem(formData) 
+      
+      if (res?.error) {
+        setError(res.error)
+        setLoading(false)
+      } else {
+        router.push('/admin/gallery')
+        router.refresh()
+      }
     } catch (err: any) {
       setError(err.message || "Failed to upload image")
       setLoading(false)
