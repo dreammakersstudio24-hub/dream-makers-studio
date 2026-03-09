@@ -60,7 +60,7 @@ export async function addGalleryItem(formData: FormData) {
 export async function deleteGalleryItem(id: string) {
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { error: "Unauthorized" }
+  if (!user) throw new Error("Unauthorized")
 
   const supabaseAdmin = createAdminClient()
   
@@ -78,10 +78,10 @@ export async function deleteGalleryItem(id: string) {
   const { error } = await supabaseAdmin.from('gallery_items').delete().eq('id', id)
   
   if (error) {
-    return { error: `Delete failed: ${error.message}` }
+    console.error(`Delete failed: ${error.message}`)
+    throw new Error(error.message)
   }
 
   revalidatePath('/gallery')
   revalidatePath('/admin/gallery')
-  return { success: true }
 }
