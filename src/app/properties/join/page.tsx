@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Building2, Home, CheckCircle2, ArrowRight } from 'lucide-react'
-import Header from '@/components/Header'
 
 export default function PropertiesJoinPage() {
   const [loading, setLoading] = useState(false)
