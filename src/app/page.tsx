@@ -1,10 +1,13 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ArrowRight, Star, Image as ImageIcon, BookOpen } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, Star, Image as ImageIcon, BookOpen, Menu, X } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-black text-white selection:bg-white/30">
       {/* Navigation */}
@@ -13,14 +16,49 @@ export default function Home() {
           <div className="text-2xl font-light tracking-widest uppercase">
             Dream<span className="font-semibold text-neutral-400">Makers</span>
           </div>
+          
+          {/* Desktop Nav */}
           <div className="hidden md:flex gap-8 text-sm tracking-widest text-neutral-400">
              <Link href="#gallery" className="hover:text-white transition-colors">Gallery</Link>
              <Link href="/directory" className="hover:text-white transition-colors">Contractors</Link>
              <Link href="/real-estate" className="hover:text-white transition-colors">Real Estate</Link>
              <Link href="/ebook" className="hover:text-white transition-colors">E-Book</Link>
           </div>
+
+          {/* Mobile Menu Toggle */}
+          <button 
+            className="md:hidden text-white" 
+            onClick={() => setIsMobileMenuOpen(true)}
+          >
+            <Menu className="w-6 h-6" />
+          </button>
         </div>
       </nav>
+
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed inset-0 z-[60] bg-black border-b border-white/10 flex flex-col items-center justify-center"
+          >
+            <button 
+              className="absolute top-6 right-6 p-2 text-white"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <X className="w-8 h-8" />
+            </button>
+            <div className="flex flex-col gap-10 text-xl tracking-widest text-center">
+               <Link href="#gallery" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-neutral-400 transition-colors">GALLERY</Link>
+               <Link href="/directory" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-neutral-400 transition-colors">CONTRACTORS</Link>
+               <Link href="/real-estate" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-neutral-400 transition-colors">REAL ESTATE</Link>
+               <Link href="/ebook" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-neutral-400 transition-colors">E-BOOK</Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden px-6">

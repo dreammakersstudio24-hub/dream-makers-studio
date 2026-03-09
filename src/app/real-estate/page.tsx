@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
-import { MapPin, Search } from 'lucide-react'
+import { MapPin, Search, Menu, X } from 'lucide-react'
 import Link from 'next/link'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface Property {
   id: string
@@ -18,6 +19,7 @@ export default function RealEstateDirectoryPage() {
   const [properties, setProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
   const [searchLocation, setSearchLocation] = useState('')
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -55,13 +57,50 @@ export default function RealEstateDirectoryPage() {
 
   return (
     <div className="min-h-[100dvh] bg-black text-white relative">
-      <nav className="fixed top-0 w-full p-6 flex justify-between items-center z-50 mix-blend-difference">
-        <Link href="/" className="text-xl font-light tracking-wide uppercase">D.M. STUDIO</Link>
-        <div className="flex gap-6">
-           <Link href="/directory" className="text-sm tracking-widest uppercase hover:text-neutral-400 transition-colors hidden md:block">Contractors</Link>
-           <Link href="/properties/join" className="text-sm tracking-widest uppercase hover:text-neutral-400 transition-colors">List Your Property</Link>
+      {/* Navigation */}
+      <nav className="fixed w-full z-50 top-0 border-b border-white/10 bg-black/50 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <Link href="/" className="text-xl font-light tracking-wide uppercase">D.M. STUDIO</Link>
+          
+          {/* Desktop Nav */}
+          <div className="hidden md:flex gap-8 items-center text-sm tracking-widest text-neutral-400">
+             <Link href="/directory" className="hover:text-white transition-colors">Contractors</Link>
+             <Link href="/properties/join" className="hover:text-white transition-colors">List Your Property</Link>
+          </div>
+
+          {/* Mobile Menu Toggle */}
+          <button 
+            className="md:hidden text-white" 
+            onClick={() => setIsMobileMenuOpen(true)}
+          >
+            <Menu className="w-6 h-6" />
+          </button>
         </div>
       </nav>
+
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed inset-0 z-[60] bg-black border-b border-white/10 flex flex-col items-center justify-center"
+          >
+            <button 
+              className="absolute top-6 right-6 p-2 text-white"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <X className="w-8 h-8" />
+            </button>
+            <div className="flex flex-col gap-10 text-xl tracking-widest text-center">
+               <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-neutral-400 transition-colors">HOME</Link>
+               <Link href="/directory" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-neutral-400 transition-colors">CONTRACTORS</Link>
+               <Link href="/properties/join" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-neutral-400 transition-colors">LIST YOUR PROPERTY</Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       
       <div className="pt-32 pb-24 px-6 md:px-12 max-w-7xl mx-auto">
         <div className="mb-16">
