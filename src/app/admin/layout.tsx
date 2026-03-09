@@ -1,5 +1,5 @@
 import { logout } from "@/actions/auth"
-import { LayoutDashboard, Image as ImageIcon, FileText, LogOut } from "lucide-react"
+import { LayoutDashboard, Image as ImageIcon, FileText, LogOut, Users } from "lucide-react"
 import Link from "next/link"
 
 export default function AdminLayout({
@@ -22,6 +22,9 @@ export default function AdminLayout({
           </Link>
           <Link href="/admin/gallery" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-colors text-sm font-medium tracking-wide text-neutral-300 hover:text-white">
             <ImageIcon className="w-4 h-4" /> Gallery
+          </Link>
+          <Link href="/admin/contractors" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-colors text-sm font-medium tracking-wide text-neutral-300 hover:text-white">
+            <Users className="w-4 h-4" /> Contractors
           </Link>
           <div className="flex items-center gap-3 px-4 py-3 rounded-xl text-neutral-600 text-sm font-medium tracking-wide cursor-not-allowed">
             <FileText className="w-4 h-4" /> E-Books (Coming Soon)

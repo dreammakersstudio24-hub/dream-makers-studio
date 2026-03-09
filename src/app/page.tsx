@@ -15,6 +15,7 @@ export default function Home() {
           </div>
           <div className="hidden md:flex gap-8 text-sm tracking-widest text-neutral-400">
              <Link href="#gallery" className="hover:text-white transition-colors">Gallery</Link>
+             <Link href="/directory" className="hover:text-white transition-colors">Directory</Link>
              <Link href="/ebook" className="hover:text-white transition-colors">E-Book</Link>
           </div>
         </div>
