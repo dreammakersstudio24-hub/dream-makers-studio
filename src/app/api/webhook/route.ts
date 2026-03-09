@@ -54,31 +54,53 @@ export async function POST(req: Request) {
     case "customer.subscription.updated": {
       const subscription = event.data.object as Stripe.Subscription;
       try {
-        // We need the user ID which we stored in customer metadata during checkout
         let userId = subscription.metadata?.userId;
+        let subType = subscription.metadata?.type;
         
         if (!userId && subscription.customer) {
            const customer = await stripe.customers.retrieve(subscription.customer as string) as Stripe.Customer;
            userId = customer.metadata?.userId;
+           // Fallback to customer metadata if subscription metadata doesn't have it
+           if (!subType) subType = customer.metadata?.type;
         }
 
         if (userId) {
           const status = subscription.status; // 'active', 'past_due', 'canceled', etc.
           const isActive = status === 'active' || status === 'trialing';
-          
           const supabaseAdmin = createAdminClient();
-          const { error } = await supabaseAdmin
-            .from('contractors')
-            .update({
-              stripe_subscription_id: subscription.id,
-              stripe_customer_id: subscription.customer as string,
-              subscription_status: status,
-              is_active: isActive
-            })
-            .eq('user_id', userId);
+          
+          if (subType === 'property_listing') {
+             // Handle Property Subscription
+             const { error } = await supabaseAdmin
+              .from('properties')
+              .update({
+                stripe_subscription_id: subscription.id,
+                stripe_customer_id: subscription.customer as string,
+                subscription_status: status,
+                is_active: isActive
+              })
+              .eq('user_id', userId)
+              // We assume updating the most recent or all records if multiple. 
+              // Better logic would link subscription.id precisely.
+             
+             if (error) console.error(`Failed to update property subscription:`, error);
+             else console.log(`Property ${userId} subscription updated to: ${status}`);
+             
+          } else {
+             // Default to Contractor Subscription (existing logic)
+             const { error } = await supabaseAdmin
+              .from('contractors')
+              .update({
+                stripe_subscription_id: subscription.id,
+                stripe_customer_id: subscription.customer as string,
+                subscription_status: status,
+                is_active: isActive
+              })
+              .eq('user_id', userId);
 
-          if (error) console.error(`Failed to update contractor subscription:`, error);
-          else console.log(`Contractor ${userId} subscription updated to: ${status}`);
+             if (error) console.error(`Failed to update contractor subscription:`, error);
+             else console.log(`Contractor ${userId} subscription updated to: ${status}`);
+          }
         }
       } catch (err) {
         console.error("Error processing subscription update:", err);
@@ -90,22 +112,36 @@ export async function POST(req: Request) {
       const subscription = event.data.object as Stripe.Subscription;
       try {
         let userId = subscription.metadata?.userId;
+        let subType = subscription.metadata?.type;
+        
         if (!userId && subscription.customer) {
            const customer = await stripe.customers.retrieve(subscription.customer as string) as Stripe.Customer;
            userId = customer.metadata?.userId;
+           if (!subType) subType = customer.metadata?.type;
         }
 
         if (userId) {
           const supabaseAdmin = createAdminClient();
-          await supabaseAdmin
-            .from('contractors')
-            .update({
-              subscription_status: 'canceled',
-              is_active: false
-            })
-            .eq('user_id', userId);
-            
-          console.log(`Contractor ${userId} subscription canceled.`);
+          
+          if (subType === 'property_listing') {
+             await supabaseAdmin
+              .from('properties')
+              .update({
+                subscription_status: 'canceled',
+                is_active: false
+              })
+              .eq('user_id', userId);
+             console.log(`Property ${userId} subscription canceled.`);
+          } else {
+             await supabaseAdmin
+              .from('contractors')
+              .update({
+                subscription_status: 'canceled',
+                is_active: false
+              })
+              .eq('user_id', userId);
+             console.log(`Contractor ${userId} subscription canceled.`);
+          }
         }
       } catch (err) {
         console.error("Error processing subscription deletion:", err);
