@@ -46,6 +46,16 @@ export async function POST(req: Request) {
       )
     }
 
+    // Ensure base URL has a valid protocol
+    const getBaseUrl = () => {
+      let url = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+      // Make sure it includes https:// if not present (except for localhost)
+      url = url.includes('http') ? url : `https://${url}`
+      return url
+    }
+
+    const baseUrl = getBaseUrl()
+
     // 3. Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -56,8 +66,8 @@ export async function POST(req: Request) {
         },
       ],
       mode: 'subscription', 
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/properties/dashboard?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/properties/join`,
+      success_url: `${baseUrl}/properties/dashboard?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/properties/join`,
       customer_email: user.email, 
       client_reference_id: user.id, // Very important: links Stripe session back to our Supabase user
       metadata: {
