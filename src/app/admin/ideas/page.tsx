@@ -51,7 +51,7 @@ export default async function AdminIdeasPage() {
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                     <form action={toggleIdeaStatus.bind(null, idea.id, idea.is_active)}>
+                     <form action={toggleIdeaStatus.bind(null, idea.id, idea.is_active ?? false)}>
                         <button className="text-neutral-500 hover:text-white p-2 hover:bg-white/10 rounded-xl transition-all" title="Toggle active status">
                         <Power className="w-4 h-4" />
                         </button>
