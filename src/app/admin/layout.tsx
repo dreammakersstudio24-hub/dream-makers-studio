@@ -26,6 +26,9 @@ export default function AdminLayout({
           <Link href="/admin/contractors" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-colors text-sm font-medium tracking-wide text-neutral-300 hover:text-white">
             <Users className="w-4 h-4" /> Contractors
           </Link>
+          <Link href="/admin/ideas" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-colors text-sm font-medium tracking-wide text-neutral-300 hover:text-white">
+            <FileText className="w-4 h-4" /> AI Ideas
+          </Link>
           <div className="flex items-center gap-3 px-4 py-3 rounded-xl text-neutral-600 text-sm font-medium tracking-wide cursor-not-allowed">
             <FileText className="w-4 h-4" /> E-Books (Coming Soon)
           </div>

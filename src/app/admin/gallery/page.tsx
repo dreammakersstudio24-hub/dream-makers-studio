@@ -23,6 +23,7 @@ export default async function AdminGalleryListPage() {
               <th className="px-6 py-5 font-medium tracking-widest uppercase text-xs">Image</th>
               <th className="px-6 py-5 font-medium tracking-widest uppercase text-xs">Title</th>
               <th className="px-6 py-5 font-medium tracking-widest uppercase text-xs">Category</th>
+              <th className="px-6 py-5 font-medium tracking-widest uppercase text-xs">Details</th>
               <th className="px-6 py-5 font-medium tracking-widest uppercase text-xs text-right">Actions</th>
             </tr>
           </thead>
@@ -37,6 +38,16 @@ export default async function AdminGalleryListPage() {
                 <td className="px-6 py-4 text-white font-medium">{item.title}</td>
                 <td className="px-6 py-4">
                   <span className="bg-white/10 px-3 py-1.5 text-xs tracking-widest uppercase rounded-full">{item.style_category}</span>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="flex flex-col gap-1">
+                    {item.is_ai_generated && <span className="text-xs text-blue-400 font-medium tracking-wide">✨ AI Generated</span>}
+                    {item.keywords && item.keywords.length > 0 && (
+                      <span className="text-xs text-neutral-500">
+                        {item.keywords.slice(0, 3).join(', ')}{item.keywords.length > 3 ? '...' : ''}
+                      </span>
+                    )}
+                  </div>
                 </td>
                 <td className="px-6 py-4 text-right">
                   <form action={deleteGalleryItem.bind(null, item.id)}>

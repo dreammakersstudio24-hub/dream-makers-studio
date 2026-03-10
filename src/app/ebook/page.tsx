@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowLeft, CheckCircle2, ChevronRight, Star } from "lucide-react";
+import { ArrowLeft, CheckCircle2, ChevronRight, Star, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
 const CHAPTERS = [
@@ -141,6 +141,37 @@ export default function EBookPage() {
           </motion.div>
 
         </div>
+
+        {/* Recommended Tools Affiliate Section */}
+        <motion.div 
+           initial={{ opacity: 0, y: 30 }}
+           whileInView={{ opacity: 1, y: 0 }}
+           viewport={{ once: true }}
+           transition={{ duration: 0.8 }}
+           className="mt-32 pt-16 border-t border-white/10"
+        >
+           <h2 className="text-3xl font-light mb-2 text-center">Tools of the Trade</h2>
+           <p className="text-neutral-500 text-center mb-12 max-w-xl mx-auto font-light">
+             The software and platforms we use daily to create stunning interior designs and 3D renderings.
+           </p>
+
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                { name: "SketchUp Pro", role: "3D Modeling", desc: "Our go-to software for precise architectural modeling.", link: "#" },
+                { name: "Midjourney", role: "AI Concept Art", desc: "For rapid ideation and mood boarding before finalizing designs.", link: "#" },
+                { name: "Canva Pro", role: "Presentations", desc: "How we deliver stunning mood boards to our high-end clients.", link: "#" },
+              ].map((tool, i) => (
+                <a key={i} href={tool.link} target="_blank" rel="noopener noreferrer" className="group bg-neutral-900 border border-white/5 hover:border-white/20 rounded-3xl p-8 block transition-all hover:-translate-y-1">
+                   <div className="flex items-center justify-between mb-4">
+                     <h3 className="text-xl font-medium text-white">{tool.name}</h3>
+                     <ExternalLink className="w-4 h-4 text-neutral-500 group-hover:text-white transition-colors" />
+                   </div>
+                   <div className="text-xs text-blue-400 tracking-widest uppercase mb-4">{tool.role}</div>
+                   <p className="text-sm text-neutral-400 leading-relaxed font-light">{tool.desc}</p>
+                </a>
+              ))}
+           </div>
+        </motion.div>
       </main>
     </div>
   );
