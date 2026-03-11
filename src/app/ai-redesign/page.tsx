@@ -6,11 +6,36 @@ import { Upload, Camera, ImageIcon, X, Loader2, Sparkles, ChevronLeft, Check } f
 import Link from "next/link";
 import { STYLES } from "@/constants/styles";
 
+// Utility to compress image to base64 to ensure it fits within Vercel's 4.5MB payload limit
+const compressImage = (dataUrl: string, maxWidth = 1024): Promise<string> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.src = dataUrl;
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      let width = img.width;
+      let height = img.height;
+
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width);
+        width = maxWidth;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      ctx?.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL("image/jpeg", 0.8));
+    };
+  });
+};
+
 export default function AiRedesignPage() {
   const [step, setStep] = useState<"upload" | "style" | "processing" | "result">("upload");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedStyleId, setSelectedStyleId] = useState<string | null>(null);
   const [resultImage, setResultImage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -27,25 +52,72 @@ export default function AiRedesignPage() {
     }
   };
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!selectedStyleId || !selectedImage) return;
     
     setStep("processing");
+    setError(null);
     
-    // MOCK API CALL - replace with real Replicate API later
-    setTimeout(() => {
-      // For mock, just use the style image as the result
+    try {
+      // 1. Compress image to avoid Vercel 4.5MB limit
+      const compressedBase64 = await compressImage(selectedImage);
+      
       const styleInfo = STYLES.find(s => s.id === selectedStyleId);
-      setResultImage(styleInfo?.image || null);
+      const stylePrompt = styleInfo?.nameKey || "modern";
+
+      // 2. Call the backend API
+      const response = await fetch("/api/redesign", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          image: compressedBase64,
+          stylePrompt: stylePrompt,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to generate image.");
+      }
+
+      // 3. Display the result
+      setResultImage(data.resultUrl);
       setStep("result");
-    }, 4000);
+
+    } catch (err: any) {
+      console.error("Generation error:", err);
+      setError(err.message || "An unexpected error occurred.");
+      setStep("style"); // Go back to style selection to see the error
+    }
   };
 
   const resetAll = () => {
     setSelectedImage(null);
     setSelectedStyleId(null);
     setResultImage(null);
+    setError(null);
     setStep("upload");
+  };
+
+  const downloadImage = async () => {
+    if (!resultImage) return;
+    try {
+      const response = await fetch(resultImage);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `redesign-${selectedStyleId}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+       console.error("Failed to download image", error);
+    }
   };
 
   return (
@@ -172,7 +244,12 @@ export default function AiRedesignPage() {
 
               {/* Fixed Footer for Generate Button */}
               <div className="fixed bottom-0 left-0 w-full p-4 sm:p-6 bg-gradient-to-t from-black via-black/90 to-transparent z-50">
-                 <div className="max-w-3xl mx-auto">
+                 <div className="max-w-3xl mx-auto space-y-3">
+                    {error && (
+                      <div className="bg-red-500/10 border border-red-500/50 text-red-500 p-3 rounded-xl text-sm text-center">
+                        {error}
+                      </div>
+                    )}
                     <button 
                       onClick={handleGenerate}
                       disabled={!selectedStyleId}
@@ -229,6 +306,7 @@ export default function AiRedesignPage() {
 
               <div className="grid grid-cols-2 gap-4">
                  <button 
+                   onClick={downloadImage}
                    className="w-full bg-neutral-900 border border-white/10 text-white py-4 rounded-xl font-medium hover:bg-neutral-800 transition-colors"
                  >
                    Download
