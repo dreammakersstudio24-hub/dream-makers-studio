@@ -1,0 +1,249 @@
+"use client";
+
+import { useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Upload, Camera, ImageIcon, X, Loader2, Sparkles, ChevronLeft, Check } from "lucide-react";
+import Link from "next/link";
+import { STYLES } from "@/constants/styles";
+
+export default function AiRedesignPage() {
+  const [step, setStep] = useState<"upload" | "style" | "processing" | "result">("upload");
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedStyleId, setSelectedStyleId] = useState<string | null>(null);
+  const [resultImage, setResultImage] = useState<string | null>(null);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setSelectedImage(event.target?.result as string);
+        setStep("style");
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleGenerate = () => {
+    if (!selectedStyleId || !selectedImage) return;
+    
+    setStep("processing");
+    
+    // MOCK API CALL - replace with real Replicate API later
+    setTimeout(() => {
+      // For mock, just use the style image as the result
+      const styleInfo = STYLES.find(s => s.id === selectedStyleId);
+      setResultImage(styleInfo?.image || null);
+      setStep("result");
+    }, 4000);
+  };
+
+  const resetAll = () => {
+    setSelectedImage(null);
+    setSelectedStyleId(null);
+    setResultImage(null);
+    setStep("upload");
+  };
+
+  return (
+    <div className="min-h-screen bg-black text-white selection:bg-white/30 font-sans">
+      {/* Dynamic Header */}
+      <nav className="fixed w-full z-40 top-0 border-b border-white/10 bg-black/80 backdrop-blur-md">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+          <button 
+            onClick={() => step === "upload" ? window.history.back() : setStep(step === "result" ? "upload" : step === "processing" ? "processing" : "upload")}
+            className="p-2 -ml-2 text-neutral-400 hover:text-white transition-colors"
+            disabled={step === "processing"}
+          >
+             <ChevronLeft className="w-6 h-6" />
+          </button>
+          
+          <span className="text-lg font-medium tracking-wide">
+            {step === "upload" && "Upload Photo"}
+            {step === "style" && "Choose Style"}
+            {step === "processing" && "Redesigning..."}
+            {step === "result" && "Your New Room"}
+          </span>
+          
+          <div className="w-10" /> {/* Spacer to center the title */}
+        </div>
+      </nav>
+
+      {/* Main Content Area - Mobile optimized width */}
+      <main className="max-w-3xl mx-auto pt-20 pb-32 px-4 sm:px-6 min-h-screen flex flex-col">
+        <AnimatePresence mode="wait">
+          
+          {/* STEP 1: UPLOAD */}
+          {step === "upload" && (
+            <motion.div
+              key="upload"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="flex-1 flex flex-col items-center justify-center py-12"
+            >
+              <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-8 border border-white/10">
+                <Sparkles className="w-10 h-10 text-neutral-400" />
+              </div>
+              
+              <h1 className="text-3xl sm:text-4xl font-light mb-4 text-center">Transform your space</h1>
+              <p className="text-neutral-400 text-center mb-12 max-w-sm font-light">
+                Take a photo of your room or upload one from your gallery to get started.
+              </p>
+
+              <div className="w-full max-w-md space-y-4">
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  className="hidden"
+                  ref={cameraInputRef}
+                  onChange={handleFileChange}
+                />
+                <button 
+                  onClick={() => cameraInputRef.current?.click()}
+                  className="w-full bg-white text-black py-4 px-6 rounded-2xl font-medium text-lg flex items-center justify-center gap-3 hover:bg-neutral-200 transition-colors"
+                >
+                  <Camera className="w-6 h-6" />
+                  Take a Photo
+                </button>
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                />
+                <button 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full bg-neutral-900 border border-white/10 text-white py-4 px-6 rounded-2xl font-medium text-lg flex items-center justify-center gap-3 hover:bg-neutral-800 transition-colors"
+                >
+                  <ImageIcon className="w-6 h-6" />
+                  Upload from Gallery
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* STEP 2: SELECT STYLE */}
+          {step === "style" && (
+            <motion.div
+              key="style"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="flex-1 flex flex-col"
+            >
+              <div className="mb-6 relative w-24 h-24 rounded-2xl overflow-hidden border-2 border-white/20 shadow-2xl mx-auto">
+                 <img src={selectedImage!} alt="Original" className="w-full h-full object-cover" />
+                 <button 
+                    onClick={() => setStep("upload")}
+                    className="absolute top-1 right-1 p-1 bg-black/50 backdrop-blur-md rounded-full text-white"
+                 >
+                    <X className="w-3 h-3" />
+                 </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 pb-24">
+                {STYLES.map((style) => (
+                  <div 
+                    key={style.id}
+                    onClick={() => setSelectedStyleId(style.id)}
+                    className={`relative rounded-3xl overflow-hidden aspect-square border-2 transition-all cursor-pointer ${selectedStyleId === style.id ? 'border-white' : 'border-transparent'}`}
+                  >
+                    <img src={style.image} alt={style.nameKey} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-4">
+                       <span className="text-white font-medium">{style.nameKey}</span>
+                       <span className="text-neutral-400 text-xs mt-1 line-clamp-1">{style.descKey}</span>
+                    </div>
+
+                    {selectedStyleId === style.id && (
+                       <div className="absolute top-3 right-3 w-6 h-6 bg-white rounded-full flex items-center justify-center text-black shadow-lg">
+                          <Check className="w-4 h-4" />
+                       </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Fixed Footer for Generate Button */}
+              <div className="fixed bottom-0 left-0 w-full p-4 sm:p-6 bg-gradient-to-t from-black via-black/90 to-transparent z-50">
+                 <div className="max-w-3xl mx-auto">
+                    <button 
+                      onClick={handleGenerate}
+                      disabled={!selectedStyleId}
+                      className="w-full bg-white text-black py-4 rounded-2xl font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neutral-200 transition-colors shadow-[0_0_30px_rgba(255,255,255,0.1)] flex items-center justify-center gap-2"
+                    >
+                      <Sparkles className="w-5 h-5" />
+                      Generate Design
+                    </button>
+                 </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* STEP 3: PROCESSING */}
+          {step === "processing" && (
+            <motion.div
+              key="processing"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex-1 flex flex-col items-center justify-center py-24"
+            >
+              <div className="relative w-32 h-32 mb-8">
+                 <div className="absolute inset-0 rounded-full border-4 border-white/10" />
+                 <div className="absolute inset-0 rounded-full border-4 border-white border-t-transparent animate-spin" />
+                 <div className="absolute inset-0 flex items-center justify-center">
+                    <Sparkles className="w-8 h-8 text-white animate-pulse" />
+                 </div>
+              </div>
+              <h2 className="text-2xl font-light mb-2">Designing your dream space...</h2>
+              <p className="text-neutral-400 font-light text-center max-w-xs">
+                Our AI is currently analyzing your room structure and applying the selected style.
+              </p>
+            </motion.div>
+          )}
+
+          {/* STEP 4: RESULT */}
+          {step === "result" && (
+            <motion.div
+              key="result"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex-1 flex flex-col"
+            >
+              <div className="relative w-full aspect-[4/5] sm:aspect-square bg-neutral-900 rounded-3xl overflow-hidden mb-8 border border-white/5 shadow-2xl">
+                 <img src={resultImage!} alt="Redesign Result" className="w-full h-full object-cover" />
+                 
+                 <div className="absolute top-4 left-4 flex gap-2">
+                    <span className="px-3 py-1.5 bg-black/50 backdrop-blur-md rounded-full text-xs font-medium uppercase tracking-widest border border-white/10">
+                       {STYLES.find(s => s.id === selectedStyleId)?.nameKey}
+                    </span>
+                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                 <button 
+                   className="w-full bg-neutral-900 border border-white/10 text-white py-4 rounded-xl font-medium hover:bg-neutral-800 transition-colors"
+                 >
+                   Download
+                 </button>
+                 <button 
+                   onClick={resetAll}
+                   className="w-full bg-white text-black py-4 rounded-xl font-medium hover:bg-neutral-200 transition-colors"
+                 >
+                   Design Another
+                 </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </main>
+    </div>
+  );
+}
