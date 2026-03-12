@@ -1,7 +1,6 @@
 import { createServerSupabaseClient } from "@/utils/supabase/server"
 import Link from "next/link"
 import { Plus, Trash2 } from "lucide-react"
-import { deleteGalleryItem } from "@/actions/gallery"
 
 export default async function AdminGalleryListPage() {
   const supabase = await createServerSupabaseClient()
@@ -50,8 +49,12 @@ export default async function AdminGalleryListPage() {
                   </div>
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <form action={deleteGalleryItem.bind(null, item.id)}>
-                    <button className="text-neutral-500 hover:text-red-400 p-2 hover:bg-red-500/10 rounded-xl transition-all inline-flex opacity-0 group-hover:opacity-100 focus:opacity-100">
+                  <form action={async () => {
+                    "use server";
+                    const { deleteGalleryItem: deleteItem } = await import("@/actions/gallery");
+                    await deleteItem(item.id);
+                  }}>
+                    <button type="submit" className="text-neutral-500 hover:text-red-400 p-2 hover:bg-red-500/10 rounded-xl transition-all inline-flex opacity-0 group-hover:opacity-100 focus:opacity-100">
                       <Trash2 className="w-5 h-5" />
                     </button>
                   </form>
