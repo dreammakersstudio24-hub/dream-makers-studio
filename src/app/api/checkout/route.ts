@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-02-25.clover", // Latest API version
-});
-
 export async function POST(req: Request) {
   try {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: "2026-02-25.clover", // Note: using a stable known version string
+    });
+    
     const origin = req.headers.get("origin") || "http://localhost:3000";
     
     const session = await stripe.checkout.sessions.create({

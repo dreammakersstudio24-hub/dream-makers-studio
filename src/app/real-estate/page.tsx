@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useState, useEffect } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
 import { MapPin, Search, Menu, X } from 'lucide-react'
@@ -22,8 +24,8 @@ export default function RealEstateDirectoryPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost.supabase.co',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'dummy_anon_key'
   )
 
   useEffect(() => {

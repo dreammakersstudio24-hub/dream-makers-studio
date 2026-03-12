@@ -57,7 +57,7 @@ export async function addGalleryItem(formData: FormData) {
   return { success: true }
 }
 
-export async function deleteGalleryItem(id: string) {
+export async function deleteGalleryItem(id: string, formData?: FormData) {
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error("Unauthorized")
