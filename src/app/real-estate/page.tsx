@@ -4,9 +4,7 @@ export const dynamic = 'force-dynamic'
 
 import { useState, useEffect } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
-import { MapPin, Search, Menu, X } from 'lucide-react'
-import Link from 'next/link'
-import { motion, AnimatePresence } from 'framer-motion'
+import { MapPin, Search } from 'lucide-react'
 
 interface Property {
   id: string
@@ -21,7 +19,6 @@ export default function RealEstateDirectoryPage() {
   const [properties, setProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
   const [searchLocation, setSearchLocation] = useState('')
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost.supabase.co',
@@ -58,70 +55,48 @@ export default function RealEstateDirectoryPage() {
 
 
   return (
-    <div className="min-h-[100dvh] bg-black text-white relative">
-      {/* Navigation */}
-      <nav className="fixed w-full z-50 top-0 border-b border-white/10 bg-black/50 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <Link href="/" className="text-xl font-light tracking-wide uppercase">D.M. STUDIO</Link>
-          
-          {/* Desktop Nav */}
-          <div className="hidden md:flex gap-8 items-center text-sm tracking-widest text-neutral-400">
-             <Link href="/directory" className="hover:text-white transition-colors">Contractors</Link>
-             <Link href="/properties/join" className="hover:text-white transition-colors">List Your Property</Link>
-          </div>
-
-          {/* Mobile Menu Toggle */}
-          <button 
-            className="md:hidden text-white" 
-            onClick={() => setIsMobileMenuOpen(true)}
-          >
-            <Menu className="w-6 h-6" />
-          </button>
-        </div>
-      </nav>
-
-      {/* Mobile Menu Overlay */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-[60] bg-black border-b border-white/10 flex flex-col items-center justify-center"
-          >
-            <button 
-              className="absolute top-6 right-6 p-2 text-white"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <X className="w-8 h-8" />
-            </button>
-            <div className="flex flex-col gap-10 text-xl tracking-widest text-center">
-               <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-neutral-400 transition-colors">HOME</Link>
-               <Link href="/directory" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-neutral-400 transition-colors">CONTRACTORS</Link>
-               <Link href="/properties/join" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-neutral-400 transition-colors">LIST YOUR PROPERTY</Link>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      
-      <div className="pt-32 pb-24 px-6 md:px-12 max-w-7xl mx-auto">
-        <div className="mb-16">
-          <h1 className="text-4xl md:text-5xl font-light mb-4 tracking-wide">Exclusive <span className="text-neutral-500 font-serif italic">Real Estate</span></h1>
-          <p className="text-neutral-400 font-light max-w-2xl">
+    <div className="min-h-[100dvh] bg-neutral-50 text-neutral-900 relative">
+      <div className="pt-24 sm:pt-32 pb-24 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto">
+        <div className="mb-12 sm:mb-16">
+          <h1 className="text-4xl md:text-5xl font-light mb-4 tracking-wide text-neutral-900">Exclusive <span className="text-orange-500 font-serif italic font-medium">Real Estate</span></h1>
+          <p className="text-neutral-500 font-light max-w-2xl text-sm sm:text-base mb-8">
             Discover premium properties curated for design-conscious buyers. Connecting you directly with owners and top-tier brokers.
           </p>
+
+          {/* Monetization CTA for Real Estate */}
+          <div className="bg-gradient-to-r from-neutral-900 flex-col sm:flex-row flex items-center justify-between to-neutral-800 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden flex-wrap gap-6">
+             <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+             <div className="relative z-10 max-w-xl">
+               <h2 className="text-2xl font-bold mb-2 tracking-wide text-orange-400">List Your Luxury Property</h2>
+               <p className="text-neutral-300 font-light text-sm sm:text-base">Reach our curated audience of high-net-worth buyers and international design enthusiasts. One-time listing fee applies.</p>
+             </div>
+             <div className="relative z-10 shrink-0 w-full sm:w-auto">
+               <button 
+                 onClick={async () => {
+                   try {
+                     const res = await fetch('/api/properties/checkout', { method: 'POST' });
+                     const data = await res.json();
+                     if (data.url) window.location.href = data.url;
+                   } catch(e) { console.error(e); }
+                 }}
+                 className="w-full sm:w-auto px-8 py-3.5 bg-white hover:bg-neutral-100 text-neutral-900 rounded-full font-bold tracking-widest text-sm transition-colors shadow-lg"
+               >
+                 List Property ($299 USD)
+               </button>
+             </div>
+          </div>
         </div>
 
         {/* Search */}
-        <div className="bg-neutral-900 border border-white/10 rounded-2xl p-6 mb-12 max-w-md">
+        <div className="bg-white border border-neutral-200 shadow-sm rounded-2xl p-4 sm:p-6 mb-8 sm:mb-12 max-w-md">
            <div className="relative">
-             <MapPin className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500" />
+             <MapPin className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
              <input 
                type="text" 
                placeholder="Search by Location (e.g. Sukhumvit)" 
                value={searchLocation}
                onChange={(e) => setSearchLocation(e.target.value)}
-               className="w-full bg-black border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white focus:border-white/30"
+               className="w-full bg-neutral-50 border border-neutral-200 rounded-xl pl-12 pr-4 py-3 text-neutral-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder:text-neutral-400 text-sm sm:text-base"
              />
            </div>
         </div>
@@ -130,36 +105,36 @@ export default function RealEstateDirectoryPage() {
         {loading ? (
            <div className="text-center text-neutral-500 py-12">Loading properties...</div>
         ) : properties.length === 0 ? (
-           <div className="text-center py-24 bg-neutral-900/50 border border-white/5 rounded-3xl">
-              <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 text-neutral-500">
+           <div className="text-center py-24 bg-white border border-neutral-200 shadow-sm rounded-3xl">
+              <div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4 text-neutral-400">
                 <Search className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-light tracking-wide mb-2">No properties found</h3>
+              <h3 className="text-xl font-medium tracking-wide mb-2 text-neutral-900">No properties found</h3>
               <p className="text-neutral-500 text-sm">Try adjusting your location search</p>
            </div>
         ) : (
-           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
              {properties.map((property) => (
-                <div key={property.id} className="group cursor-pointer">
-                   <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl mb-4 bg-neutral-900 border border-white/5 relative">
+                <div key={property.id} className="group cursor-pointer bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-neutral-200 shadow-sm hover:shadow-md transition-shadow">
+                   <div className="aspect-[4/3] w-full overflow-hidden rounded-xl sm:rounded-2xl mb-4 sm:mb-6 bg-neutral-100 relative">
                      {/* eslint-disable-next-line @next/next/no-img-element */}
                      <img 
                        src={property.image_url} 
                        alt={property.title}
                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                      />
-                     <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-full text-sm font-medium tracking-wide">
+                     <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full text-sm font-bold tracking-wide text-blue-900 shadow-sm">
                         {property.price}
                      </div>
                    </div>
                    
-                   <h3 className="text-lg font-medium tracking-wide mb-1 group-hover:text-neutral-300 transition-colors">{property.title}</h3>
-                   <div className="flex items-center gap-1.5 text-neutral-400 text-sm mb-3">
-                     <MapPin className="w-3.5 h-3.5" />
+                   <h3 className="text-lg font-semibold tracking-wide mb-2 group-hover:text-blue-600 transition-colors text-blue-950">{property.title}</h3>
+                   <div className="flex items-center gap-1.5 text-neutral-500 text-sm mb-4 font-medium">
+                     <MapPin className="w-4 h-4 text-orange-400" />
                      {property.location}
                    </div>
                    
-                   <p className="text-sm text-neutral-500 line-clamp-3 leading-relaxed">
+                   <p className="text-sm text-neutral-600 line-clamp-3 leading-relaxed">
                      {property.description}
                    </p>
                 </div>

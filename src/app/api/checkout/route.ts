@@ -3,11 +3,17 @@ import Stripe from "stripe";
 
 export async function POST(req: Request) {
   try {
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    const origin = req.headers.get("origin") || "http://localhost:3000";
+
+    // Fallback for local testing if Stripe isn't configured
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.warn("⚠️ STRIPE_SECRET_KEY is missing. Mocking successful checkout for local testing.");
+      return NextResponse.json({ url: `${origin}/success?session_id=mock_local_session` });
+    }
+
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
       apiVersion: "2026-02-25.clover", // Note: using a stable known version string
     });
-    
-    const origin = req.headers.get("origin") || "http://localhost:3000";
     
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],

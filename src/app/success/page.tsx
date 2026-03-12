@@ -23,14 +23,27 @@ function SuccessContent() {
 
     try {
       const res = await fetch(`/api/download?session_id=${sessionId}`);
-      const data = await res.json();
       
-      if (!res.ok) throw new Error(data.error || "Failed to get download link");
-      if (data.url) {
-        window.open(data.url, "_blank");
+      if (!res.ok) {
+        throw new Error("Failed to authenticate download or session expired");
       }
+      
+      // Get the binary PDF data from the response stream
+      const blob = await res.blob();
+      
+      // Create a temporary link and trigger download
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "50 Cinematic AI Prompts for Stunning Backyard & Garden Designs.pdf";
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
     } catch (err: any) {
-      setErrorMsg(err.message);
+      console.error(err);
+      setErrorMsg(err.message || "An unexpected error occurred.");
     } finally {
       setDownloading(false);
     }
