@@ -9,7 +9,7 @@ const replicate = new Replicate({
 
 export async function POST(req: Request) {
   try {
-    const { image, stylePrompt } = await req.json();
+    const { image, stylePrompt, roomType = "room", aspectRatio = "1:1" } = await req.json();
 
     if (!image || !stylePrompt) {
       return NextResponse.json(
@@ -26,16 +26,21 @@ export async function POST(req: Request) {
     }
 
     // Clean base64 string if it contains the data uri prefix.
-    // Replicate accepts base64 data URIs starting with 'data:image/...;base64,'
     const formattedImage = image.startsWith('data:image') 
+      ? image 
+      : `data:image/jpeg;base64,${image}`;
+
     // Using the cutting-edge Bytedance Seedream 4.5 model for high-fidelity image-to-image generation
     const output = await replicate.run(
         "bytedance/seedream-4.5",
         {
           input: {
             image: formattedImage,
-            prompt: `Strictly preserve the exact room layout, walls, doors, windows, and structural geometry of the input image. Redesign the interior decor, furniture, and materials in a beautiful photorealistic ${stylePrompt} style. Highly detailed, 8k resolution, professional architectural photography, modern lighting. Do not change the shape or size of the room.`,
-            prompt_upsampling: false // Turn off upsampling to ensure our strict prompt isn't rewritten by the AI
+            prompt: `Strictly preserve the exact ${roomType} layout, walls, doors, windows, and structural geometry of the input image. Redesign the interior decor, furniture, and materials in a beautiful photorealistic ${stylePrompt} style. Highly detailed, 8k resolution, professional architectural photography, modern lighting. Do not change the shape or size of the room.`,
+            prompt_upsampling: false, // Turn off upsampling to ensure our strict prompt isn't rewritten by the AI
+            image_guidance_scale: 1.6, // Higher guidance to stick to original structure (common in SDXL models)
+            prompt_strength: 0.65, // 65% redesign, 35% original structure preservation
+            aspect_ratio: aspectRatio
           }
         }
     );

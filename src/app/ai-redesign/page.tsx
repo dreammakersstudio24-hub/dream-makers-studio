@@ -2,12 +2,21 @@
 
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, Camera, ImageIcon, X, Loader2, Sparkles, ChevronLeft, Check } from "lucide-react";
+import { Upload, Camera, ImageIcon, X, Loader2, Sparkles, ChevronLeft, Check, Home, Bed, Utensils, Bath, Coffee, Monitor } from "lucide-react";
 import Link from "next/link";
 import { STYLES } from "@/constants/styles";
 
+const ROOM_TYPES = [
+  { id: 'living room', name: 'Living Room', icon: Home },
+  { id: 'bedroom', name: 'Bedroom', icon: Bed },
+  { id: 'kitchen', name: 'Kitchen', icon: Utensils },
+  { id: 'bathroom', name: 'Bathroom', icon: Bath },
+  { id: 'dining room', name: 'Dining Room', icon: Coffee },
+  { id: 'office', name: 'Home Office', icon: Monitor },
+];
+
 // Utility to compress image to base64 to ensure it fits within Vercel's 4.5MB payload limit
-const compressImage = (dataUrl: string, maxWidth = 1024): Promise<string> => {
+const compressImage = (dataUrl: string, maxWidth = 1024): Promise<{url: string, ratio: string}> => {
   return new Promise((resolve) => {
     const img = new Image();
     img.src = dataUrl;
@@ -15,6 +24,12 @@ const compressImage = (dataUrl: string, maxWidth = 1024): Promise<string> => {
       const canvas = document.createElement("canvas");
       let width = img.width;
       let height = img.height;
+
+      let ratio = "1:1";
+      if (width / height > 1.5) ratio = "16:9";
+      else if (height / width > 1.5) ratio = "9:16";
+      else if (width / height > 1.2) ratio = "3:2";
+      else if (height / width > 1.2) ratio = "2:3";
 
       if (width > maxWidth) {
         height = Math.round((height * maxWidth) / width);
@@ -25,14 +40,15 @@ const compressImage = (dataUrl: string, maxWidth = 1024): Promise<string> => {
       canvas.height = height;
       const ctx = canvas.getContext("2d");
       ctx?.drawImage(img, 0, 0, width, height);
-      resolve(canvas.toDataURL("image/jpeg", 0.8));
+      resolve({ url: canvas.toDataURL("image/jpeg", 0.8), ratio });
     };
   });
 };
 
 export default function AiRedesignPage() {
-  const [step, setStep] = useState<"upload" | "style" | "processing" | "result">("upload");
+  const [step, setStep] = useState<"upload" | "room" | "style" | "processing" | "result">("upload");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [selectedStyleId, setSelectedStyleId] = useState<string | null>(null);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -46,7 +62,7 @@ export default function AiRedesignPage() {
       const reader = new FileReader();
       reader.onload = (event) => {
         setSelectedImage(event.target?.result as string);
-        setStep("style");
+        setStep("room");
       };
       reader.readAsDataURL(file);
     }
@@ -60,7 +76,7 @@ export default function AiRedesignPage() {
     
     try {
       // 1. Compress image to avoid Vercel 4.5MB limit
-      const compressedBase64 = await compressImage(selectedImage);
+      const compressed = await compressImage(selectedImage);
       
       const styleInfo = STYLES.find(s => s.id === selectedStyleId);
       const stylePrompt = styleInfo?.nameKey || "modern";
@@ -72,8 +88,10 @@ export default function AiRedesignPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          image: compressedBase64,
+          image: compressed.url,
           stylePrompt: stylePrompt,
+          roomType: selectedRoomId || "room",
+          aspectRatio: compressed.ratio
         }),
       });
 
@@ -135,6 +153,7 @@ export default function AiRedesignPage() {
           
           <span className="text-lg font-medium tracking-wide">
             {step === "upload" && "Upload Photo"}
+            {step === "room" && "What kind of room?"}
             {step === "style" && "Choose Style"}
             {step === "processing" && "Redesigning..."}
             {step === "result" && "Your New Room"}
@@ -197,6 +216,40 @@ export default function AiRedesignPage() {
                   <ImageIcon className="w-6 h-6" />
                   Upload from Gallery
                 </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* STEP 1.5: SELECT ROOM TYPE */}
+          {step === "room" && (
+            <motion.div
+              key="room"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="flex-1 flex flex-col py-12"
+            >
+              <h2 className="text-3xl font-light mb-8 text-center">What kind of room is this?</h2>
+              
+              <div className="grid grid-cols-2 gap-4 pb-24">
+                {ROOM_TYPES.map((room) => {
+                  const Icon = room.icon;
+                  return (
+                    <button
+                      key={room.id}
+                      onClick={() => {
+                        setSelectedRoomId(room.id);
+                        setStep("style");
+                      }}
+                      className="bg-neutral-900 border border-white/10 p-6 rounded-3xl flex flex-col items-center justify-center gap-4 hover:bg-neutral-800 transition-colors aspect-square"
+                    >
+                      <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center">
+                        <Icon className="w-8 h-8 text-white" />
+                      </div>
+                      <span className="font-medium text-lg">{room.name}</span>
+                    </button>
+                  );
+                })}
               </div>
             </motion.div>
           )}
