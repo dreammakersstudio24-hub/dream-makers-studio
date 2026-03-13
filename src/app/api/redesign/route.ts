@@ -31,17 +31,17 @@ export async function POST(req: Request) {
       ? image 
       : `data:image/jpeg;base64,${image}`;
 
-    // adirik/interior-design model is a controlnet pipeline that preserves the room structure
-    // using MLSD and Segmentation maps while applying Realistic Vision V3.0
+    // rocketdigitalai/interior-design-sdxl model preserves room structure using SDXL ControlNet, yielding photorealistic renders.
     const output = await replicate.run(
-        "adirik/interior-design:76604baddc85b1b4616e1c6475ce0e64924662f9bf8ed1d37430cd1e48ec2a8c",
+        "rocketdigitalai/interior-design-sdxl",
         {
           input: {
             image: formattedImage,
-            prompt: `a photorealistic, beautiful interior design of a room in ${stylePrompt} style, highly detailed, 8k resolution, professional architectural photography`,
-            a_prompt: "best quality, extremely detailed, photo from Pinterest, interior, cinematic photo, ultra-detailed, ultra-realistic, award-winning",
-            n_prompt: "longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality",
-            image_resolution: 512, // Lower resolution for faster/cheaper generation, could be up to 768
+            prompt: `a photorealistic, beautiful interior design of a room in ${stylePrompt} style, highly detailed, 8k resolution, professional architectural photography, modern lighting`,
+            negative_prompt: "longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality",
+            num_outputs: 1,
+            num_inference_steps: 30, // Default SDXL inference steps
+            guidance_scale: 7.5
           }
         }
     );
