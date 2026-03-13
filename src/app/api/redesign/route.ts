@@ -142,7 +142,7 @@ export async function POST(req: Request) {
     // Switch to a specialized MLSD ControlNet pipeline to absolutely guarantee structure locking
     // adirik/interior-design natively handles edge-detection to map and preserve walls, doors, and windows
     const output = await replicate.run(
-        "adirik/interior-design:76604baddc85b1b4616e1c6475eca080da339c8875bd49867011efabe0801a2f",
+        "adirik/interior-design:76604baddc85b1b4616e1c6475eca080da339c8875bd4996705440484a6eac38",
         {
           input: {
             image: formattedImage,
