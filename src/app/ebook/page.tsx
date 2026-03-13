@@ -22,7 +22,9 @@ const FEATURES = [
   "Optimized for Midjourney V6.1",
 ];
 
-export default function EBookPage() {
+import { Suspense } from "react";
+
+function EBookClient() {
   const searchParams = useSearchParams();
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState("");
@@ -60,6 +62,60 @@ export default function EBookPage() {
       setIsDownloading(false);
     }
   };
+
+  const handleBuy = async () => {
+    try {
+      const res = await fetch("/api/checkout", { method: "POST" });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert("Payment initialization failed.");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Something went wrong initializing checkout.");
+    }
+  };
+
+  return (
+    <div className="bg-white p-8 rounded-3xl border border-neutral-200 shadow-sm mb-10 relative overflow-hidden">
+      <div className="flex items-end gap-4 mb-6">
+        <span className="text-5xl font-light text-neutral-900">$29</span>
+        <span className="text-neutral-400 line-through mb-1 font-medium">$99 value</span>
+      </div>
+      
+      {downloadError && (
+        <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 text-sm text-center font-medium border border-red-100">
+          {downloadError}
+        </div>
+      )}
+      
+      {isDownloading ? (
+        <div className="w-full bg-blue-50 text-blue-700 py-4 rounded-full text-sm tracking-widest font-bold shadow-inner flex items-center justify-center gap-3">
+          <Loader2 className="w-5 h-5 animate-spin" />
+          Preparing your Download...
+        </div>
+      ) : (
+        <button 
+          onClick={sessionId ? () => handleDownload(sessionId) : handleBuy}
+          disabled={isDownloading}
+          className="w-full bg-blue-900 text-white font-medium py-4 px-6 rounded-full hover:bg-blue-800 transition-colors shadow-lg shadow-blue-900/20 disabled:opacity-75 flex items-center justify-center gap-2 text-base tracking-widest font-bold group"
+        >
+          {sessionId ? (
+             <><Download className="w-5 h-5" /> Download Your Copy Now</>
+          ) : (
+             <>Buy Now <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>
+          )}
+        </button>
+      )}
+
+      <p className="text-center text-xs text-neutral-400 mt-4 tracking-widest uppercase font-medium">Secure Checkout with Stripe</p>
+    </div>
+  );
+}
+
+export default function EBookPage() {
 
   const handleBuy = async () => {
     try {
@@ -140,38 +196,16 @@ export default function EBookPage() {
               ))}
             </div>
 
-            <div className="bg-white p-8 rounded-3xl border border-neutral-200 shadow-sm mb-10 relative overflow-hidden">
-              <div className="flex items-end gap-4 mb-6">
-                <span className="text-5xl font-light text-neutral-900">$29</span>
-                <span className="text-neutral-400 line-through mb-1 font-medium">$99 value</span>
-              </div>
-              
-              {isDownloading ? (
-                <div className="w-full bg-blue-50 text-blue-700 py-4 rounded-full text-sm tracking-widest font-bold shadow-inner flex items-center justify-center gap-3">
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Preparing your Download...
-                </div>
-              ) : (
-                <button 
-                  onClick={handleBuy}
-                  disabled={isDownloading}
-                  className="w-full bg-blue-900 text-white py-4 rounded-full text-sm tracking-widest font-bold hover:bg-blue-800 shadow-md transition-colors flex items-center justify-center gap-2 group disabled:opacity-50"
-                >
-                  Buy Now 
-                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </button>
-              )}
-
-              {downloadError && (
-                <div className="mt-4 p-3 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100 text-center font-medium">
-                  {downloadError}
-                </div>
-              )}
-              
-              <p className="text-center text-xs text-neutral-400 mt-4 tracking-widest uppercase font-medium">Secure Checkout with Stripe</p>
+          <Suspense fallback={
+            <div className="bg-white p-8 rounded-3xl border border-neutral-200 shadow-sm mb-10 w-full animate-pulse">
+              <div className="h-12 bg-neutral-100 rounded-xl mb-6 w-1/3"></div>
+              <div className="h-14 bg-blue-100 rounded-full w-full"></div>
             </div>
+          }>
+            <EBookClient />
+          </Suspense>
 
-            {/* Chapters */}
+          {/* Chapters */}
             <div>
               <h3 className="text-xl font-medium tracking-wide text-neutral-900 mb-6">What's Inside</h3>
               <div className="space-y-1">
