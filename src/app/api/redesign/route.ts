@@ -40,19 +40,25 @@ export async function POST(req: Request) {
         }
     );
 
+    console.log("Raw Replicate Output:", JSON.stringify(output, null, 2));
+
     // Handle different output formats from Replicate models.
-    // Some return a single URL string, some return an array of strings, some return an array of objects
+    // Some return a single URL string, some return an array of strings, some return an array of File objects with .url() method
     let resultUrl = "";
     
     if (Array.isArray(output)) {
        const lastElement = output[output.length - 1];
        if (typeof lastElement === "string") {
            resultUrl = lastElement;
+       } else if (lastElement && typeof (lastElement as any).url === "function") {
+           resultUrl = (lastElement as any).url(); // New Replicate SDK File output format
        } else if (lastElement && typeof lastElement === "object" && (lastElement as any).url) {
            resultUrl = (lastElement as any).url;
        }
     } else if (typeof output === "string") {
        resultUrl = output;
+    } else if (output && typeof (output as any).url === "function") {
+       resultUrl = (output as any).url();
     } else if (output && typeof output === "object" && (output as any).url) {
        resultUrl = (output as any).url;
     }

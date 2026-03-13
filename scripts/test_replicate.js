@@ -1,6 +1,5 @@
 import Replicate from "replicate";
 import fs from "fs";
-import path from "path";
 import dotenv from "dotenv";
 
 dotenv.config({ path: ".env.local" });
@@ -24,11 +23,18 @@ async function main() {
         }
       }
     );
-    console.log("Output Type:", typeof output);
-    console.log("Is Array?", Array.isArray(output));
     console.log("Raw Output:", JSON.stringify(output, null, 2));
+    
+    // Save to a local file so I can read it without trusting the terminal output buffer
+    fs.writeFileSync("replicate_test_output.json", JSON.stringify(output, null, 2));
+    console.log("Saved to replicate_test_output.json");
+    
+    // Force exit to prevent hanging
+    process.exit(0);
   } catch (error) {
     console.error("Error:", error);
+    fs.writeFileSync("replicate_test_error.json", JSON.stringify({error: error.message}, null, 2));
+    process.exit(1);
   }
 }
 
