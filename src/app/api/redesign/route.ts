@@ -40,15 +40,21 @@ export async function POST(req: Request) {
         }
     );
 
-    // The output is typically an array of image URLs or a single string URL depending on the model.
-    // For adirik/interior-design, it returns an array where the second element [1] is usually the generated image (first is a control map or similar sometimes, or it just returns 1 image).
-    // Let's handle both string and array returns to be safe.
-    
+    // Handle different output formats from Replicate models.
+    // Some return a single URL string, some return an array of strings, some return an array of objects
     let resultUrl = "";
+    
     if (Array.isArray(output)) {
-       resultUrl = output[output.length - 1]; // usually the final image is last
+       const lastElement = output[output.length - 1];
+       if (typeof lastElement === "string") {
+           resultUrl = lastElement;
+       } else if (lastElement && typeof lastElement === "object" && (lastElement as any).url) {
+           resultUrl = (lastElement as any).url;
+       }
     } else if (typeof output === "string") {
        resultUrl = output;
+    } else if (output && typeof output === "object" && (output as any).url) {
+       resultUrl = (output as any).url;
     }
 
     if (!resultUrl) {
