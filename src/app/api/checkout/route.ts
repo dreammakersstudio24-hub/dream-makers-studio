@@ -22,8 +22,8 @@ export async function POST(req: Request) {
           price_data: {
             currency: "usd",
             product_data: {
-              name: "The Ultimate Design Guide (E-Book)",
-              description: "50+ Pages of actionable advice, vendor lists, and design checklists.",
+              name: "50 AI Prompts for Stunning Backyard Designs (E-Book)",
+              description: "50 high-quality AI prompts to generate realistic backyard scenes.",
             },
             unit_amount: 1299, // $12.99
           },
