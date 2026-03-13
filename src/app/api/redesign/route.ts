@@ -28,20 +28,17 @@ export async function POST(req: Request) {
     // Clean base64 string if it contains the data uri prefix.
     // Replicate accepts base64 data URIs starting with 'data:image/...;base64,'
     const formattedImage = image.startsWith('data:image') 
-      ? image 
-      : `data:image/jpeg;base64,${image}`;
-
-    // rocketdigitalai/interior-design-sdxl model preserves room structure using SDXL ControlNet, yielding photorealistic renders.
+    // Using the exact version hash for the Lightning model to prevent 404 errors and speed up generation
     const output = await replicate.run(
-        "rocketdigitalai/interior-design-sdxl",
+        "rocketdigitalai/interior-design-sdxl-lightning:5d8da4e526a6e54ee662db1e3d06eb469d45e4eeb41071d2b8feabc6804daae2",
         {
           input: {
             image: formattedImage,
             prompt: `a photorealistic, beautiful interior design of a room in ${stylePrompt} style, highly detailed, 8k resolution, professional architectural photography, modern lighting`,
             negative_prompt: "longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality",
             num_outputs: 1,
-            num_inference_steps: 30, // Default SDXL inference steps
-            guidance_scale: 7.5
+            num_inference_steps: 4, // Lightning models are optimized for 4 to 8 steps
+            guidance_scale: 1.5
           }
         }
     );
