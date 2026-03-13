@@ -25,7 +25,7 @@ export async function POST(req: Request) {
               name: "The Ultimate Design Guide (E-Book)",
               description: "50+ Pages of actionable advice, vendor lists, and design checklists.",
             },
-            unit_amount: 2900, // $29.00
+            unit_amount: 1299, // $12.99
           },
           quantity: 1,
         },

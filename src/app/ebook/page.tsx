@@ -81,7 +81,7 @@ function EBookClient() {
   return (
     <div className="bg-white p-8 rounded-3xl border border-neutral-200 shadow-sm mb-10 relative overflow-hidden">
       <div className="flex items-end gap-4 mb-6">
-        <span className="text-5xl font-light text-neutral-900">$29</span>
+        <span className="text-5xl font-light text-neutral-900">$12.99</span>
         <span className="text-neutral-400 line-through mb-1 font-medium">$99 value</span>
       </div>
       
