@@ -28,17 +28,18 @@ export async function POST(req: Request) {
     // Clean base64 string if it contains the data uri prefix.
     // Replicate accepts base64 data URIs starting with 'data:image/...;base64,'
     const formattedImage = image.startsWith('data:image') 
-    // Using the exact version hash for the Lightning model to prevent 404 errors and speed up generation
+    // Using a very stable ControlNet model (Hough/MLSD) specifically trained for architecture and interior design
     const output = await replicate.run(
-        "rocketdigitalai/interior-design-sdxl-lightning:5d8da4e526a6e54ee662db1e3d06eb469d45e4eeb41071d2b8feabc6804daae2",
+        "jagilley/controlnet-hough:854e87270c1a024da38afeb4110cfbad9470b10b0956930225134d193136201b",
         {
           input: {
             image: formattedImage,
             prompt: `a photorealistic, beautiful interior design of a room in ${stylePrompt} style, highly detailed, 8k resolution, professional architectural photography, modern lighting`,
-            negative_prompt: "longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality",
-            num_outputs: 1,
-            num_inference_steps: 4, // Lightning models are optimized for 4 to 8 steps
-            guidance_scale: 1.5
+            a_prompt: "best quality, extremely detailed, photo from Pinterest, interior, cinematic photo, ultra-detailed, ultra-realistic, award-winning",
+            n_prompt: "longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality",
+            num_samples: 1,
+            image_resolution: 512,
+            ddim_steps: 20
           }
         }
     );
