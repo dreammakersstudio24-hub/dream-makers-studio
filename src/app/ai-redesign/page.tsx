@@ -2,18 +2,10 @@
 
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, Camera, ImageIcon, X, Loader2, Sparkles, ChevronLeft, Check, Home, Bed, Utensils, Bath, Coffee, Monitor } from "lucide-react";
+import { Upload, Camera, ImageIcon, X, Loader2, Sparkles, ChevronLeft, Check } from "lucide-react";
 import Link from "next/link";
 import { STYLES } from "@/constants/styles";
-
-const ROOM_TYPES = [
-  { id: 'living room', name: 'Living Room', icon: Home },
-  { id: 'bedroom', name: 'Bedroom', icon: Bed },
-  { id: 'kitchen', name: 'Kitchen', icon: Utensils },
-  { id: 'bathroom', name: 'Bathroom', icon: Bath },
-  { id: 'dining room', name: 'Dining Room', icon: Coffee },
-  { id: 'office', name: 'Home Office', icon: Monitor },
-];
+import { ROOM_TYPES } from "@/constants/roomTypes";
 
 // Utility to compress image to base64 to ensure it fits within Vercel's 4.5MB payload limit
 const compressImage = (dataUrl: string, maxWidth = 1024): Promise<{url: string, ratio: string}> => {
@@ -75,11 +67,13 @@ export default function AiRedesignPage() {
     setError(null);
     
     try {
-      // 1. Compress image to avoid Vercel 4.5MB limit
       const compressed = await compressImage(selectedImage);
       
       const styleInfo = STYLES.find(s => s.id === selectedStyleId);
       const stylePrompt = styleInfo?.nameKey || "modern";
+      
+      const roomInfo = ROOM_TYPES.find(r => r.id === selectedRoomId);
+      const roomType = roomInfo?.nameKey || "room";
 
       // 2. Call the backend API
       const response = await fetch("/api/redesign", {
@@ -90,7 +84,7 @@ export default function AiRedesignPage() {
         body: JSON.stringify({
           image: compressed.url,
           stylePrompt: stylePrompt,
-          roomType: selectedRoomId || "room",
+          roomType: roomType,
           aspectRatio: compressed.ratio
         }),
       });
@@ -114,6 +108,7 @@ export default function AiRedesignPage() {
 
   const resetAll = () => {
     setSelectedImage(null);
+    setSelectedRoomId(null);
     setSelectedStyleId(null);
     setResultImage(null);
     setError(null);
@@ -144,7 +139,7 @@ export default function AiRedesignPage() {
       <nav className="fixed w-full z-40 top-0 border-b border-white/10 bg-black/80 backdrop-blur-md">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <button 
-            onClick={() => step === "upload" ? window.history.back() : setStep(step === "result" ? "upload" : step === "processing" ? "processing" : "upload")}
+            onClick={() => step === "upload" ? window.history.back() : setStep(step === "result" ? "upload" : step === "processing" ? "processing" : step === "style" ? "room" : "upload")}
             className="p-2 -ml-2 text-neutral-400 hover:text-white transition-colors"
             disabled={step === "processing"}
           >
@@ -153,13 +148,18 @@ export default function AiRedesignPage() {
           
           <span className="text-lg font-medium tracking-wide">
             {step === "upload" && "Upload Photo"}
-            {step === "room" && "What kind of room?"}
+            {step === "room" && "Room Type"}
             {step === "style" && "Choose Style"}
             {step === "processing" && "Redesigning..."}
             {step === "result" && "Your New Room"}
           </span>
           
-          <div className="w-10" /> {/* Spacer to center the title */}
+          <Link 
+            href="/history"
+            className="text-sm font-medium hover:text-white text-neutral-400 transition-colors"
+          >
+            History
+          </Link>
         </div>
       </nav>
 
@@ -220,36 +220,40 @@ export default function AiRedesignPage() {
             </motion.div>
           )}
 
-          {/* STEP 1.5: SELECT ROOM TYPE */}
+          {/* STEP 1.5: SELECT ROOM */}
           {step === "room" && (
             <motion.div
               key="room"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="flex-1 flex flex-col py-12"
+              className="flex-1 flex flex-col"
             >
-              <h2 className="text-3xl font-light mb-8 text-center">What kind of room is this?</h2>
+              <div className="mb-6 relative w-24 h-24 rounded-2xl overflow-hidden border-2 border-white/20 shadow-2xl mx-auto">
+                 <img src={selectedImage!} alt="Original" className="w-full h-full object-cover" />
+                 <button 
+                    onClick={() => setStep("upload")}
+                    className="absolute top-1 right-1 p-1 bg-black/50 backdrop-blur-md rounded-full text-white"
+                 >
+                    <X className="w-3 h-3" />
+                 </button>
+              </div>
+              <h2 className="text-2xl font-light mb-6 text-center">What type of room is this?</h2>
               
               <div className="grid grid-cols-2 gap-4 pb-24">
-                {ROOM_TYPES.map((room) => {
-                  const Icon = room.icon;
-                  return (
-                    <button
-                      key={room.id}
-                      onClick={() => {
-                        setSelectedRoomId(room.id);
-                        setStep("style");
-                      }}
-                      className="bg-neutral-900 border border-white/10 p-6 rounded-3xl flex flex-col items-center justify-center gap-4 hover:bg-neutral-800 transition-colors aspect-square"
-                    >
-                      <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center">
-                        <Icon className="w-8 h-8 text-white" />
-                      </div>
-                      <span className="font-medium text-lg">{room.name}</span>
-                    </button>
-                  );
-                })}
+                {ROOM_TYPES.map((room) => (
+                  <div 
+                    key={room.id}
+                    onClick={() => {
+                        setSelectedRoomId(room.id)
+                        setStep("style")
+                    }}
+                    className={`relative rounded-3xl p-6 border-2 transition-all cursor-pointer flex flex-col items-center justify-center gap-3 bg-white/5 hover:bg-white/10 ${selectedRoomId === room.id ? 'border-white bg-white/10' : 'border-transparent'}`}
+                  >
+                    <span className="text-4xl">{room.icon}</span>
+                    <span className="text-white font-medium text-center">{room.nameKey}</span>
+                  </div>
+                ))}
               </div>
             </motion.div>
           )}
@@ -278,7 +282,7 @@ export default function AiRedesignPage() {
                   <div 
                     key={style.id}
                     onClick={() => setSelectedStyleId(style.id)}
-                    className={`relative rounded-3xl overflow-hidden aspect-square border-2 transition-all cursor-pointer ${selectedStyleId === style.id ? 'border-white' : 'border-transparent'}`}
+                    className={`relative rounded-3xl overflow-hidden aspect-[3/4] border-2 transition-all cursor-pointer ${selectedStyleId === style.id ? 'border-white' : 'border-transparent'}`}
                   >
                     <img src={style.image} alt={style.nameKey} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-4">
@@ -347,11 +351,11 @@ export default function AiRedesignPage() {
               animate={{ opacity: 1, scale: 1 }}
               className="flex-1 flex flex-col"
             >
-              <div className="relative w-full aspect-[4/5] sm:aspect-square bg-neutral-900 rounded-3xl overflow-hidden mb-8 border border-white/5 shadow-2xl">
-                 <img src={resultImage!} alt="Redesign Result" className="w-full h-full object-cover" />
+              <div className="relative w-full max-h-[70vh] flex items-center justify-center bg-neutral-900 rounded-3xl overflow-hidden mb-8 border border-white/5 shadow-2xl">
+                 <img src={resultImage!} alt="Redesign Result" className="w-full h-full max-h-[70vh] object-contain" />
                  
                  <div className="absolute top-4 left-4 flex gap-2">
-                    <span className="px-3 py-1.5 bg-black/50 backdrop-blur-md rounded-full text-xs font-medium uppercase tracking-widest border border-white/10">
+                    <span className="px-3 py-1.5 bg-black/50 backdrop-blur-md rounded-full text-xs font-medium uppercase tracking-widest border border-white/10 text-white">
                        {STYLES.find(s => s.id === selectedStyleId)?.nameKey}
                     </span>
                  </div>

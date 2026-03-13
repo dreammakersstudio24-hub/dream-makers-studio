@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import Replicate from "replicate";
+import { createClient } from "@/utils/supabase/server";
 
 export const maxDuration = 60; // Set maximum duration to 60s for Vercel
 
@@ -9,11 +10,19 @@ const replicate = new Replicate({
 
 export async function POST(req: Request) {
   try {
-    const { image, stylePrompt, roomType = "room", aspectRatio = "1:1" } = await req.json();
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-    if (!image || !stylePrompt) {
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await req.json();
+    const { image, stylePrompt, roomType, aspectRatio = "1:1" } = body;
+
+    if (!image || !stylePrompt || !roomType) {
       return NextResponse.json(
-        { error: "Image and style prompt are required." },
+        { error: "Image, style, and room type are required." },
         { status: 400 }
       );
     }
@@ -26,53 +35,165 @@ export async function POST(req: Request) {
     }
 
     // Clean base64 string if it contains the data uri prefix.
+    // Replicate accepts base64 data URIs starting with 'data:image/...;base64,'
     const formattedImage = image.startsWith('data:image') 
       ? image 
       : `data:image/jpeg;base64,${image}`;
 
-    // Using the cutting-edge Bytedance Seedream 4.5 model for high-fidelity image-to-image generation
+    // Create dynamic positive prompts based on Room Type to guarantee WOW centerpiece furniture
+    // We use an array of variations and randomize them so the user gets a unique image every time!
+    let roomSpecificObjects = "";
+    const getRandomElement = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
+    
+    switch (roomType.toLowerCase()) {
+        case "living_room":
+            roomSpecificObjects = getRandomElement([
+                "EXTREMELY MASSIVE luxury L-shaped sectional sofa that fills the entire room, gigantic designer coffee table taking up the floor space, huge expensive decorative rug, grand media console, towering indoor plants",
+                "two facing oversized velvet sofas entirely filling the center space, heavy marble accent tables, grand fireplace, massive expensive artwork covering the walls, stunning crystal chandelier",
+                "cozy but gigantic curved high-end sofa, floor-to-ceiling built-in bookshelves packed with decor, dramatic oversized indoor tree, huge plush rug covering the entire floor, stylish expensive coffee table"
+            ]);
+            // Add strict constraint to completely eliminate empty floor space
+            roomSpecificObjects += " -- MUST BE completely filled with expensive, high-end, oversized seating and furniture. ABSOLUTELY NO empty spaces or bare floors allowed.";
+            break;
+        case "bedroom":
+            roomSpecificObjects = getRandomElement([
+                "gigantic king-size bed with plush premium bedding, elegant nightstands, beautiful headboard, cozy area rug, wardrobe",
+                "luxurious canopy bed, seating area with two premium armchairs, large mirror, soft ambient lighting, elegant bedding",
+                "platform bed with massive floor-to-ceiling headboard, floating nightstands, extremely cozy layered blankets, expensive rug"
+            ]);
+            break;
+        case "bathroom":
+            roomSpecificObjects = getRandomElement([
+                "stunning freestanding luxury bathtub, elegant double vanity with large mirrors, premium walk-in glass shower, high-end tiling",
+                "massive walk-in wet room shower with rainfall head, floating wood vanity, ergonomic spacing, realistic plumbing layout, towel warmer",
+                "beautiful built-in soaking tub, large vanity with luxury marble top, highly functional usable layout, elegant wall sconces"
+            ]);
+            // Add a strict architectural constraint for bathrooms
+            roomSpecificObjects += " -- MUST HAVE highly functional, usable layout with logical plumbing and ergonomic spacing. Do not block mirrors.";
+            break;
+        case "kitchen":
+            roomSpecificObjects = getRandomElement([
+                "massive luxury kitchen island with barstools, sleek modern built-in cabinets, high-end stainless steel stove and oven, large refrigerator, beautiful countertops",
+                "U-shaped kitchen layout, premium gas range stove, range hood, deep farmhouse sink, walls covered in high-end cabinets, elegant backsplash",
+                "chef's dream kitchen, double ovens, massive wall of cabinetry, built-in fridge, beautiful countertops with cooking prep area"
+            ]);
+            // Emphasize cooking appliances so it doesn't look like a dining room
+            roomSpecificObjects += " -- MUST INCLUDE cooking appliances like stove, oven, sink, and kitchen cabinets.";
+            break;
+        case "home_office":
+            roomSpecificObjects = getRandomElement([
+                "large impressive executive desk in center, ergonomic premium office chair, beautiful bookshelves, stylish reading nook, elegant desk lamp",
+                "L-shaped modern workspace, dual monitors setup, sleek floating shelves, comfortable leather reading chair, large window view",
+                "creative studio layout, massive drafting table, wall full of inspirational art, stylish storage cabinets, premium task lighting"
+            ]);
+            break;
+        default:
+            roomSpecificObjects = "beautiful high-end centerpiece furniture, luxurious seating, stunning decor, elegant lighting";
+    }
+
+    // Create dynamic style prompts to ensure each style looks totally distinct
+    let styleSpecificFeatures = "";
+    switch (stylePrompt.toLowerCase()) {
+        case "minimalist":
+            styleSpecificFeatures = "clean geometric lines, uncluttered surfaces, neutral color palette (white, beige, soft gray), minimal but impactful decor, sleek hidden storage";
+            break;
+        case "scandinavian":
+            styleSpecificFeatures = "light warm woods, cozy textiles, white walls, soft natural light, functional layout, hygge atmosphere, simple aesthetic";
+            break;
+        case "industrial":
+            styleSpecificFeatures = "exposed brick walls, raw concrete floors, matte black metal accents, massive vintage leather Chesterfield sofas, heavy iron and reclaimed wood coffee tables, large factory-style windows, exposed piping overhead, rich dark mahogany, heavy industrial lighting fixtures";
+            break;
+        case "luxury":
+            styleSpecificFeatures = "glamorous marble surfaces, gold or brass accents, opulent velvet upholstery, expensive cascading crystal chandeliers, rich deep jewel-tone colors, highly reflective glossy surfaces, opulent and heavy decor, massive custom millwork";
+            break;
+        case "modern":
+            styleSpecificFeatures = "sleek and sophisticated, bold contrasting colors, massive abstract art pieces, glass and polished steel elements, dramatic spotlighting, sharp architectural angles, highly curated designer furniture";
+            break;
+        default:
+            styleSpecificFeatures = "beautiful aesthetic, highly coordinated colors, stunning designer look, premium materials";
+    }
+
+    // Switch to Bytedance Seedream 4.5 as requested by the user for better photorealism
     const output = await replicate.run(
         "bytedance/seedream-4.5",
         {
           input: {
             image: formattedImage,
-            prompt: `Strictly preserve the exact ${roomType} layout, walls, doors, windows, and structural geometry of the input image. Redesign the interior decor, furniture, and materials in a beautiful photorealistic ${stylePrompt} style. Highly detailed, 8k resolution, professional architectural photography, modern lighting. Do not change the shape or size of the room.`,
+            prompt: `A jaw-dropping, award-winning ${stylePrompt} style ${roomType} interior design. STRICTLY PRESERVE THE EXACT ROOM LAYOUT, WALLS, DOORS, AND WINDOWS of the input image. The room features: ${styleSpecificFeatures}. It is FULLY FURNISHED with a ${roomSpecificObjects}. ${densityPrompt} Add beautiful layered rugs, stunning indoor plants, and cinematic photorealistic lighting. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
             prompt_upsampling: false, // Turn off upsampling to ensure our strict prompt isn't rewritten by the AI
-            image_guidance_scale: 1.6, // Higher guidance to stick to original structure (common in SDXL models)
+            image_guidance_scale: 1.6, // Higher guidance to stick to original structure
             prompt_strength: 0.65, // 65% redesign, 35% original structure preservation
             aspect_ratio: aspectRatio
           }
         }
     );
 
-    console.log("Raw Replicate Output:", JSON.stringify(output, null, 2));
-
-    // Handle different output formats from Replicate models.
-    // Some return a single URL string, some return an array of strings, some return an array of File objects with .url() method
+    // Replicate v1.x SDK returns FileOutput objects (ReadableStreams) instead of raw strings.
+    // They have a .url() method that returns a URL object.
     let resultUrl = "";
     
-    if (Array.isArray(output)) {
-       const lastElement = output[output.length - 1];
-       if (typeof lastElement === "string") {
-           resultUrl = lastElement;
-       } else if (lastElement && typeof (lastElement as any).url === "function") {
-           resultUrl = (lastElement as any).url(); // New Replicate SDK File output format
-       } else if (lastElement && typeof lastElement === "object" && (lastElement as any).url) {
-           resultUrl = (lastElement as any).url;
-       }
+    // Helper to extract string URL from either a FileOutput or a string
+    const extractUrl = (item: any) => {
+        if (!item) return "";
+        if (typeof item === "string") return item;
+        if (typeof item.url === "function") {
+            const u = item.url();
+            return u ? u.toString() : "";
+        }
+        if (typeof item.url === "string") return item.url;
+        return "";
+    };
+
+    if (output && typeof output === "object") {
+        if (Array.isArray(output) && output.length > 0) {
+            // Some models return an array of FileOutputs
+            resultUrl = extractUrl(output[output.length - 1]);
+        } else {
+            // adirik/interior-design returns a single FileOutput object
+            resultUrl = extractUrl(output);
+        }
     } else if (typeof output === "string") {
-       resultUrl = output;
-    } else if (output && typeof (output as any).url === "function") {
-       resultUrl = (output as any).url();
-    } else if (output && typeof output === "object" && (output as any).url) {
-       resultUrl = (output as any).url;
+        resultUrl = output;
     }
 
-    if (!resultUrl) {
-       throw new Error("Failed to generate image URL from Replicate");
+    if (!resultUrl || typeof resultUrl !== 'string' || !resultUrl.startsWith('http')) {
+       console.error("Invalid output format from Replicate. Raw output:", output);
+       throw new Error("Failed to generate a valid image URL from Replicate.");
     }
 
-    return NextResponse.json({ success: true, resultUrl });
+    // --- Save to Supabase Storage ---
+    const timestamp = Date.now();
+    
+    // 1. Upload original image
+    const base64Data = formattedImage.split(',')[1];
+    const originalBuffer = Buffer.from(base64Data, 'base64');
+    const originalFileName = `${user.id}/${timestamp}_original.jpg`;
+    
+    await supabase.storage.from('images').upload(originalFileName, originalBuffer, {
+        contentType: 'image/jpeg',
+    });
+    const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
+
+    // 2. Fetch and upload generated image
+    const imageResponse = await fetch(resultUrl);
+    const imageBlob = await imageResponse.blob();
+    const generatedFileName = `${user.id}/${timestamp}_generated.jpg`;
+    
+    await supabase.storage.from('images').upload(generatedFileName, imageBlob, {
+        contentType: 'image/jpeg',
+    });
+    const finalUrl = supabase.storage.from('images').getPublicUrl(generatedFileName).data.publicUrl;
+
+    // 3. Save generation record to database
+    await supabase.from('generations').insert({
+        user_id: user.id,
+        original_image_url: originalUrl,
+        generated_image_url: finalUrl,
+        room_type: roomType,
+        style: stylePrompt
+    });
+
+    return NextResponse.json({ success: true, resultUrl: finalUrl });
 
   } catch (error: any) {
     console.error("Replicate API Error:", error);
