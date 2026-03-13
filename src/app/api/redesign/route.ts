@@ -34,8 +34,8 @@ export async function POST(req: Request) {
         {
           input: {
             image: formattedImage,
-            prompt: `a photorealistic, beautiful interior design of a room in ${stylePrompt} style, highly detailed, 8k resolution, professional architectural photography, modern lighting`,
-            prompt_upsampling: true // Often supported to enhance prompts
+            prompt: `Strictly preserve the exact room layout, walls, doors, windows, and structural geometry of the input image. Redesign the interior decor, furniture, and materials in a beautiful photorealistic ${stylePrompt} style. Highly detailed, 8k resolution, professional architectural photography, modern lighting. Do not change the shape or size of the room.`,
+            prompt_upsampling: false // Turn off upsampling to ensure our strict prompt isn't rewritten by the AI
           }
         }
     );
