@@ -28,18 +28,14 @@ export async function POST(req: Request) {
     // Clean base64 string if it contains the data uri prefix.
     // Replicate accepts base64 data URIs starting with 'data:image/...;base64,'
     const formattedImage = image.startsWith('data:image') 
-    // Using a very stable ControlNet model (Hough/MLSD) specifically trained for architecture and interior design
+    // Using the cutting-edge Bytedance Seedream 4.5 model for high-fidelity image-to-image generation
     const output = await replicate.run(
-        "jagilley/controlnet-hough:854e87270c1a024da38afeb4110cfbad9470b10b0956930225134d193136201b",
+        "bytedance/seedream-4.5",
         {
           input: {
             image: formattedImage,
             prompt: `a photorealistic, beautiful interior design of a room in ${stylePrompt} style, highly detailed, 8k resolution, professional architectural photography, modern lighting`,
-            a_prompt: "best quality, extremely detailed, photo from Pinterest, interior, cinematic photo, ultra-detailed, ultra-realistic, award-winning",
-            n_prompt: "longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality",
-            num_samples: 1,
-            image_resolution: 512,
-            ddim_steps: 20
+            prompt_upsampling: true // Often supported to enhance prompts
           }
         }
     );
