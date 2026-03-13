@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server'
+import { createServerSupabaseClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronLeft, Sparkles, Image as ImageIcon } from 'lucide-react'
@@ -8,7 +8,7 @@ export const metadata = {
 }
 
 export default async function HistoryPage() {
-  const supabase = await createClient()
+  const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {

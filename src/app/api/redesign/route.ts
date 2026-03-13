@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import Replicate from "replicate";
-import { createClient } from "@/utils/supabase/server";
+import { createServerSupabaseClient } from "@/utils/supabase/server";
 
 export const maxDuration = 60; // Set maximum duration to 60s for Vercel
 
@@ -10,7 +10,7 @@ const replicate = new Replicate({
 
 export async function POST(req: Request) {
   try {
-    const supabase = await createClient();
+    const supabase = await createServerSupabaseClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -111,6 +111,14 @@ export async function POST(req: Request) {
             break;
         default:
             styleSpecificFeatures = "beautiful aesthetic, highly coordinated colors, stunning designer look, premium materials";
+    }
+
+    // Dynamic Density Control to fix "poor / empty" look for non-minimalist styles
+    let densityPrompt = "";
+    if (stylePrompt.toLowerCase().includes("minimalist") || stylePrompt.toLowerCase().includes("scandinavian")) {
+        densityPrompt = "SPACIOUS layout, breathing room between furniture, perfectly balanced negative space, clean, curated.";
+    } else {
+        densityPrompt = "MAXIMALIST styling, DENSE furniture layout, room is completely FULL of heavy expensive furniture, stunningly layered decor, absolutely NO huge empty floor spaces, extravagant styling, highly curated magazine layout.";
     }
 
     // Switch to Bytedance Seedream 4.5 as requested by the user for better photorealism
