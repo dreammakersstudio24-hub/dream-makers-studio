@@ -5,4 +5,6 @@ export const ROOM_TYPES = [
   { id: "kitchen", nameKey: "Kitchen", icon: "🍳" },
   { id: "dining_room", nameKey: "Dining Room", icon: "🍽️" },
   { id: "home_office", nameKey: "Home Office", icon: "💻" },
+  { id: "kids_room", nameKey: "Kids Room", icon: "🧸" },
+  { id: "balcony", nameKey: "Balcony / Patio", icon: "🪴" },
 ];

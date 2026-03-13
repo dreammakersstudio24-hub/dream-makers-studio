@@ -87,6 +87,21 @@ export async function POST(req: Request) {
                 "creative studio layout, massive drafting table, wall full of inspirational art, stylish storage cabinets, premium task lighting"
             ]);
             break;
+        case "kids_room":
+            roomSpecificObjects = getRandomElement([
+                "fun and colorful custom bunk beds, built-in toy storage shelves, whimsical wall art, cozy reading corner with bean bags, large play rug",
+                "adorable premium twin bed, beautiful dollhouse or indoor slide, creative play area, floating bookshelves, soft pastel ambient lighting"
+            ]);
+            // Strictly maintain safety and kid-friendly layouts
+            roomSpecificObjects += " -- MUST BE completely kid-friendly, playful, safe design with ample toy storage.";
+            break;
+        case "balcony":
+            roomSpecificObjects = getRandomElement([
+                "luxurious outdoor patio seating, premium weather-resistant sofa set, stunning vertical garden, beautiful evening string lights, modern coffee table",
+                "cozy terrace design, beautiful outdoor dining table for two, lots of lush potted plants, hanging swing chair, outdoor rug and lanterns"
+            ]);
+            roomSpecificObjects += " -- MUST BE an outdoor or semi-outdoor space. Add exterior elements like plants and outdoor furniture.";
+            break;
         default:
             roomSpecificObjects = "beautiful high-end centerpiece furniture, luxurious seating, stunning decor, elegant lighting";
     }
@@ -129,8 +144,8 @@ export async function POST(req: Request) {
             image: formattedImage,
             prompt: `A jaw-dropping, award-winning ${stylePrompt} style ${roomType} interior design. STRICTLY PRESERVE THE EXACT ROOM LAYOUT, WALLS, DOORS, AND WINDOWS of the input image. The room features: ${styleSpecificFeatures}. It is FULLY FURNISHED with a ${roomSpecificObjects}. ${densityPrompt} Add beautiful layered rugs, stunning indoor plants, and cinematic photorealistic lighting. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
             prompt_upsampling: false, // Turn off upsampling to ensure our strict prompt isn't rewritten by the AI
-            image_guidance_scale: 1.6, // Higher guidance to stick to original structure
-            prompt_strength: 0.65, // 65% redesign, 35% original structure preservation
+            image_guidance_scale: 2.0, // CRITICAL: Extreme guidance to stick to original structure
+            prompt_strength: 0.35, // CRITICAL: Lowered to 35% redesign to absolutely force the model to keep original walls and windows
             aspect_ratio: aspectRatio
           }
         }
