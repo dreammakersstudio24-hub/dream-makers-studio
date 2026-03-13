@@ -34,11 +34,12 @@ export async function GET(req: Request) {
     // 3. Read file and send as downloadable stream
     const fileBuffer = fs.readFileSync(filePath);
     
-    return new NextResponse(fileBuffer, {
+    const fileName = "50 Cinematic AI Prompts for Stunning Backyard & Garden Designs.pdf";
+    return new Response(fileBuffer, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': 'attachment; filename="50 Cinematic AI Prompts for Stunning Backyard & Garden Designs.pdf"',
+        'Content-Disposition': `attachment; filename="${fileName}"`,
       },
     });
 

@@ -5,21 +5,21 @@ import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { CheckCircle2, ChevronRight, Star, ExternalLink, Download, Loader2 } from "lucide-react";
 
-const CHAPTERS = [
-  "How to Use the AI Prompt System",
-  "Small Backyard Designs (Prompts 1-10)",
-  "Garden Pathways & Walkways",
-  "Water Features & Reflecting Pools",
-  "Fire Pit Lounge & Social Spaces",
-  "Tropical & Resort Garden Concepts",
-  "Bonus Tips for Photo-Realism",
+const CATEGORIES = [
+  "Small Backyard Designs",
+  "Garden Pathways",
+  "Water Features",
+  "Fire Pit Lounge",
+  "Luxury Garden Spaces",
+  "Tropical & Resort Gardens",
 ];
 
 const FEATURES = [
-  "50 plug-and-play AI prompts",
-  "High-res cinematic references",
-  "Tips for lighting & camera angles",
-  "Optimized for Midjourney V6.1",
+  "50 ready-to-use AI prompts",
+  "Organized into 6 backyard design categories",
+  "Realistic residential garden scenes",
+  "Style Keywords Cheat Sheet",
+  "Bonus tips for better AI images",
 ];
 
 import { Suspense } from "react";
@@ -180,11 +180,11 @@ export default function EBookPage() {
             </div>
             
             <h1 className="text-4xl lg:text-5xl font-light leading-tight mb-6 text-neutral-900">
-              Generate Stunning Outdoor Concepts in Seconds
+              50 AI Prompts for Stunning Backyard Designs
             </h1>
             
             <p className="text-lg text-neutral-500 mb-10 leading-relaxed font-light">
-              Stop guessing keywords. Discover the exact Midjourney prompts we use to generate photorealistic, cinematic backyard and garden designs that win over high-end clients.
+              Create beautiful backyard and garden designs with AI — in seconds. Dream Makers Pro Prompts is a curated collection of 50 high-quality AI prompts designed to generate realistic and inspiring backyard scenes effortlessly. Just copy, paste, and generate.
             </p>
 
             <div className="space-y-4 mb-10">
@@ -205,14 +205,13 @@ export default function EBookPage() {
             <EBookClient />
           </Suspense>
 
-          {/* Chapters */}
             <div>
-              <h3 className="text-xl font-medium tracking-wide text-neutral-900 mb-6">What's Inside</h3>
+              <h3 className="text-xl font-medium tracking-wide text-neutral-900 mb-6">Prompt Categories</h3>
               <div className="space-y-1">
-                {CHAPTERS.map((chapter, i) => (
+                {CATEGORIES.map((category, i) => (
                   <div key={i} className="flex gap-4 py-3 border-b border-neutral-100 last:border-0 hover:bg-neutral-50 px-2 rounded-lg transition-colors cursor-default">
                     <span className="text-blue-500 font-mono font-medium">{String(i + 1).padStart(2, '0')}</span>
-                    <span className="text-neutral-700 font-medium">{chapter}</span>
+                    <span className="text-neutral-700 font-medium">{category}</span>
                   </div>
                 ))}
               </div>
@@ -221,6 +220,37 @@ export default function EBookPage() {
           </motion.div>
 
         </div>
+
+        {/* Inspirational Gallery Section */}
+        <motion.div 
+           initial={{ opacity: 0, y: 30 }}
+           whileInView={{ opacity: 1, y: 0 }}
+           viewport={{ once: true }}
+           transition={{ duration: 0.8 }}
+           className="mt-24 pt-16 border-t border-neutral-200"
+        >
+           <h2 className="text-3xl font-light mb-2 text-center text-neutral-900">See What's Possible</h2>
+           <p className="text-neutral-500 text-center mb-12 max-w-xl mx-auto font-light">
+             A sneak peek at the exact photorealistic, cinematic backyard renders you can create using the prompts in this guide.
+           </p>
+
+           <div className="columns-1 md:columns-2 gap-6 space-y-6">
+             {/* eslint-disable @next/next/no-img-element */}
+             <div className="rounded-3xl overflow-hidden shadow-lg border border-neutral-100 group">
+               <img src="/Ebook/Backyard_garden_with_fire_pit_a060186c13.jpeg" alt="Fire Pit Lounge" className="w-full h-auto transform group-hover:scale-105 transition-transform duration-700" />
+             </div>
+             <div className="rounded-3xl overflow-hidden shadow-lg border border-neutral-100 group">
+               <img src="/Ebook/Backyard_with_pergola_lounge_area_1c36a9fc5b.jpeg" alt="Pergola Lounge Area" className="w-full h-auto transform group-hover:scale-105 transition-transform duration-700" />
+             </div>
+             <div className="rounded-3xl overflow-hidden shadow-lg border border-neutral-100 group">
+               <img src="/Ebook/Modern_house_courtyard_backyard_with_stone_patio_f_c2b067f9dc.jpeg" alt="Modern Stone Patio" className="w-full h-auto transform group-hover:scale-105 transition-transform duration-700" />
+             </div>
+             <div className="rounded-3xl overflow-hidden shadow-lg border border-neutral-100 group">
+               <img src="/Ebook/Backyard_garden_with_koi_pond_36d3c2a2ae.jpeg" alt="Koi Pond Oasis" className="w-full h-auto transform group-hover:scale-105 transition-transform duration-700" />
+             </div>
+             {/* eslint-enable @next/next/no-img-element */}
+           </div>
+        </motion.div>
 
         {/* Recommended Tools Affiliate Section */}
         <motion.div 
