@@ -17,7 +17,10 @@ export default async function AdminIdeasPage() {
 
       <div className="bg-neutral-900 border border-white/10 rounded-3xl p-6 mb-8">
          <h2 className="text-lg font-medium mb-4">Add New Idea</h2>
-         <form action={addGenerationIdea} className="flex gap-4">
+         <form action={async (formData: FormData) => {
+            "use server";
+            await addGenerationIdea(formData);
+         }} className="flex gap-4">
             <input 
                type="text" 
                name="prompt_idea" 
@@ -51,12 +54,18 @@ export default async function AdminIdeasPage() {
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                     <form action={toggleIdeaStatus.bind(null, idea.id, idea.is_active ?? false)}>
+                     <form action={async () => {
+                        "use server";
+                        await toggleIdeaStatus(idea.id, idea.is_active ?? false);
+                     }}>
                         <button className="text-neutral-500 hover:text-white p-2 hover:bg-white/10 rounded-xl transition-all" title="Toggle active status">
                         <Power className="w-4 h-4" />
                         </button>
                      </form>
-                     <form action={deleteGenerationIdea.bind(null, idea.id)}>
+                     <form action={async () => {
+                        "use server";
+                        await deleteGenerationIdea(idea.id);
+                     }}>
                         <button className="text-neutral-500 hover:text-red-400 p-2 hover:bg-red-500/10 rounded-xl transition-all" title="Delete idea">
                         <Trash2 className="w-4 h-4" />
                         </button>

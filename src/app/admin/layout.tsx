@@ -35,7 +35,10 @@ export default function AdminLayout({
         </nav>
 
         <div className="p-4 border-t border-white/10">
-          <form action={logout}>
+          <form action={async (formData: FormData) => {
+            "use server";
+            await logout();
+          }}>
             <button className="flex items-center gap-3 w-full px-4 py-3 rounded-xl hover:bg-red-500/10 hover:text-red-500 transition-colors text-sm font-medium tracking-wide text-neutral-400">
               <LogOut className="w-4 h-4" /> Sign Out
             </button>
