@@ -234,18 +234,18 @@ export default function EBookPage() {
              A sneak peek at the exact photorealistic, cinematic backyard renders you can create using the prompts in this guide.
            </p>
 
-           <div className="columns-1 md:columns-2 gap-6 space-y-6">
+           <div className="max-w-4xl mx-auto columns-1 md:columns-2 gap-6">
              {/* eslint-disable @next/next/no-img-element */}
-             <div className="rounded-3xl overflow-hidden shadow-lg border border-neutral-100 group">
+             <div className="rounded-3xl overflow-hidden shadow-lg border border-neutral-100 group mb-6 hover:shadow-xl transition-shadow break-inside-avoid">
                <img src="/Ebook/Backyard_garden_with_fire_pit_a060186c13.jpeg" alt="Fire Pit Lounge" className="w-full h-auto transform group-hover:scale-105 transition-transform duration-700" />
              </div>
-             <div className="rounded-3xl overflow-hidden shadow-lg border border-neutral-100 group">
+             <div className="rounded-3xl overflow-hidden shadow-lg border border-neutral-100 group mb-6 hover:shadow-xl transition-shadow break-inside-avoid">
                <img src="/Ebook/Backyard_with_pergola_lounge_area_1c36a9fc5b.jpeg" alt="Pergola Lounge Area" className="w-full h-auto transform group-hover:scale-105 transition-transform duration-700" />
              </div>
-             <div className="rounded-3xl overflow-hidden shadow-lg border border-neutral-100 group">
+             <div className="rounded-3xl overflow-hidden shadow-lg border border-neutral-100 group mb-6 hover:shadow-xl transition-shadow break-inside-avoid">
                <img src="/Ebook/Modern_house_courtyard_backyard_with_stone_patio_f_c2b067f9dc.jpeg" alt="Modern Stone Patio" className="w-full h-auto transform group-hover:scale-105 transition-transform duration-700" />
              </div>
-             <div className="rounded-3xl overflow-hidden shadow-lg border border-neutral-100 group">
+             <div className="rounded-3xl overflow-hidden shadow-lg border border-neutral-100 group mb-6 hover:shadow-xl transition-shadow break-inside-avoid">
                <img src="/Ebook/Backyard_garden_with_koi_pond_36d3c2a2ae.jpeg" alt="Koi Pond Oasis" className="w-full h-auto transform group-hover:scale-105 transition-transform duration-700" />
              </div>
              {/* eslint-enable @next/next/no-img-element */}
