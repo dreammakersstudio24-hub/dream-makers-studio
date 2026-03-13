@@ -136,17 +136,20 @@ export async function POST(req: Request) {
         densityPrompt = "MAXIMALIST styling, DENSE furniture layout, room is completely FULL of heavy expensive furniture, stunningly layered decor, absolutely NO huge empty floor spaces, extravagant styling, highly curated magazine layout.";
     }
 
-    // Switch to Bytedance Seedream 4.5 as requested by the user for better photorealism
+    // Dynamic negative prompt to help ControlNet shape the output better
+    let dynamicNegativePrompt = "lowres, watermark, banner, logo, text, deformed, blurry, blur, out of focus, surreal, extra, ugly, bad architecture, weird proportions, crooked walls";
+
+    // Switch to a specialized MLSD ControlNet pipeline to absolutely guarantee structure locking
+    // adirik/interior-design natively handles edge-detection to map and preserve walls, doors, and windows
     const output = await replicate.run(
-        "bytedance/seedream-4.5",
+        "adirik/interior-design:76604baddc85b1b4616e1c6475eca080da339c8875bd49867011efabe0801a2f",
         {
           input: {
             image: formattedImage,
-            prompt: `A jaw-dropping, award-winning ${stylePrompt} style ${roomType} interior design. STRICTLY PRESERVE THE EXACT ROOM LAYOUT, WALLS, DOORS, AND WINDOWS of the input image. The room features: ${styleSpecificFeatures}. It is FULLY FURNISHED with a ${roomSpecificObjects}. ${densityPrompt} Add beautiful layered rugs, stunning indoor plants, and cinematic photorealistic lighting. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
-            prompt_upsampling: false, // Turn off upsampling to ensure our strict prompt isn't rewritten by the AI
-            image_guidance_scale: 2.0, // CRITICAL: Extreme guidance to stick to original structure
-            prompt_strength: 0.35, // CRITICAL: Lowered to 35% redesign to absolutely force the model to keep original walls and windows
-            aspect_ratio: aspectRatio
+            prompt: `A jaw-dropping, award-winning ${stylePrompt} style ${roomType} interior design. STRICTLY PRESERVE THE EXACT ROOM LAYOUT. The room features: ${styleSpecificFeatures}. It is FULLY FURNISHED with a ${roomSpecificObjects}. ${densityPrompt} Add beautiful layered rugs, stunning indoor plants, and cinematic photorealistic lighting. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
+            negative_prompt: dynamicNegativePrompt,
+            guidance_scale: 15, // Default for this model
+            prompt_strength: 0.85, // 85% restyling, but geometry is held rigidly by the MLSD ControlNet beneath
           }
         }
     );
