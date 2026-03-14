@@ -54,32 +54,14 @@ export default function LoginPage({
            </svg>
          </div>
          <h1 className="text-3xl font-light mb-2 tracking-tight text-neutral-900">
-           Welcome to the Studio
+           {isSignUp ? "Create an Account" : "Welcome to the Studio"}
          </h1>
          <p className="text-neutral-500 font-light text-sm">
-           Log in or create an account to start designing.
+           {isSignUp ? "Sign up to start transforming spaces with AI." : "Log in to continue designing."}
          </p>
       </div>
 
       <div className="w-full max-w-md bg-white border border-neutral-200 shadow-xl rounded-[2rem] overflow-hidden">
-        {/* Tab Header */}
-        <div className="flex w-full border-b border-neutral-100">
-          <button 
-            type="button"
-            onClick={() => { setIsSignUp(false); setErrorMessage(""); }}
-            className={`flex-1 py-5 text-sm font-semibold tracking-wide transition-colors ${!isSignUp ? 'text-black border-b-2 border-black' : 'text-neutral-400 hover:text-neutral-600'}`}
-          >
-            SIGN IN
-          </button>
-          <button 
-            type="button"
-            onClick={() => { setIsSignUp(true); setErrorMessage(""); }}
-            className={`flex-1 py-5 text-sm font-semibold tracking-wide transition-colors ${isSignUp ? 'text-black border-b-2 border-black' : 'text-neutral-400 hover:text-neutral-600'}`}
-          >
-            CREATE ACCOUNT
-          </button>
-        </div>
-
         {/* Form Body */}
         <div className="p-8">
           <form className="space-y-6" onSubmit={handleSubmit}>
@@ -127,6 +109,15 @@ export default function LoginPage({
               {isLoading ? "Authenticating..." : (isSignUp ? "Create My Account" : "Access Studio")}
             </button>
           </form>
+
+          {/* Toggle Mode Link */}
+          <div className="mt-6 text-center text-sm text-neutral-500">
+            {isSignUp ? (
+                <p>Already have an account? <button type="button" onClick={() => {setIsSignUp(false); setErrorMessage("");}} className="text-black font-bold hover:underline">Log in</button></p>
+            ) : (
+                <p>Don't have an account? <button type="button" onClick={() => {setIsSignUp(true); setErrorMessage("");}} className="text-black font-bold hover:underline">Sign up</button></p>
+            )}
+          </div>
         </div>
       </div>
     </div>

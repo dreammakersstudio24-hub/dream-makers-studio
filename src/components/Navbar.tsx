@@ -6,6 +6,8 @@ import { usePathname } from 'next/navigation';
 export function Navbar() {
   const pathname = usePathname();
 
+  if (pathname.startsWith('/app') || pathname.startsWith('/login')) return null;
+
   const links = [
     { name: 'Home', href: '/' },
     { name: 'Gallery', href: '/gallery' },
