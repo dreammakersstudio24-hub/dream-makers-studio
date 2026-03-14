@@ -15,10 +15,16 @@ export default async function HistoryPage() {
     redirect('/login')
   }
 
+  // Filter for last 30 days
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const thirtyDaysAgoIso = thirtyDaysAgo.toISOString();
+
   const { data: generations, error } = await supabase
     .from('generations')
     .select('*')
     .eq('user_id', user.id)
+    .gte('created_at', thirtyDaysAgoIso)
     .order('created_at', { ascending: false })
 
   return (

@@ -24,11 +24,44 @@ export async function POST(req: Request) {
   switch (event.type) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
+      const supabaseAdmin = createAdminClient();
       
+      // 1. Check if this is an AI Credits purchase
+      if (session.metadata?.productType === 'ai_credits') {
+        try {
+           const userId = session.client_reference_id;
+           if (!userId) {
+              console.error("No client_reference_id found for AI Credits purchase:", session.id);
+              break;
+           }
+
+           // Fetch current credits
+           const { data: userMeta } = await supabaseAdmin
+             .from('users_metadata')
+             .select('credits')
+             .eq('id', userId)
+             .single();
+           
+           const currentCredits = userMeta?.credits || 0;
+           const newCredits = currentCredits + Number(session.metadata.amount || 50);
+
+           // Update or Insert credits
+           const { error } = await supabaseAdmin
+             .from('users_metadata')
+             .upsert({ id: userId, credits: newCredits });
+
+           if (error) console.error("Failed to add AI credits:", error);
+           else console.log(`Successfully added ${session.metadata.amount} AI credits to user ${userId}`);
+           
+        } catch (dbError) {
+           console.error("Database connection error in webhook for AI credits:", dbError);
+        }
+        break;
+      }
+
       // Check if this is an e-book purchase or a contractor subscription
       if (session.metadata?.type !== 'contractor_subscription') {
         try {
-          const supabaseAdmin = createAdminClient();
           const { error } = await supabaseAdmin
             .from('customers')
             .insert({

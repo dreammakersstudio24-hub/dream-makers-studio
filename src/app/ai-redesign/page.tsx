@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, Camera, ImageIcon, X, Loader2, Sparkles, ChevronLeft, Check } from "lucide-react";
+import { Camera, ImageIcon, X, Loader2, Sparkles, ChevronLeft, Check, Lock } from "lucide-react";
 import Link from "next/link";
 import { STYLES } from "@/constants/styles";
 import { ROOM_TYPES } from "@/constants/roomTypes";
@@ -44,6 +44,31 @@ export default function AiRedesignPage() {
   const [selectedStyleId, setSelectedStyleId] = useState<string | null>(null);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  
+  // Auth and Paywall states
+  const [authStatus, setAuthStatus] = useState<"loading" | "authorized" | "not_logged_in" | "no_credits">("loading");
+  const [credits, setCredits] = useState(0);
+
+  useEffect(() => {
+    // Check if user is logged in and has credits
+    fetch('/api/user/ai-access')
+      .then(res => res.json())
+      .then(data => {
+        if (!data.authorized && data.reason === "NOT_LOGGED_IN") {
+           setAuthStatus("not_logged_in");
+        } else if (!data.authorized && data.reason === "NO_CREDITS") {
+           setAuthStatus("no_credits");
+           setCredits(0);
+        } else {
+           setAuthStatus("authorized");
+           setCredits(data.credits || 0);
+        }
+      })
+      .catch((err) => {
+         console.error(err);
+         setAuthStatus("not_logged_in");
+      });
+  }, []);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -161,14 +186,79 @@ export default function AiRedesignPage() {
             History
           </Link>
         </div>
+        
+        {/* Credits Indicator */}
+        {authStatus === "authorized" && (
+          <div className="absolute top-16 left-0 w-full bg-neutral-900 border-b border-white/10 px-4 py-2 flex justify-center items-center gap-2 text-xs font-medium text-neutral-300">
+            <Sparkles className="w-3 h-3 text-yellow-500" />
+            <span>{credits} AI Credits Available</span>
+          </div>
+        )}
       </nav>
 
       {/* Main Content Area - Mobile optimized width */}
-      <main className="max-w-3xl mx-auto pt-20 pb-32 px-4 sm:px-6 min-h-screen flex flex-col">
+      <main className="max-w-3xl mx-auto pt-24 pb-32 px-4 sm:px-6 min-h-screen flex flex-col">
         <AnimatePresence mode="wait">
           
+          {/* AUTHENTICATION & PAYWALL BLOCKERS */}
+          {authStatus === "loading" && (
+            <motion.div 
+               key="loading" 
+               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+               className="flex-1 flex flex-col items-center justify-center py-32"
+            >
+              <Loader2 className="w-8 h-8 animate-spin text-neutral-400" />
+            </motion.div>
+          )}
+
+          {authStatus === "not_logged_in" && (
+            <motion.div 
+               key="not_logged_in" 
+               initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
+               className="flex-1 flex flex-col items-center justify-center py-32 text-center"
+            >
+              <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10">
+                <Lock className="w-8 h-8 text-neutral-400" />
+              </div>
+              <h2 className="text-3xl font-light mb-4 text-white">Member Access Only</h2>
+              <p className="text-neutral-400 mb-10 max-w-sm">Please log in or create an account to use the AI Interior Designer tool.</p>
+              <Link href="/login" className="bg-white text-black px-8 py-3 rounded-full font-medium hover:bg-neutral-200 transition-colors">
+                Sign In / Join
+              </Link>
+            </motion.div>
+          )}
+
+          {authStatus === "no_credits" && (
+            <motion.div 
+               key="no_credits" 
+               initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
+               className="flex-1 flex flex-col items-center justify-center py-32 text-center"
+            >
+              <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10">
+                <Sparkles className="w-8 h-8 text-neutral-400" />
+              </div>
+              <h2 className="text-3xl font-light mb-4 text-white">Recharge Your Credits</h2>
+              <p className="text-neutral-400 mb-10 max-w-md">You've reached your generation limit. Purchase an AI Developer Pass to instantly unlock 50 more high-quality 8K room transformations.</p>
+              
+              <button 
+                onClick={async () => {
+                   try {
+                     const res = await fetch("/api/ai/checkout", { method: "POST" });
+                     const data = await res.json();
+                     if (data.url) window.location.href = data.url;
+                   } catch (e) {
+                     console.error(e);
+                   }
+                }}
+                className="bg-white text-black px-8 py-4 rounded-full font-medium hover:bg-neutral-200 transition-colors flex items-center gap-2 shadow-[0_0_30px_rgba(255,255,255,0.15)]"
+              >
+                <span>Buy 50 Credits for $9.99</span>
+              </button>
+            </motion.div>
+          )}
+
           {/* STEP 1: UPLOAD */}
-          {step === "upload" && (
+          {authStatus === "authorized" && step === "upload" && (
             <motion.div
               key="upload"
               initial={{ opacity: 0, x: -20 }}
@@ -221,7 +311,7 @@ export default function AiRedesignPage() {
           )}
 
           {/* STEP 1.5: SELECT ROOM */}
-          {step === "room" && (
+          {authStatus === "authorized" && step === "room" && (
             <motion.div
               key="room"
               initial={{ opacity: 0, x: 20 }}
@@ -259,7 +349,7 @@ export default function AiRedesignPage() {
           )}
 
           {/* STEP 2: SELECT STYLE */}
-          {step === "style" && (
+          {authStatus === "authorized" && step === "style" && (
             <motion.div
               key="style"
               initial={{ opacity: 0, x: 20 }}
@@ -321,7 +411,7 @@ export default function AiRedesignPage() {
           )}
 
           {/* STEP 3: PROCESSING */}
-          {step === "processing" && (
+          {authStatus === "authorized" && step === "processing" && (
             <motion.div
               key="processing"
               initial={{ opacity: 0 }}
@@ -344,7 +434,7 @@ export default function AiRedesignPage() {
           )}
 
           {/* STEP 4: RESULT */}
-          {step === "result" && (
+          {authStatus === "authorized" && step === "result" && (
             <motion.div
               key="result"
               initial={{ opacity: 0, scale: 0.95 }}

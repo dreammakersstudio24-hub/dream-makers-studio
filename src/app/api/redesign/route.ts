@@ -34,6 +34,21 @@ export async function POST(req: Request) {
       );
     }
 
+    // --- Verify Credits ---
+    const { data: userMeta, error: metaError } = await supabase
+      .from('users_metadata')
+      .select('credits')
+      .eq('id', user.id)
+      .single();
+
+    const currentCredits = userMeta?.credits || 0;
+    if (currentCredits <= 0) {
+      return NextResponse.json(
+        { error: "Insufficient AI credits. Please purchase more." },
+        { status: 403 }
+      );
+    }
+
     // Clean base64 string if it contains the data uri prefix.
     // Replicate accepts base64 data URIs starting with 'data:image/...;base64,'
     const formattedImage = image.startsWith('data:image') 
@@ -210,7 +225,18 @@ export async function POST(req: Request) {
     });
     const finalUrl = supabase.storage.from('images').getPublicUrl(generatedFileName).data.publicUrl;
 
-    // 3. Save generation record to database
+    // 3. Deduct credit
+    const { error: deductError } = await supabase
+      .from('users_metadata')
+      .update({ credits: currentCredits - 1 })
+      .eq('id', user.id);
+
+    if (deductError) {
+       console.error("Failed to deduct credit:", deductError);
+       // We still continue to save the generation even if this fails, but it's logged
+    }
+
+    // 4. Save generation record to database
     await supabase.from('generations').insert({
         user_id: user.id,
         original_image_url: originalUrl,
