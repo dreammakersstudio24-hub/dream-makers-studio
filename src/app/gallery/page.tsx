@@ -33,6 +33,7 @@ export default function Gallery() {
       const { data, error } = await supabase
         .from('gallery_items')
         .select('*')
+        .eq('is_approved', true) // Only show approved items
         .order('created_at', { ascending: false });
       
       if (data) setItems(data as GalleryItem[]);
