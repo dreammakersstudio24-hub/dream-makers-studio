@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import Replicate from "replicate";
-import { createServerSupabaseClient } from "@/utils/supabase/server";
+import { createServerSupabaseClient, createAdminClient } from "@/utils/supabase/server";
 
 export const maxDuration = 60; // Set maximum duration to 60s for Vercel
 
@@ -229,8 +229,9 @@ export async function POST(req: Request) {
     });
     const finalUrl = supabase.storage.from('images').getPublicUrl(generatedFileName).data.publicUrl;
 
-    // 3. Deduct credit
-    const { error: deductError } = await supabase
+    // 3. Deduct credit (using admin client to bypass RLS policies)
+    const supabaseAdmin = createAdminClient();
+    const { error: deductError } = await supabaseAdmin
       .from('users_metadata')
       .update({ credits: currentCredits - 1 })
       .eq('id', user.id);
