@@ -2,6 +2,7 @@ import { createServerSupabaseClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronLeft, Sparkles, Image as ImageIcon } from 'lucide-react'
+import { logout } from '@/actions/auth'
 
 export const metadata = {
   title: 'My Designs - Dream Makers',
@@ -43,7 +44,16 @@ export default async function HistoryPage() {
             My Designs
           </span>
           
-          <div className="w-10 sm:w-24" /> {/* Spacer */}
+          <div className="flex items-center gap-6">
+            <form action={logout}>
+              <button 
+                type="submit"
+                className="text-sm font-medium hover:text-white text-neutral-400 transition-colors"
+               >
+                 Log Out
+              </button>
+            </form>
+          </div>
         </div>
       </nav>
 

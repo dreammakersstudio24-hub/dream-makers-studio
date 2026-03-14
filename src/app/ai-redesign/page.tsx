@@ -37,6 +37,8 @@ const compressImage = (dataUrl: string, maxWidth = 1024): Promise<{url: string, 
   });
 };
 
+import { logout } from '@/actions/auth'
+
 export default function AiRedesignPage() {
   const [step, setStep] = useState<"upload" | "room" | "style" | "processing" | "result">("upload");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -179,12 +181,25 @@ export default function AiRedesignPage() {
             {step === "result" && "Your New Room"}
           </span>
           
-          <Link 
-            href="/history"
-            className="text-sm font-medium hover:text-white text-neutral-400 transition-colors"
-          >
-            History
-          </Link>
+          <div className="flex items-center gap-6">
+            <Link 
+              href="/history"
+              className="text-sm font-medium hover:text-white text-neutral-400 transition-colors"
+            >
+              History
+            </Link>
+            
+            {authStatus === "authorized" && (
+              <form action={logout}>
+                <button 
+                  type="submit"
+                  className="text-sm font-medium hover:text-white text-neutral-400 transition-colors"
+                >
+                  Log Out
+                </button>
+              </form>
+            )}
+          </div>
         </div>
         
         {/* Credits Indicator */}
