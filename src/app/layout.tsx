@@ -16,10 +16,17 @@ export const metadata: Metadata = {
   title: "Studio AI - Transform Your Space",
   description: "Premium AI Interior Design Room Transformation App.",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/icon-192x192.png",
+    apple: "/icon-192x192.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "Studio AI",
+    startupImage: [
+      "/icon-512x512.png"
+    ]
   },
   themeColor: "#000000",
   viewport: {
