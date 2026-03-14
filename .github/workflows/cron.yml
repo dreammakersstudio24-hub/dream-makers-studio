@@ -1,0 +1,30 @@
+name: Studio AI Cron Jobs
+
+on:
+  schedule:
+    # Trigger image generation every hour (at minute 0)
+    - cron: '0 * * * *'
+    
+    # Trigger database cleanup daily at midnight UTC
+    - cron: '0 0 * * *'
+  
+  # Allow manual trigger from the GitHub Actions tab for testing
+  workflow_dispatch:
+
+jobs:
+  ping-api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Auto-Generate Image API (Hourly)
+        if: github.event.schedule == '0 * * * *' || github.event_name == 'workflow_dispatch'
+        run: |
+          curl -X GET "${{ secrets.PRODUCTION_URL }}/api/cron/generate" \
+               -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+               -s -o /dev/null -w "%{http_code}"
+
+      - name: Ping 30-Day Image Cleanup API (Daily)
+        if: github.event.schedule == '0 0 * * *' || github.event_name == 'workflow_dispatch'
+        run: |
+          curl -X GET "${{ secrets.PRODUCTION_URL }}/api/cron/cleanup" \
+               -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+               -s -o /dev/null -w "%{http_code}"
