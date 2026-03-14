@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       apiVersion: "2026-02-25.clover",
     });
     
-    // AI Designer Membership / Credit Pack ($9.99 for 50 Generations)
+    // AI Designer Transformation App ($10.00 = 40 Credits)
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       client_reference_id: user.id, // Keep track of the user filling the credits
@@ -31,20 +31,20 @@ export async function POST(req: Request) {
           price_data: {
             currency: "usd",
             product_data: {
-              name: "AI Designer Pro Access (50 Credits)",
-              description: "Instantly unlock 50 high-quality room transformations.",
+              name: "AI Transformation App Access (40 Credits)",
+              description: "Instantly unlock 40 high-quality room transformations.",
             },
-            unit_amount: 999, // $9.99
+            unit_amount: 1000, // $10.00
           },
           quantity: 1,
         },
       ],
       mode: "payment",
-      success_url: `${origin}/ai-redesign?payment=success`,
-      cancel_url: `${origin}/ai-redesign`,
+      success_url: `${origin}/app/dashboard?payment=success`,
+      cancel_url: `${origin}/app/dashboard?payment=cancelled`,
       metadata: {
         productType: 'ai_credits',
-        amount: 50
+        amount: 40
       }
     });
 

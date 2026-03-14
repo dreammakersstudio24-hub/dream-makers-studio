@@ -33,11 +33,11 @@ export default async function HistoryPage() {
       <nav className="fixed w-full z-40 top-0 border-b border-white/10 bg-black/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link 
-            href="/ai-redesign"
+            href="/app/dashboard"
             className="p-2 -ml-2 text-neutral-400 hover:text-white transition-colors flex items-center gap-2"
           >
              <ChevronLeft className="w-5 h-5" />
-             <span className="font-medium hidden sm:block">Back to Studio</span>
+             <span className="font-medium hidden sm:block">Dashboard</span>
           </Link>
           
           <span className="text-lg font-medium tracking-wide">
@@ -74,7 +74,7 @@ export default async function HistoryPage() {
                 <h3 className="text-xl font-medium mb-2">No designs yet</h3>
                 <p className="text-neutral-400 mb-8 font-light">Start your first room transformation in the studio.</p>
                 <Link 
-                    href="/ai-redesign"
+                    href="/app/generate"
                     className="bg-white text-black px-8 py-3 rounded-full font-medium hover:bg-neutral-200 transition-colors"
                 >
                     Create Design
