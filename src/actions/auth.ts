@@ -13,14 +13,13 @@ export async function login(formData: FormData) {
   }
 
   const { error } = await supabase.auth.signInWithPassword(data)
-  const nextUrl = formData.get('next') as string || '/ai-redesign'
 
   if (error) {
-    redirect(`/login?error=true&next=${encodeURIComponent(nextUrl)}&message=${encodeURIComponent(error.message)}`)
+    return { error: error.message }
   }
 
   revalidatePath('/', 'layout')
-  redirect(nextUrl)
+  return { success: true }
 }
 
 export async function signup(formData: FormData) {
@@ -32,16 +31,13 @@ export async function signup(formData: FormData) {
   }
 
   const { error } = await supabase.auth.signUp(data)
-  const nextUrl = formData.get('next') as string || '/ai-redesign'
 
   if (error) {
-    redirect(`/login?error=true&mode=signup&next=${encodeURIComponent(nextUrl)}&message=${encodeURIComponent(error.message)}`)
+    return { error: error.message }
   }
 
   revalidatePath('/', 'layout')
-  // Depending on Supabase settings, email confirmation may be required. 
-  // Assuming it is disabled for this prototype flow, they are auto-logged in.
-  redirect(nextUrl)
+  return { success: true }
 }
 
 export async function logout() {
