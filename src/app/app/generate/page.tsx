@@ -7,6 +7,7 @@ import Link from "next/link";
 import { STYLES } from "@/constants/styles";
 import { ROOM_TYPES } from "@/constants/roomTypes";
 import { CompareSlider } from "@/components/CompareSlider";
+import { ShopSimilarFurniture } from "@/components/ShopSimilarFurniture";
 
 // Utility to compress image
 const compressImage = (dataUrl: string, maxWidth = 1024): Promise<{url: string, ratio: string}> => {
@@ -327,24 +328,8 @@ export default function MobileGeneratePage() {
                         Design Another Room
                     </button>
 
-                    {/* AFFILIATE SECTION PLACEHOLDER */}
-                    <div className="mt-8 border-t border-neutral-100 pt-8">
-                        <h3 className="font-bold text-lg mb-4">Shop Similar Furniture</h3>
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="bg-white rounded-3xl p-3 border border-neutral-200 shadow-sm flex flex-col">
-                                <div className="bg-neutral-100 rounded-2xl aspect-square mb-3 flex items-center justify-center text-neutral-400 text-xs font-medium">Wayfair Ad Box</div>
-                                <p className="font-bold text-sm line-clamp-1 text-black">Modern Sectional Sofa</p>
-                                <p className="text-xs text-neutral-500 mb-2">View on Wayfair</p>
-                                <button className="mt-auto bg-neutral-900 text-white text-xs font-bold py-2 rounded-xl w-full">Shop Now</button>
-                            </div>
-                            <div className="bg-white rounded-3xl p-3 border border-neutral-200 shadow-sm flex flex-col">
-                                <div className="bg-neutral-100 rounded-2xl aspect-square mb-3 flex items-center justify-center text-neutral-400 text-xs font-medium">Amazon Ad Box</div>
-                                <p className="font-bold text-sm line-clamp-1 text-black">Minimalist Coffee Table</p>
-                                <p className="text-xs text-neutral-500 mb-2">View on Amazon</p>
-                                <button className="mt-auto bg-neutral-900 text-white text-xs font-bold py-2 rounded-xl w-full">Shop Now</button>
-                            </div>
-                        </div>
-                    </div>
+                    {/* DYNAMIC AFFILIATE SECTION */}
+                    <ShopSimilarFurniture roomType={selectedRoomId || 'living_room'} />
                 </motion.div>
             )}
 
