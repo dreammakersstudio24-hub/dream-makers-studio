@@ -50,7 +50,7 @@ export default function Home() {
       title: "AI Room Designer",
       description: "Instantly reimagine your space with our advanced AI staging technology.",
       icon: <ImageIcon className="w-8 h-8 text-rose-500 mb-6" />, // Reusing icon for simplicity, you might want a Wand or Sparkles icon later
-      href: "/ai-redesign",
+      href: "/app",
       color: "from-rose-50 to-white",
       borderColor: "group-hover:border-rose-300",
       accent: "bg-rose-500",

@@ -9,7 +9,7 @@ export function Navbar() {
   const links = [
     { name: 'Home', href: '/' },
     { name: 'Gallery', href: '/gallery' },
-    { name: 'AI Designer', href: '/ai-redesign' },
+    { name: 'AI App', href: '/app' },
     { name: 'Contractors', href: '/directory' },
     { name: 'Real Estate', href: '/real-estate' },
     { name: 'E-Book', href: '/ebook' },
