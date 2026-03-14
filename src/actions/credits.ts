@@ -28,7 +28,8 @@ export async function addTestCredits() {
     .upsert({ id: user.id, credits: newCredits })
 
   if (updateError) {
-    return { error: 'Failed to add test credits' }
+    console.error('Supabase update_error:', updateError)
+    return { error: `Failed to add test credits: ${updateError.message}` }
   }
 
   revalidatePath('/app/dashboard')
