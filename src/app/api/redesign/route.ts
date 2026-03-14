@@ -175,18 +175,22 @@ export async function POST(req: Request) {
 
     try {
         if (Array.isArray(output) && output.length > 0) {
-            // If it's an array, grab the last item (usually the final generated image URL)
             const lastItem = output[output.length - 1];
-            resultUrl = typeof lastItem === 'string' ? lastItem : (lastItem?.url || "");
+            if (typeof lastItem === 'string') {
+                resultUrl = lastItem;
+            } else if (lastItem && typeof lastItem.url === 'function') {
+                resultUrl = lastItem.url().toString();
+            } else if (lastItem && lastItem.url) {
+                resultUrl = String(lastItem.url);
+            }
         } else if (typeof output === "string") {
-            // Sometimes it just returns the raw string URL directly
             resultUrl = output;
+        } else if (output && typeof (output as any).url === 'function') {
+            resultUrl = (output as any).url().toString();
         } else if (output && typeof output === "object" && 'url' in output) {
-            // Handles cases where it returns a FileOutput object
             resultUrl = String((output as any).url);
         }
 
-        // Clean up any weird invisible characters just in case
         if (resultUrl) {
            resultUrl = resultUrl.toString().trim();
         }
@@ -197,7 +201,9 @@ export async function POST(req: Request) {
 
     if (!resultUrl || !resultUrl.startsWith('http')) {
        console.error("Invalid output format from Replicate. Raw output:", output);
-       throw new Error("Failed to generate a valid image URL from Replicate.");
+       let debugInfo = "";
+       try { debugInfo = Array.isArray(output) ? `Array[${output.length}] of ${typeof output[0]}` : typeof output; } catch(e) {}
+       throw new Error(`Failed to generate a valid image URL from Replicate. Raw type: ${debugInfo}`);
     }
 
     // --- Save to Supabase Storage ---
