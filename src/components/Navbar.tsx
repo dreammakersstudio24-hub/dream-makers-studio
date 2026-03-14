@@ -13,8 +13,8 @@ export function Navbar() {
     { name: 'Home', href: '/' },
     { name: 'Gallery', href: '/gallery' },
     { name: 'AI App', href: '/app' },
-    { name: 'Contractors', href: '/directory' },
-    { name: 'Real Estate', href: '/real-estate' },
+    // { name: 'Contractors', href: '/directory' },
+    // { name: 'Real Estate', href: '/real-estate' },
     { name: 'E-Book', href: '/ebook' },
   ];
 
