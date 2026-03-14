@@ -6,7 +6,8 @@ import { usePathname } from 'next/navigation';
 export function Navbar() {
   const pathname = usePathname();
 
-  if (pathname.startsWith('/app') || pathname.startsWith('/login')) return null;
+  // Hide the navbar only on the login page
+  if (pathname.startsWith('/login')) return null;
 
   const links = [
     { name: 'Home', href: '/' },
@@ -23,7 +24,7 @@ export function Navbar() {
         
         {/* Logo - First Line on Mobile */}
         <Link href="/" className="font-bold tracking-widest uppercase flex items-center gap-1 shrink-0 text-blue-900 group text-lg sm:text-base">
-          Dream<span className="text-orange-500 group-hover:text-orange-400 transition-colors">Makers</span>
+          Dream<span className="text-orange-500 group-hover:text-orange-400 transition-colors">Makers Studio</span>
         </Link>
         
         <div className="w-px h-6 bg-neutral-200 shrink-0 hidden sm:block"></div>

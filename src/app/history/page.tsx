@@ -5,7 +5,7 @@ import { ChevronLeft, Sparkles, Image as ImageIcon } from 'lucide-react'
 import { logout } from '@/actions/auth'
 
 export const metadata = {
-  title: 'My Designs - Dream Makers',
+  title: 'My Designs - Dream Makers Studio',
 }
 
 export default async function HistoryPage() {

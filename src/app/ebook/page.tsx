@@ -183,9 +183,7 @@ export default function EBookPage() {
               50 AI Prompts for Stunning Backyard Designs
             </h1>
             
-            <p className="text-lg text-neutral-500 mb-10 leading-relaxed font-light">
-              Create beautiful backyard and garden designs with AI — in seconds. Dream Makers Pro Prompts is a curated collection of 50 high-quality AI prompts designed to generate realistic and inspiring backyard scenes effortlessly. Just copy, paste, and generate.
-            </p>
+              Create beautiful backyard and garden designs with AI — in seconds. Dream Makers Studio Pro Prompts is a curated collection of 50 high-quality AI prompts designed to generate realistic and inspiring backyard scenes effortlessly. Just copy, paste, and generate.
 
             <div className="space-y-4 mb-10">
               {FEATURES.map((feature, i) => (

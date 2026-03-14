@@ -29,23 +29,14 @@ export default async function MobileDashboard() {
   return (
     <div className="min-h-screen bg-neutral-50 text-neutral-900 pb-24 font-sans selection:bg-black/10">
       
-      {/* Top Navigation Bar */}
-      <header className="px-6 pt-12 pb-6 flex items-center justify-between border-b border-neutral-100 bg-white sticky top-0 z-10 shadow-sm">
-         <div className="flex items-center gap-3">
-             <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center shadow-md">
-                <Sparkles className="w-5 h-5 text-white" />
-             </div>
-             <div>
-                <h1 className="text-xl font-bold tracking-tight">Studio</h1>
-                <p className="text-xs text-neutral-500 font-medium">Welcome back</p>
-             </div>
-         </div>
-         <form action={logout}>
-            <button className="w-10 h-10 bg-neutral-100 rounded-full flex items-center justify-center text-neutral-600 hover:bg-neutral-200 transition-colors">
+      {/* Settings / Logout Bar */}
+      <div className="px-6 pt-24 pb-2 flex justify-end">
+          <form action={logout}>
+            <button className="w-10 h-10 bg-white shadow-sm border border-neutral-200 rounded-full flex items-center justify-center text-neutral-600 hover:bg-neutral-50 transition-colors">
                <Settings className="w-5 h-5" />
             </button>
          </form>
-      </header>
+      </div>
 
       <main className="px-6 pt-8 space-y-8 max-w-lg mx-auto">
          
