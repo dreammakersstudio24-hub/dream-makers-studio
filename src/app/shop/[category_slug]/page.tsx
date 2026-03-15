@@ -3,12 +3,13 @@ import Link from 'next/link';
 import { ShoppingBag, ArrowRight, ChevronLeft } from 'lucide-react';
 import { notFound } from 'next/navigation';
 
-export async function generateMetadata({ params }: { params: { category_slug: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ category_slug: string }> }) {
+  const { category_slug } = await params;
   const supabase = createAdminClient();
   const { data: category } = await supabase
     .from('product_categories')
     .select('name')
-    .eq('slug', params.category_slug)
+    .eq('slug', category_slug)
     .single();
 
   return {
@@ -16,14 +17,15 @@ export async function generateMetadata({ params }: { params: { category_slug: st
   };
 }
 
-export default async function CategoryPage({ params }: { params: { category_slug: string } }) {
+export default async function CategoryPage({ params }: { params: Promise<{ category_slug: string }> }) {
+  const { category_slug } = await params;
   const supabase = createAdminClient();
   
   // Fetch current category
   const { data: currentCategory } = await supabase
     .from('product_categories')
     .select('*')
-    .eq('slug', params.category_slug)
+    .eq('slug', category_slug)
     .single();
 
   if (!currentCategory) notFound();
