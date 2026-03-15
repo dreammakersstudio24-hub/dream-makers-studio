@@ -35,6 +35,9 @@ export const metadata: Metadata = {
     maximumScale: 1,
     userScalable: false,
   },
+  other: {
+    "p:domain_verify": "568974dd6d79ee4cfbe0fc5ffda56994",
+  },
 };
 
 import { Navbar } from "@/components/Navbar";
