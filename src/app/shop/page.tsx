@@ -55,50 +55,60 @@ export default async function ShopPage() {
       </div>
 
       {/* Product Grid */}
-      <main className="max-w-7xl mx-auto px-6">
+      <main className="max-w-7xl mx-auto px-4">
         {(!products || products.length === 0) ? (
             <div className="text-center py-32 border-2 border-dashed border-neutral-100 rounded-[40px]">
                 <ShoppingBag className="w-12 h-12 text-neutral-200 mx-auto mb-4" />
                 <p className="text-neutral-400 font-medium">Coming Soon</p>
             </div>
         ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-12">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-6">
                 {products.map((product) => (
-                    <div key={product.id} className="group relative flex flex-col">
-                        <div className="aspect-[3/4] rounded-[32px] overflow-hidden bg-neutral-100 mb-6 relative">
+                    <a 
+                      key={product.id} 
+                      href={product.affiliate_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="group bg-neutral-50 rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col border border-transparent hover:border-blue-200 hover:shadow-xl hover:shadow-blue-50 transition-all duration-300"
+                    >
+                        <div className="aspect-square overflow-hidden bg-white relative">
                             {product.image_url ? (
                                 <img 
                                   src={product.image_url} 
                                   alt={product.title} 
-                                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                 />
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center text-neutral-300"><ShoppingBag className="w-8 h-8" /></div>
+                                <div className="w-full h-full flex items-center justify-center text-neutral-200 bg-neutral-50"><ShoppingBag className="w-6 h-6" /></div>
                             )}
-                            {/* Overlay category badge */}
-                            <div className="absolute top-4 left-4">
-                                <span className="px-3 py-1.5 rounded-full bg-white/90 backdrop-blur shadow-sm text-[10px] font-bold uppercase tracking-widest text-neutral-900">
+                            <div className="absolute top-2 left-2">
+                                <span className="px-2 py-1 rounded-md bg-white/80 backdrop-blur text-[9px] font-bold uppercase tracking-wider text-neutral-600">
                                     {(product as any).product_categories?.name || 'Curated'}
                                 </span>
                             </div>
                         </div>
-                        <h3 className="text-xl font-bold mb-2 group-hover:text-blue-700 transition-colors">{product.title}</h3>
-                        <p className="text-neutral-500 text-sm font-light leading-relaxed mb-6 line-clamp-2">
-                           {product.description}
-                        </p>
-                        <a 
-                          href={product.affiliate_url} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="mt-auto inline-flex items-center justify-between w-full px-6 py-4 bg-neutral-50 rounded-2xl group/btn hover:bg-blue-600 hover:text-white transition-all duration-300"
-                        >
-                            <span className="font-bold text-sm tracking-wide">View on Temu</span>
-                            <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
-                        </a>
-                    </div>
+                        <div className="p-3 sm:p-4 flex flex-col flex-1">
+                            <h3 className="text-sm sm:text-base font-bold text-neutral-800 line-clamp-2 mb-1 group-hover:text-blue-600 transition-colors">{product.title}</h3>
+                            <p className="text-[10px] sm:text-xs text-neutral-400 font-light line-clamp-2 mb-3">
+                                {product.description}
+                            </p>
+                            <div className="mt-auto flex items-center justify-between">
+                                <span className="text-[10px] font-bold text-blue-600 uppercase tracking-tighter sm:tracking-normal group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                                    Shop Now <ArrowRight className="w-3 h-3" />
+                                </span>
+                            </div>
+                        </div>
+                    </a>
                 ))}
             </div>
         )}
+
+        {/* Affiliate Disclosure */}
+        <section className="mt-32 border-t border-neutral-100 pt-12 pb-20 text-center">
+            <p className="text-[10px] text-neutral-300 font-medium uppercase tracking-[0.2em] max-w-2xl mx-auto leading-loose">
+                As an affiliate partner, we may earn a commission from qualifying purchases made through our links to Amazon, Temu, and other marketplaces. This helps support the Studio at no additional cost to you.
+            </p>
+        </section>
       </main>
     </div>
   );
