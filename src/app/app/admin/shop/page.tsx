@@ -1,5 +1,5 @@
 import { createAdminClient, createServerSupabaseClient } from '@/utils/supabase/server';
-import { redirect, isRedirectError } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import { Plus, Trash2, Edit3, FolderPlus, Tag, Package, ExternalLink, Upload, FileText, AlertTriangle } from 'lucide-react';
 import { createCategory, deleteCategory, upsertProduct, deleteProduct, importProductsFromCSV, clearAllProducts } from '@/actions/shop';
 
@@ -273,7 +273,7 @@ export default async function ShopAdminPage() {
       </div>
     );
   } catch (err: any) {
-    if (isRedirectError(err)) throw err;
+    if (err.message === 'NEXT_REDIRECT' || err.digest?.includes('NEXT_REDIRECT')) throw err;
     return (
       <div className="min-h-screen flex items-center justify-center p-12 bg-neutral-900 text-white font-mono">
         <div className="max-w-2xl w-full text-center">
