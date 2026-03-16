@@ -1,5 +1,7 @@
 import { createAdminClient, createServerSupabaseClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
+
+export const dynamic = 'force-dynamic';
 import { Plus, Trash2, Edit3, FolderPlus, Tag, Package, ExternalLink, Upload, FileText, AlertTriangle } from 'lucide-react';
 import { createCategory, deleteCategory, upsertProduct, deleteProduct, importProductsFromCSV, clearAllProducts } from '@/actions/shop';
 
