@@ -5,40 +5,33 @@ export async function GET() {
   try {
     const supabase = createAdminClient();
     
-    // 1. Create User via Auth Admin (bypasses email confirmation)
-    const { data: userData, error: userError } = await supabase.auth.admin.createUser({
-      email: 'louktal@test.com',
-      password: '123456',
-      email_confirm: true
-    });
+    // 1. Identify User (Check if exists)
+    const { data: { users }, error: listError } = await supabase.auth.admin.listUsers();
+    if (listError) throw listError;
+    
+    const existingUser = users.find(u => u.email === 'louktal@test.com');
+    let userId;
 
-    if (userError) {
-      if (userError.message.includes('already registered')) {
-        // If user already exists, update their password and credits
-        const { data: list } = await supabase.auth.admin.listUsers();
-        const existing = list.users.find(u => u.email === 'louktal@test.com');
-        if (existing) {
-          await supabase.auth.admin.updateUserById(existing.id, { password: '123456' });
-          await supabase.from('users_metadata').upsert({ id: existing.id, credits: 50 });
-          return NextResponse.json({ message: 'EXISTING account updated: louktal@test.com / 123456 with 50 credits' });
-        }
-      }
-      return NextResponse.json({ error: userError.message }, { status: 500 });
+    if (existingUser) {
+      // 2a. Update Existing User
+      userId = existingUser.id;
+      const { error: updateError } = await supabase.auth.admin.updateUserById(userId, {
+        password: '123456',
+        email_confirm: true
+      });
+      if (updateError) throw updateError;
+    } else {
+      // 2b. Create New User
+      const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
+        email: 'louktal@test.com',
+        password: '123456',
+        email_confirm: true
+      });
+      if (createError) throw createError;
+      userId = newUser.user.id;
     }
 
-    const userId = userData.user?.id;
-    if (!userId) {
-       // Try to find if user already exists
-       const { data: list } = await supabase.auth.admin.listUsers();
-       const existing = list.users.find(u => u.email === 'louktal@test.com');
-       if (existing) {
-         await supabase.from('users_metadata').upsert({ id: existing.id, credits: 50 });
-         return NextResponse.json({ message: 'Credits updated for existing louktal@test.com' });
-       }
-       return NextResponse.json({ error: 'User creation failed and user not found' }, { status: 500 });
-    }
-
-    // 2. Set Credits to 50
+    // 3. Set Credits to 50
     const { error: metaError } = await supabase
       .from('users_metadata')
       .upsert({ id: userId, credits: 50 });
