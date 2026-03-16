@@ -8,14 +8,14 @@ export const dynamic = 'force-dynamic';
 const ADMIN_EMAILS = ['dreammakersstudio24@gmail.com'];
 
 export default async function ShopAdminPage() {
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user || !ADMIN_EMAILS.includes(user.email ?? '')) {
+    redirect('/app/dashboard');
+  }
+
   try {
-    const supabase = await createServerSupabaseClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user || !ADMIN_EMAILS.includes(user.email ?? '')) {
-      redirect('/app/dashboard');
-    }
-
     const supabaseAdmin = createAdminClient();
 
     // Fetch Categories
@@ -155,7 +155,7 @@ export default async function ShopAdminPage() {
               <h2 className="text-xl font-bold flex items-center gap-2">
                 <Package className="w-5 h-5" /> Product Catalog
               </h2>
-              <form action={clearAllProducts} onSubmit={(e) => !confirm('Are you sure you want to delete ALL products?') && e.preventDefault()}>
+              <form action={clearAllProducts}>
                 <button type="submit" className="text-[10px] font-bold uppercase tracking-widest text-red-500 hover:text-red-700 flex items-center gap-1 bg-red-50 px-4 py-2 rounded-full transition-colors">
                   <AlertTriangle className="w-3 h-3" /> Clear All Products
                 </button>
@@ -273,7 +273,6 @@ export default async function ShopAdminPage() {
       </div>
     );
   } catch (err: any) {
-    if (err.message === 'NEXT_REDIRECT' || err.digest?.includes('NEXT_REDIRECT')) throw err;
     return (
       <div className="min-h-screen flex items-center justify-center p-12 bg-neutral-900 text-white font-mono">
         <div className="max-w-2xl w-full text-center">
@@ -287,9 +286,7 @@ export default async function ShopAdminPage() {
               {err.stack}
             </pre>
           </div>
-          <button onClick={() => window.location.reload()} className="px-12 py-4 bg-white text-black rounded-full font-bold hover:bg-neutral-200 transition-all active:scale-95 shadow-xl shadow-white/10">
-            Hard Reload System
-          </button>
+          <p className="text-neutral-500 mt-4">Please report this error with the trace above.</p>
         </div>
       </div>
     );
