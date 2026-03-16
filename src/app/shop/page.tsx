@@ -1,6 +1,7 @@
 import { createAdminClient } from '@/utils/supabase/server';
 import Link from 'next/link';
 import { ShoppingBag, ArrowRight } from 'lucide-react';
+import { Pagination } from '@/components/Pagination';
 
 export const metadata = {
   title: 'Shop - Dream Makers Studio',
@@ -9,22 +10,40 @@ export const metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default async function ShopPage() {
+interface ShopPageProps {
+  searchParams: Promise<{ page?: string }>;
+}
+
+export default async function ShopPage({ searchParams }: ShopPageProps) {
+  const params = await searchParams;
+  const currentPage = parseInt(params.page || '1', 10);
+  const pageSize = 40;
+  
   const supabase = createAdminClient();
   
+  // Total Count for Pagination
+  const { count: totalItems } = await supabase
+    .from('products')
+    .select('*', { count: 'exact', head: true })
+    .eq('is_active', true);
+
   // Fetch Categories
   const { data: categories } = await supabase
     .from('product_categories')
     .select('*')
     .order('name');
 
-  // Fetch all active products with their category assignments
+  // Fetch paginated products
+  const from = (currentPage - 1) * pageSize;
+  const to = from + pageSize - 1;
+
   const { data: productsData } = await supabase
     .from('products')
     .select('*, product_category_assignment(product_categories(name, slug))')
-    .eq('is_active', true);
+    .eq('is_active', true)
+    .range(from, to);
 
-  // Shuffle products in memory for a fresh look every visit
+  // Shuffle products in memory for a fresh look every visit (on current page only)
   const products = productsData 
     ? [...productsData].sort(() => Math.random() - 0.5) 
     : [];
@@ -68,45 +87,54 @@ export default async function ShopPage() {
                 <p className="text-neutral-400 font-medium">Coming Soon</p>
             </div>
         ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-6">
-                {products.map((product) => (
-                    <a 
-                      key={product.id} 
-                      href={product.affiliate_url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="group bg-neutral-50 rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col border border-transparent hover:border-blue-200 hover:shadow-xl hover:shadow-blue-50 transition-all duration-300"
-                    >
-                        <div className="aspect-square overflow-hidden bg-white relative">
-                            {product.image_url ? (
-                                <img 
-                                  src={product.image_url} 
-                                  alt={product.title} 
-                                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center text-neutral-200 bg-neutral-50"><ShoppingBag className="w-6 h-6" /></div>
-                            )}
-                            <div className="absolute top-2 left-2">
-                                <span className="px-2 py-1 rounded-md bg-white/80 backdrop-blur text-[9px] font-bold uppercase tracking-wider text-neutral-600">
-                                    {(product as any).product_category_assignment?.[0]?.product_categories?.name || 'Curated'}
-                                </span>
+            <>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-6">
+                    {products.map((product) => (
+                        <a 
+                          key={product.id} 
+                          href={product.affiliate_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="group bg-neutral-50 rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col border border-transparent hover:border-blue-200 hover:shadow-xl hover:shadow-blue-50 transition-all duration-300"
+                        >
+                            <div className="aspect-square overflow-hidden bg-white relative">
+                                {product.image_url ? (
+                                    <img 
+                                      src={product.image_url} 
+                                      alt={product.title} 
+                                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-neutral-200 bg-neutral-50"><ShoppingBag className="w-6 h-6" /></div>
+                                )}
+                                <div className="absolute top-2 left-2">
+                                    <span className="px-2 py-1 rounded-md bg-white/80 backdrop-blur text-[9px] font-bold uppercase tracking-wider text-neutral-600">
+                                        {(product as any).product_category_assignment?.[0]?.product_categories?.name || 'Curated'}
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                        <div className="p-3 sm:p-4 flex flex-col flex-1">
-                            <h3 className="text-sm sm:text-base font-bold text-neutral-800 line-clamp-2 mb-1 group-hover:text-blue-600 transition-colors">{product.title}</h3>
-                            <p className="text-[10px] sm:text-xs text-neutral-400 font-light line-clamp-2 mb-3">
-                                {product.description}
-                            </p>
-                            <div className="mt-auto flex items-center justify-between">
-                                <span className="text-[10px] font-bold text-blue-600 uppercase tracking-tighter sm:tracking-normal group-hover:translate-x-1 transition-transform flex items-center gap-1">
-                                    Shop Now <ArrowRight className="w-3 h-3" />
-                                </span>
+                            <div className="p-3 sm:p-4 flex flex-col flex-1">
+                                <h3 className="text-sm sm:text-base font-bold text-neutral-800 line-clamp-2 mb-1 group-hover:text-blue-600 transition-colors">{product.title}</h3>
+                                <p className="text-[10px] sm:text-xs text-neutral-400 font-light line-clamp-2 mb-3">
+                                    {product.description}
+                                </p>
+                                <div className="mt-auto flex items-center justify-between">
+                                    <span className="text-[10px] font-bold text-blue-600 uppercase tracking-tighter sm:tracking-normal group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                                        Shop Now <ArrowRight className="w-3 h-3" />
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                ))}
-            </div>
+                        </a>
+                    ))}
+                </div>
+
+                <Pagination 
+                    currentPage={currentPage}
+                    totalItems={totalItems || 0}
+                    pageSize={pageSize}
+                    baseUrl="/shop"
+                />
+            </>
         )}
 
         {/* Affiliate Disclosure */}

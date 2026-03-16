@@ -13,19 +13,19 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Studio AI - Transform Your Space",
-  description: "Premium AI Interior Design Room Transformation App.",
+  title: "Dream Makers Studio - Transform Your Space",
+  description: "Official Dream Makers Studio AI Interior Design App.",
   manifest: "/manifest.json",
   icons: {
-    icon: "/icon-192x192.png",
-    apple: "/icon-192x192.png",
+    icon: "/icon.png",
+    apple: "/icon.png",
   },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Studio AI",
+    title: "DM Studio",
     startupImage: [
-      "/icon-512x512.png"
+      "/icon.png"
     ]
   },
   themeColor: "#000000",

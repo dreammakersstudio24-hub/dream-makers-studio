@@ -2,6 +2,12 @@ import { createAdminClient } from '@/utils/supabase/server';
 import Link from 'next/link';
 import { ShoppingBag, ArrowRight, ChevronLeft } from 'lucide-react';
 import { notFound } from 'next/navigation';
+import { Pagination } from '@/components/Pagination';
+
+interface CategoryPageProps {
+  params: Promise<{ category_slug: string }>;
+  searchParams: Promise<{ page?: string }>;
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ category_slug: string }> }) {
   const { category_slug } = await params;
@@ -19,8 +25,12 @@ export async function generateMetadata({ params }: { params: Promise<{ category_
 
 export const dynamic = 'force-dynamic';
 
-export default async function CategoryPage({ params }: { params: Promise<{ category_slug: string }> }) {
+export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
   const { category_slug } = await params;
+  const p = await searchParams;
+  const currentPage = parseInt(p.page || '1', 10);
+  const pageSize = 40;
+
   const supabase = createAdminClient();
   
   // Fetch current category
@@ -38,11 +48,21 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
     .select('*')
     .order('name');
 
-  // Fetch category products via junction table
+  // Count products in category
+  const { count: totalItems } = await supabase
+    .from('product_category_assignment')
+    .select('*', { count: 'exact', head: true })
+    .eq('category_id', currentCategory.id);
+
+  // Fetch paginated products via junction table
+  const from = (currentPage - 1) * pageSize;
+  const to = from + pageSize - 1;
+
   const { data: assignments } = await supabase
     .from('product_category_assignment')
     .select('products(*)')
-    .eq('category_id', currentCategory.id);
+    .eq('category_id', currentCategory.id)
+    .range(from, to);
 
   // Filter out any null assignments or inactive products and shuffle
   const products = assignments
@@ -68,7 +88,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
         </div>
         <div className="flex gap-2">
             <span className="bg-neutral-100 px-4 py-2 rounded-full text-xs font-bold text-neutral-400">
-                {products?.length || 0} Items
+                {totalItems || 0} Items
             </span>
         </div>
       </section>
@@ -102,40 +122,49 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
                 <p className="text-neutral-400 font-medium">No items in this category yet</p>
             </div>
         ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-6">
-                {products.map((product) => (
-                    <a 
-                      key={product.id} 
-                      href={product.affiliate_url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="group bg-neutral-50 rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col border border-transparent hover:border-blue-200 hover:shadow-xl hover:shadow-blue-50 transition-all duration-300"
-                    >
-                        <div className="aspect-square overflow-hidden bg-white relative">
-                            {product.image_url ? (
-                                <img 
-                                  src={product.image_url} 
-                                  alt={product.title} 
-                                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center text-neutral-200 bg-neutral-50"><ShoppingBag className="w-6 h-6" /></div>
-                            )}
-                        </div>
-                        <div className="p-3 sm:p-4 flex flex-col flex-1">
-                            <h3 className="text-sm sm:text-base font-bold text-neutral-800 line-clamp-2 mb-1 group-hover:text-blue-600 transition-colors">{product.title}</h3>
-                            <p className="text-[10px] sm:text-xs text-neutral-400 font-light line-clamp-2 mb-3">
-                                {product.description}
-                            </p>
-                            <div className="mt-auto flex items-center justify-between">
-                                <span className="text-[10px] font-bold text-blue-600 uppercase tracking-tighter sm:tracking-normal group-hover:translate-x-1 transition-transform flex items-center gap-1">
-                                    Shop Now <ArrowRight className="w-3 h-3" />
-                                </span>
+            <>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-6">
+                    {products.map((product) => (
+                        <a 
+                          key={product.id} 
+                          href={product.affiliate_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="group bg-neutral-50 rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col border border-transparent hover:border-blue-200 hover:shadow-xl hover:shadow-blue-50 transition-all duration-300"
+                        >
+                            <div className="aspect-square overflow-hidden bg-white relative">
+                                {product.image_url ? (
+                                    <img 
+                                      src={product.image_url} 
+                                      alt={product.title} 
+                                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-neutral-200 bg-neutral-50"><ShoppingBag className="w-6 h-6" /></div>
+                                )}
                             </div>
-                        </div>
-                    </a>
-                ))}
-            </div>
+                            <div className="p-3 sm:p-4 flex flex-col flex-1">
+                                <h3 className="text-sm sm:text-base font-bold text-neutral-800 line-clamp-2 mb-1 group-hover:text-blue-600 transition-colors">{product.title}</h3>
+                                <p className="text-[10px] sm:text-xs text-neutral-400 font-light line-clamp-2 mb-3">
+                                    {product.description}
+                                </p>
+                                <div className="mt-auto flex items-center justify-between">
+                                    <span className="text-[10px] font-bold text-blue-600 uppercase tracking-tighter sm:tracking-normal group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                                        Shop Now <ArrowRight className="w-3 h-3" />
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    ))}
+                </div>
+
+                <Pagination 
+                    currentPage={currentPage}
+                    totalItems={totalItems || 0}
+                    pageSize={pageSize}
+                    baseUrl={`/shop/${category_slug}`}
+                />
+            </>
         )}
 
         {/* Affiliate Disclosure */}
