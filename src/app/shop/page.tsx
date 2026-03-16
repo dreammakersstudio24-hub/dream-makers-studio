@@ -7,6 +7,8 @@ export const metadata = {
   description: 'Browse our curated collection of luxury interior design products and furniture.',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function ShopPage() {
   const supabase = createAdminClient();
   
@@ -23,7 +25,9 @@ export default async function ShopPage() {
     .eq('is_active', true);
 
   // Shuffle products in memory for a fresh look every visit
-  const products = productsData ? [...productsData].sort(() => Math.random() - 0.5) : [];
+  const products = productsData 
+    ? [...productsData].sort(() => Math.random() - 0.5) 
+    : [];
 
   return (
     <div className="min-h-screen bg-white text-neutral-900 pt-20 pb-32">

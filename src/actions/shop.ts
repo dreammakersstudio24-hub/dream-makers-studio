@@ -82,7 +82,8 @@ export async function upsertProduct(formData: FormData) {
       title,
       description,
       affiliate_url,
-      image_url
+      image_url,
+      is_active: true
     };
 
     let productId = id;
@@ -192,7 +193,8 @@ export async function importProductsFromCSV(formData: FormData) {
         title: row.title,
         description: row.description || '',
         image_url: row.image || row.image_url,
-        affiliate_url: row.url || row.affiliate_url
+        affiliate_url: row.url || row.affiliate_url,
+        is_active: true
       };
 
       const { data: newProd, error: prodErr } = await supabase.from('products').insert(productData).select('id').single();

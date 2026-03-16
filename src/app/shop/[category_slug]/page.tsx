@@ -17,6 +17,8 @@ export async function generateMetadata({ params }: { params: Promise<{ category_
   };
 }
 
+export const dynamic = 'force-dynamic';
+
 export default async function CategoryPage({ params }: { params: Promise<{ category_slug: string }> }) {
   const { category_slug } = await params;
   const supabase = createAdminClient();
