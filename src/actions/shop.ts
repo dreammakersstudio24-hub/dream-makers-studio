@@ -127,10 +127,29 @@ export async function importProductsFromCSV(formData: FormData) {
 
     const text = await csvFile.text();
     const lines = text.split('\n');
-    const header = lines[0].split(',').map(h => h.trim().toLowerCase());
+
+    // Helper to parse CSV lines with quotes
+    const parseCSVLine = (line: string) => {
+      const result = [];
+      let current = '';
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+          result.push(current.trim());
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      result.push(current.trim());
+      return result;
+    };
+
+    const header = parseCSVLine(lines[0]).map(h => h.trim().toLowerCase());
     
-    // Simple CSV Parser (ignores complexity like quoted commas for now)
-    const productsToInsert = [];
     const supabase = createAdminClient();
 
     // Fetch all categories to map names to IDs
@@ -139,9 +158,11 @@ export async function importProductsFromCSV(formData: FormData) {
 
     for (let i = 1; i < lines.length; i++) {
       if (!lines[i].trim()) continue;
-      const values = lines[i].split(',').map(v => v.trim());
+      const values = parseCSVLine(lines[i]);
       const row: any = {};
       header.forEach((h, idx) => row[h] = values[idx]);
+
+      if (!row.title || !row.affiliate_url) continue;
 
       const productData = {
         title: row.title,
@@ -185,5 +206,18 @@ export async function deleteProduct(id: string) {
     revalidatePath('/shop');
   } catch (error: any) {
     console.error('Error deleting product:', error);
+  }
+}
+
+export async function clearAllProducts() {
+  try {
+    await requireAdmin();
+    const supabase = createAdminClient();
+    const { error } = await supabase.from('products').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    if (error) throw error;
+    revalidatePath('/app/admin/shop');
+    revalidatePath('/shop');
+  } catch (error: any) {
+    console.error('Error clearing products:', error);
   }
 }

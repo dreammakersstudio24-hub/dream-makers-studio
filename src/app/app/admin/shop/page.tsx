@@ -1,7 +1,7 @@
 import { createAdminClient, createServerSupabaseClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
-import { Plus, Trash2, Edit3, FolderPlus, Tag, Package, ExternalLink, Upload, FileText } from 'lucide-react';
-import { createCategory, deleteCategory, upsertProduct, deleteProduct, importProductsFromCSV } from '@/actions/shop';
+import { Plus, Trash2, Edit3, FolderPlus, Tag, Package, ExternalLink, Upload, FileText, AlertTriangle } from 'lucide-react';
+import { createCategory, deleteCategory, upsertProduct, deleteProduct, importProductsFromCSV, clearAllProducts } from '@/actions/shop';
 
 export const metadata = {
   title: 'Shop Manager - Admin',
@@ -165,6 +165,11 @@ export default async function ShopAdminPage() {
             <h2 className="text-xl font-bold flex items-center gap-2">
                 <Package className="w-5 h-5" /> Product Catalog
             </h2>
+            <form action={clearAllProducts} onSubmit={(e) => !confirm('Are you sure you want to delete ALL products?') && e.preventDefault()}>
+                <button type="submit" className="text-[10px] font-bold uppercase tracking-widest text-red-500 hover:text-red-700 flex items-center gap-1 bg-red-50 px-4 py-2 rounded-full transition-colors">
+                    <AlertTriangle className="w-3 h-3" /> Clear All Products
+                </button>
+            </form>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
