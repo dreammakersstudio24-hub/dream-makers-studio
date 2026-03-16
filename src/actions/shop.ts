@@ -198,16 +198,36 @@ export async function importProductsFromCSV(formData: FormData) {
       const { data: newProd, error: prodErr } = await supabase.from('products').insert(productData).select('id').single();
       
       if (!prodErr && newProd && row.category) {
-        const categoryNames = row.category.split('|').map((c: string) => c.trim().toLowerCase());
-        const assignments = categoryNames
-          .map((name: string) => categoryMap.get(name))
-          .filter(Boolean)
-          .map((catId: string) => ({
+        const categoryNames = row.category.split('|').map((c: string) => c.trim());
+        const categoryIds: string[] = [];
+
+        for (const name of categoryNames) {
+          const lowerName = name.toLowerCase();
+          let catId = categoryMap.get(lowerName);
+
+          // Auto-create category if it doesn't exist
+          if (!catId) {
+            const slug = name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+            const { data: newCat, error: catErr } = await supabase
+              .from('product_categories')
+              .insert({ name, slug })
+              .select('id')
+              .single();
+            
+            if (!catErr && newCat) {
+              catId = newCat.id;
+              categoryMap.set(lowerName, catId);
+            }
+          }
+
+          if (catId) categoryIds.push(catId);
+        }
+
+        if (categoryIds.length > 0) {
+          const assignments = categoryIds.map(catId => ({
              product_id: newProd.id,
              category_id: catId
           }));
-        
-        if (assignments.length > 0) {
           await supabase.from('product_category_assignment').insert(assignments);
         }
       }
