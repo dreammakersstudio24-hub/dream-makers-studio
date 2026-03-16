@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Sparkles, History, ImageIcon, Download, Settings, Crown } from 'lucide-react'
 import { logout } from '@/actions/auth'
-import { TestCreditButton } from '@/components/TestCreditButton'
 export const metadata = {
   title: 'Dashboard - Transformation App',
 }
@@ -73,7 +72,6 @@ export default async function MobileDashboard() {
                         Recharge Credits ($10)
                      </button>
                  )}
-                 <TestCreditButton />
              </div>
          </div>
 
