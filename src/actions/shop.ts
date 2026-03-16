@@ -59,14 +59,15 @@ export async function upsertProduct(formData: FormData) {
     const title = formData.get('title') as string;
     const description = formData.get('description') as string;
     const affiliate_url = formData.get('affiliate_url') as string;
-    const category_id = formData.get('category_id') as string;
+    const external_image_url = formData.get('external_image_url') as string;
+    const category_ids = formData.getAll('category_ids') as string[];
     const image_file = formData.get('image') as File;
-    let image_url = formData.get('existing_image_url') as string;
+    let image_url = external_image_url || formData.get('existing_image_url') as string;
 
     const supabase = createAdminClient();
 
-    // Handle Image Upload if new file provided
-    if (image_file && image_file.size > 0) {
+    // Handle Image Upload if new file provided AND no external URL
+    if (!external_image_url && image_file && image_file.size > 0) {
       const timestamp = Date.now();
       const fileName = `products/${timestamp}_${image_file.name}`;
       const { data: uploadData, error: uploadError } = await supabase.storage
@@ -81,22 +82,96 @@ export async function upsertProduct(formData: FormData) {
       title,
       description,
       affiliate_url,
-      category_id: category_id || null,
       image_url
     };
+
+    let productId = id;
 
     if (id) {
       const { error } = await supabase.from('products').update(productData).eq('id', id);
       if (error) throw error;
     } else {
-      const { error } = await supabase.from('products').insert(productData);
+      const { data, error } = await supabase.from('products').insert(productData).select('id').single();
       if (error) throw error;
+      productId = data.id;
+    }
+
+    // Update Category Assignments
+    if (productId) {
+      // Clear existing assignments
+      await supabase.from('product_category_assignment').delete().eq('product_id', productId);
+      
+      // Add new assignments
+      if (category_ids.length > 0) {
+        const assignments = category_ids.map(catId => ({
+          product_id: productId,
+          category_id: catId
+        }));
+        const { error: assignError } = await supabase.from('product_category_assignment').insert(assignments);
+        if (assignError) throw assignError;
+      }
     }
 
     revalidatePath('/app/admin/shop');
     revalidatePath('/shop');
   } catch (error: any) {
     console.error('Error upserting product:', error);
+  }
+}
+
+export async function importProductsFromCSV(formData: FormData) {
+  try {
+    await requireAdmin();
+    const csvFile = formData.get('file') as File;
+    if (!csvFile) return;
+
+    const text = await csvFile.text();
+    const lines = text.split('\n');
+    const header = lines[0].split(',').map(h => h.trim().toLowerCase());
+    
+    // Simple CSV Parser (ignores complexity like quoted commas for now)
+    const productsToInsert = [];
+    const supabase = createAdminClient();
+
+    // Fetch all categories to map names to IDs
+    const { data: allCategories } = await supabase.from('product_categories').select('id, name');
+    const categoryMap = new Map(allCategories?.map(c => [c.name.toLowerCase(), c.id]));
+
+    for (let i = 1; i < lines.length; i++) {
+      if (!lines[i].trim()) continue;
+      const values = lines[i].split(',').map(v => v.trim());
+      const row: any = {};
+      header.forEach((h, idx) => row[h] = values[idx]);
+
+      const productData = {
+        title: row.title,
+        description: row.description || '',
+        image_url: row.image || row.image_url,
+        affiliate_url: row.url || row.affiliate_url
+      };
+
+      const { data: newProd, error: prodErr } = await supabase.from('products').insert(productData).select('id').single();
+      
+      if (!prodErr && newProd && row.category) {
+        const categoryNames = row.category.split('|').map((c: string) => c.trim().toLowerCase());
+        const assignments = categoryNames
+          .map((name: string) => categoryMap.get(name))
+          .filter(Boolean)
+          .map((catId: string) => ({
+             product_id: newProd.id,
+             category_id: catId
+          }));
+        
+        if (assignments.length > 0) {
+          await supabase.from('product_category_assignment').insert(assignments);
+        }
+      }
+    }
+
+    revalidatePath('/app/admin/shop');
+    revalidatePath('/shop');
+  } catch (error: any) {
+    console.error('Error importing CSV:', error);
   }
 }
 

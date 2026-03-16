@@ -16,12 +16,14 @@ export default async function ShopPage() {
     .select('*')
     .order('name');
 
-  // Fetch all active products
-  const { data: products } = await supabase
+  // Fetch all active products with their category assignments
+  const { data: productsData } = await supabase
     .from('products')
-    .select('*, product_categories(name, slug)')
-    .eq('is_active', true)
-    .order('created_at', { ascending: false });
+    .select('*, product_category_assignment(product_categories(name, slug))')
+    .eq('is_active', true);
+
+  // Shuffle products in memory for a fresh look every visit
+  const products = productsData ? [...productsData].sort(() => Math.random() - 0.5) : [];
 
   return (
     <div className="min-h-screen bg-white text-neutral-900 pt-20 pb-32">
@@ -83,7 +85,7 @@ export default async function ShopPage() {
                             )}
                             <div className="absolute top-2 left-2">
                                 <span className="px-2 py-1 rounded-md bg-white/80 backdrop-blur text-[9px] font-bold uppercase tracking-wider text-neutral-600">
-                                    {(product as any).product_categories?.name || 'Curated'}
+                                    {(product as any).product_category_assignment?.[0]?.product_categories?.name || 'Curated'}
                                 </span>
                             </div>
                         </div>

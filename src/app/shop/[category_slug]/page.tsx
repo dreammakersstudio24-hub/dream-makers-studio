@@ -36,13 +36,19 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
     .select('*')
     .order('name');
 
-  // Fetch category products
-  const { data: products } = await supabase
-    .from('products')
-    .select('*, product_categories(name)')
-    .eq('category_id', currentCategory.id)
-    .eq('is_active', true)
-    .order('created_at', { ascending: false });
+  // Fetch category products via junction table
+  const { data: assignments } = await supabase
+    .from('product_category_assignment')
+    .select('products(*)')
+    .eq('category_id', currentCategory.id);
+
+  // Filter out any null assignments or inactive products and shuffle
+  const products = assignments
+    ? assignments
+        .map((a: any) => a.products)
+        .filter((p: any) => p && p.is_active)
+        .sort(() => Math.random() - 0.5)
+    : [];
 
   return (
     <div className="min-h-screen bg-white text-neutral-900 pt-20 pb-32">
