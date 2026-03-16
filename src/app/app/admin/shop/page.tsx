@@ -18,45 +18,39 @@ export default async function ShopAdminPage() {
   }
 
   const supabaseAdmin = createAdminClient();
-  
+
   // Fetch Categories with safety
   const { data: categories, error: catError } = await supabaseAdmin
     .from('product_categories')
     .select('*')
     .order('name');
 
-  // Fetch Products with many-to-many categories
+  // Fetch Products - Simplify query to ensure page loads even if join has issues
   const { data: products, error: prodError } = await supabaseAdmin
     .from('products')
     .select('*, product_category_assignment(category_id, product_categories(name))')
     .order('created_at', { ascending: false });
 
-  // Determine if there's a serious database error (like missing tables)
-  const isTableMissing = catError?.code === 'P0001' || prodError?.code === 'P0001' || catError?.message?.includes('does not exist') || prodError?.message?.includes('does not exist');
+  if (prodError) console.error('Products Fetch Error:', prodError);
+  if (catError) console.error('Categories Fetch Error:', catError);
 
-  if (isTableMissing) {
+  // Determine if there's a serious database error (like missing tables)
+  const isTableMissing = 
+    catError?.code === '42P01' || 
+    prodError?.code === '42P01' || 
+    catError?.message?.includes('does not exist') || 
+    prodError?.message?.includes('does not exist');
+
+  if (isTableMissing || prodError) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-6">
-        <div className="max-w-md w-full bg-white p-8 rounded-[40px] shadow-xl border border-red-100 text-center">
-            <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Package className="w-8 h-8" />
-            </div>
-            <h1 className="text-2xl font-bold text-neutral-900 mb-2">Database Setup Required</h1>
-            <p className="text-neutral-500 mb-8 text-sm">
-                It looks like the Shop database tables haven't been created yet in Supabase.
-            </p>
-            <div className="bg-neutral-50 p-4 rounded-2xl text-left mb-8">
-                <p className="text-[10px] font-bold uppercase text-neutral-400 mb-2">Instructions</p>
-                <ol className="text-xs text-neutral-600 space-y-2 list-decimal ml-4">
-                    <li>Open your Supabase Dashboard</li>
-                    <li>Go to the <b>SQL Editor</b></li>
-                    <li>Paste the SQL script provided by the assistant</li>
-                    <li>Click <b>Run</b></li>
-                </ol>
-            </div>
-            <a href="/app/dashboard" className="inline-block w-full bg-black text-white py-4 rounded-2xl font-bold hover:bg-neutral-800 transition-all">
-                Back to Dashboard
-            </a>
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-6 text-center">
+        <div className="max-w-md w-full bg-white p-8 rounded-[40px] shadow-xl border border-red-100">
+            <h1 className="text-xl font-bold text-red-600 mb-4">Database Error</h1>
+            <p className="text-xs text-neutral-500 mb-4">Code: {prodError?.code || catError?.code}</p>
+            <pre className="bg-neutral-100 p-4 rounded-xl text-[10px] text-left overflow-auto mb-6">
+                {prodError?.message || catError?.message || 'Unknown database error'}
+            </pre>
+            <a href="/app/admin/shop" className="block w-full bg-black text-white py-3 rounded-xl font-bold text-sm">Retry</a>
         </div>
       </div>
     );
