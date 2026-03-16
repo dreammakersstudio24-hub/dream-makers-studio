@@ -2,20 +2,36 @@ import { createClient } from '@supabase/supabase-js';
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const getEnv = (name: string) => {
+  const value = process.env[name];
+  if (!value && typeof window === 'undefined') {
+    console.warn(`Environment variable ${name} is missing.`);
+  }
+  return value || '';
+};
 
 // Create a unified super admin client for backend/API use only
 export const createAdminClient = () => {
-  return createClient(supabaseUrl, supabaseServiceKey);
+  const url = getEnv('NEXT_PUBLIC_SUPABASE_URL');
+  const key = getEnv('SUPABASE_SERVICE_ROLE_KEY');
+  if (!url || !key) {
+    throw new Error('Supabase Admin Client failed: Missing URL or Service Role Key');
+  }
+  return createClient(url, key);
 };
 
 // Create an authenticated server client for server components
 export async function createServerSupabaseClient() {
+  const url = getEnv('NEXT_PUBLIC_SUPABASE_URL');
+  const key = getEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY');
+  
+  if (!url || !key) {
+    throw new Error('Supabase Server Client failed: Missing URL or Anon Key');
+  }
+
   const cookieStore = await cookies()
 
-  return createServerClient(supabaseUrl, supabaseAnonKey, {
+  return createServerClient(url, key, {
     cookies: {
       getAll() {
         return cookieStore.getAll()
