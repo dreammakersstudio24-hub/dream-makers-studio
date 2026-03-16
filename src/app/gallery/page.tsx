@@ -4,7 +4,8 @@ export const dynamic = 'force-dynamic'
 
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ArrowLeft, Loader2, Search, ExternalLink, Maximize2, Minimize2 } from "lucide-react";
+import { X, ArrowLeft, Loader2, Search, ExternalLink, Maximize2, Minimize2, ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { createBrowserClient } from "@/utils/supabase/client";
 import { AdUnit } from "@/components/AdUnit";
 
@@ -245,38 +246,46 @@ export default function Gallery() {
                           )}
 
                           <div className="mt-auto pt-6 border-t border-neutral-100">
-                            {/* Monetization: Affiliate Shop Buttons or Display Ads */}
-                            <h4 className="text-xs uppercase tracking-widest text-neutral-400 font-semibold mb-4">Shop The Elements</h4>
+                            {/* Internal Shop Link prioritized */}
+                            <h4 className="text-xs uppercase tracking-widest text-neutral-400 font-semibold mb-4">Get the look</h4>
                             
-                            {selectedImage.affiliate_url ? (
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <Link 
+                              href={`/shop/${selectedImage.style_category.toLowerCase().replace(/ /g, '-')}`}
+                              className="w-full bg-neutral-900 text-white py-4 rounded-xl text-sm font-bold hover:bg-black transition-all flex items-center justify-center gap-2 group mb-3 shadow-lg shadow-neutral-100"
+                            >
+                              Shop {selectedImage.style_category} Collection
+                              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </Link>
+
+                            {selectedImage.affiliate_url && (
+                              <div className="grid grid-cols-2 gap-3 opacity-60 hover:opacity-100 transition-opacity">
                                 <a 
                                   href={selectedImage.affiliate_url} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
-                                  className="w-full bg-blue-900 text-white py-3.5 sm:py-4 rounded-xl text-sm font-medium hover:bg-blue-800 transition-colors flex items-center justify-center gap-2 group shadow-sm"
+                                  className="w-full border border-neutral-200 text-neutral-600 py-3 rounded-xl text-[10px] font-bold uppercase tracking-wider hover:bg-neutral-50 transition-colors flex items-center justify-center gap-2"
                                 >
                                   Amazon Finds
-                                  <ExternalLink className="w-4 h-4 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
+                                  <ExternalLink className="w-3 h-3" />
                                 </a>
                                 <a 
                                   href={selectedImage.affiliate_url} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
-                                  className="w-full bg-orange-500 text-white py-3.5 sm:py-4 rounded-xl text-sm font-medium hover:bg-orange-600 transition-colors flex items-center justify-center gap-2 group shadow-sm"
+                                  className="w-full border border-neutral-200 text-neutral-600 py-3 rounded-xl text-[10px] font-bold uppercase tracking-wider hover:bg-neutral-50 transition-colors flex items-center justify-center gap-2"
                                 >
-                                  Shop on Temu
-                                  <ExternalLink className="w-4 h-4 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
+                                  Temu Store
+                                  <ExternalLink className="w-3 h-3" />
                                 </a>
                               </div>
-                            ) : (
-                              <div className="w-full min-h-[120px] bg-neutral-50 rounded-xl border border-neutral-100 flex items-center justify-center overflow-hidden relative">
-                                 <div className="absolute inset-0 flex flex-col items-center justify-center p-4 z-10 pointer-events-none">
-                                   <span className="text-xs text-neutral-400 mb-2">Advertisement</span>
-                                   <div className="w-full h-16 bg-neutral-200 animate-pulse rounded"></div>
-                                 </div>
-                                 <AdUnit className="w-full h-full opacity-0" />
-                              </div>
+                            )}
+
+                            {!selectedImage.affiliate_url && (
+                               <div className="w-full p-4 bg-neutral-50 rounded-xl border border-neutral-100 text-center">
+                                  <p className="text-[10px] text-neutral-400 uppercase tracking-widest leading-loose">
+                                    Our studio curates high-end alternatives specifically for this {selectedImage.style_category.toLowerCase()} concept.
+                                  </p>
+                               </div>
                             )}
                           </div>
                        </div>
