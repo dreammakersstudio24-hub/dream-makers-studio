@@ -1,6 +1,6 @@
 import { createAdminClient, createServerSupabaseClient } from '@/utils/supabase/server';
-import { redirect } from 'next/navigation';
-import { Package, Tag, AlertTriangle, Upload, FileText, Plus, Trash2, ExternalLink } from 'lucide-react';
+import { redirect, isRedirectError } from 'next/navigation';
+import { Plus, Trash2, Edit3, FolderPlus, Tag, Package, ExternalLink, Upload, FileText, AlertTriangle } from 'lucide-react';
 import { createCategory, deleteCategory, upsertProduct, deleteProduct, importProductsFromCSV, clearAllProducts } from '@/actions/shop';
 
 export const dynamic = 'force-dynamic';
@@ -24,76 +24,272 @@ export default async function ShopAdminPage() {
       .select('*')
       .order('name');
 
-    // Level 3: Fetch Products with complex join
+    // Fetch Products with category assignments
     const { data: products, error: prodError } = await supabaseAdmin
-        .from('products')
-        .select('*, product_category_assignment(category_id, product_categories(name))')
-        .order('created_at', { ascending: false });
+      .from('products')
+      .select('*, product_category_assignment(category_id, product_categories(name))')
+      .order('created_at', { ascending: false });
+
+    // Handle database errors (missing tables, etc)
+    if (catError?.code === '42P01' || prodError?.code === '42P01') {
+      return (
+        <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-6 text-center">
+          <div className="max-w-md w-full bg-white p-8 rounded-[40px] shadow-xl border border-red-100">
+            <h1 className="text-xl font-bold text-red-600 mb-4">Database Setup Required</h1>
+            <p className="text-sm text-neutral-500 mb-6">The shop tables do not exist yet. Please run the SQL setup script in your Supabase SQL Editor.</p>
+            <pre className="bg-neutral-100 p-4 rounded-xl text-[10px] text-left overflow-auto mb-6">
+              {prodError?.message || catError?.message}
+            </pre>
+            <a href="/app/admin/shop" className="block w-full bg-black text-white py-3 rounded-xl font-bold text-sm">Retry</a>
+          </div>
+        </div>
+      );
+    }
 
     if (catError) throw catError;
     if (prodError) throw prodError;
 
     return (
-      <div className="p-20 bg-neutral-50 min-h-screen text-neutral-900">
-        <h1 className="text-4xl font-black mb-8 flex items-center gap-3">
-          <Package className="w-10 h-10 text-blue-600" /> Shop Manager
-        </h1>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-white p-8 rounded-[40px] border border-neutral-200 shadow-xl">
-                <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-                    <Tag className="w-5 h-5 text-neutral-400" /> Page Isolation Test: Level 3
+      <div className="min-h-screen bg-neutral-50 pb-20">
+        <header className="bg-white border-b border-neutral-200 px-6 h-16 flex items-center justify-between sticky top-0 z-50">
+          <h1 className="font-bold text-lg flex items-center gap-2">
+            <Package className="w-5 h-5 text-blue-600" /> Shop Manager
+          </h1>
+          <div className="flex gap-4">
+            <a href="/shop" target="_blank" className="text-sm font-medium text-neutral-500 hover:text-black flex items-center gap-1 transition-colors">
+              View Public Shop <ExternalLink className="w-4 h-4" />
+            </a>
+          </div>
+        </header>
+
+        <main className="max-w-6xl mx-auto p-6 space-y-12">
+          
+          {/* --- Bulk Import & Categories Section --- */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            {/* Category Management */}
+            <section className="lg:col-span-2 space-y-6">
+              <div className="flex items-center justify-between px-2">
+                <h2 className="text-xl font-bold flex items-center gap-2">
+                  <Tag className="w-5 h-5" /> Pages & Categories
                 </h2>
-                <p className="text-neutral-500 mb-8 leading-relaxed">
-                    Imports verified. Product query successful. <br/>
-                    Found <strong>{products?.length || 0}</strong> products in catalog.
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Create Category Form */}
+                <div className="bg-white p-6 rounded-3xl border border-neutral-200 shadow-sm">
+                  <h3 className="font-bold mb-4 flex items-center gap-2 text-sm uppercase tracking-widest text-neutral-400">
+                    <Plus className="w-4 h-4" /> Create New Page
+                  </h3>
+                  <form action={createCategory} className="space-y-4">
+                    <input 
+                      type="text" 
+                      name="name" 
+                      required 
+                      placeholder="Category Name (e.g. Sofa)" 
+                      className="w-full border border-neutral-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                    />
+                    <button type="submit" className="w-full bg-black text-white py-3 rounded-xl font-bold text-sm hover:bg-neutral-800 transition-all">
+                      Create Page
+                    </button>
+                  </form>
+                </div>
+
+                {/* Category List */}
+                <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 no-scrollbar">
+                  {categories?.map((cat) => (
+                    <div key={cat.id} className="bg-white px-5 py-4 rounded-2xl border border-neutral-200 flex items-center justify-between group shadow-sm hover:border-blue-100 transition-all">
+                      <div>
+                        <p className="font-bold text-sm">{cat.name}</p>
+                        <p className="text-[10px] text-neutral-400 font-mono">/shop/{cat.slug}</p>
+                      </div>
+                      <form action={deleteCategory.bind(null, cat.id)}>
+                        <button className="text-neutral-300 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-red-50">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </form>
+                    </div>
+                  ))}
+                  {(!categories || categories.length === 0) && (
+                    <p className="text-center py-8 text-neutral-400 text-xs italic">No categories created yet.</p>
+                  )}
+                </div>
+              </div>
+            </section>
+
+            {/* Bulk CSV Import */}
+            <section className="space-y-6">
+              <h2 className="text-xl font-bold flex items-center gap-2 px-2">
+                <Upload className="w-5 h-5" /> Bulk Import
+              </h2>
+              <div className="bg-blue-600 text-white p-6 rounded-[32px] shadow-lg shadow-blue-100">
+                <h3 className="font-bold mb-2 flex items-center gap-2 text-sm uppercase tracking-widest opacity-80">
+                  <FileText className="w-4 h-4" /> Import Products (CSV)
+                </h3>
+                <p className="text-[11px] opacity-70 mb-6 leading-relaxed">
+                  Upload a CSV file with headers: <br/>
+                  <code className="bg-blue-700/50 px-1 rounded">title, description, image_url, affiliate_url, category</code><br/>
+                  Use <code className="bg-blue-700/50 px-1 rounded">|</code> to separate multiple categories.
                 </p>
-                
-                <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 no-scrollbar">
-                    {products?.map((p: any) => (
-                        <div key={p.id} className="bg-neutral-50 p-4 rounded-2xl border border-neutral-100 flex justify-between items-center group">
-                            <span className="font-bold text-sm truncate max-w-[200px]">{p.title}</span>
-                            <div className="flex gap-2">
-                                {p.product_category_assignment?.map((a: any) => (
-                                    <span key={a.category_id} className="text-[8px] bg-blue-100 text-blue-600 px-2 py-1 rounded-md font-black uppercase">
-                                        {a.product_categories?.name}
-                                    </span>
-                                ))}
-                            </div>
+                <form action={importProductsFromCSV} className="space-y-4">
+                  <input 
+                    type="file" 
+                    name="file" 
+                    accept=".csv"
+                    required
+                    className="w-full text-xs file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-white file:text-blue-600 hover:file:bg-neutral-100 cursor-pointer" 
+                  />
+                  <button type="submit" className="w-full bg-white text-blue-600 py-3 rounded-xl font-black text-sm hover:bg-neutral-100 transition-all">
+                    Start Bulk Import
+                  </button>
+                </form>
+              </div>
+            </section>
+          </div>
+
+          <hr className="border-neutral-200" />
+
+          {/* --- Product Management --- */}
+          <section>
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                <Package className="w-5 h-5" /> Product Catalog
+              </h2>
+              <form action={clearAllProducts} onSubmit={(e) => !confirm('Are you sure you want to delete ALL products?') && e.preventDefault()}>
+                <button type="submit" className="text-[10px] font-bold uppercase tracking-widest text-red-500 hover:text-red-700 flex items-center gap-1 bg-red-50 px-4 py-2 rounded-full transition-colors">
+                  <AlertTriangle className="w-3 h-3" /> Clear All Products
+                </button>
+              </form>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+              
+              {/* Add/Edit Form */}
+              <div className="lg:col-span-1">
+                <div className="bg-white p-6 rounded-[32px] border border-neutral-200 shadow-sm sticky top-24">
+                  <h3 className="font-bold mb-6 flex items-center gap-2 text-sm uppercase tracking-widest text-neutral-400">
+                    <Plus className="w-4 h-4" /> Add Product
+                  </h3>
+                  <form action={upsertProduct} className="space-y-4">
+                    <div>
+                      <label className="block text-[10px] font-bold text-neutral-400 uppercase mb-1">Title</label>
+                      <input name="title" required className="w-full border border-neutral-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-neutral-400 uppercase mb-1">Affiliate Link</label>
+                      <input name="affiliate_url" required placeholder="https://temu.com/..." className="w-full border border-neutral-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium" />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-neutral-400 uppercase mb-1">External Image URL (Optional)</label>
+                      <input name="external_image_url" placeholder="https://..." className="w-full border border-neutral-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-[10px] font-bold text-neutral-400 uppercase mb-1">Upload Image (If no URL)</label>
+                      <input type="file" name="image" accept="image/*" className="w-full text-xs text-neutral-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold text-neutral-400 uppercase mb-2">Categories (Select Multiple)</label>
+                      <div className="space-y-2 max-h-[150px] overflow-y-auto border border-neutral-100 rounded-xl p-3 bg-neutral-50/50 no-scrollbar">
+                        {categories?.map((c: any) => (
+                          <label key={c.id} className="flex items-center gap-3 text-xs cursor-pointer group">
+                            <input type="checkbox" name="category_ids" value={c.id} className="rounded border-neutral-300 text-blue-600 focus:ring-blue-500" />
+                            <span className="text-neutral-600 group-hover:text-black font-medium">{c.name}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold text-neutral-400 uppercase mb-1">Description</label>
+                      <textarea name="description" rows={3} className="w-full border border-neutral-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"></textarea>
+                    </div>
+                    <button type="submit" className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-sm hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 active:scale-[0.98]">
+                      Save Product
+                    </button>
+                  </form>
+                </div>
+              </div>
+
+              {/* Product List */}
+              <div className="lg:col-span-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {products?.map((p: any) => {
+                    const assignedCategories = p.product_category_assignment?.map((a: any) => a.product_categories?.name).filter(Boolean);
+                    
+                    return (
+                      <div key={p.id} className="bg-white rounded-[32px] border border-neutral-200 shadow-sm overflow-hidden group hover:shadow-xl hover:shadow-neutral-200/50 transition-all duration-300 flex flex-col h-full">
+                        <div className="aspect-square bg-neutral-100 relative overflow-hidden">
+                          {p.image_url ? (
+                            <img src={p.image_url} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="" />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center text-neutral-300"><Package className="w-8 h-8" /></div>
+                          )}
+                          <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+                            <form action={deleteProduct.bind(null, p.id)}>
+                              <button className="bg-white/90 backdrop-blur shadow-sm p-2 rounded-full text-red-500 hover:bg-red-500 hover:text-white transition-all">
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </form>
+                          </div>
                         </div>
-                    ))}
+                        <div className="p-5 flex flex-col flex-1">
+                          <div className="flex flex-wrap gap-1 mb-3">
+                            {assignedCategories?.length > 0 ? assignedCategories.map((name: string) => (
+                              <span key={name} className="text-[9px] font-black uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-1 rounded-md">
+                                {name}
+                              </span>
+                            )) : (
+                              <span className="text-[9px] font-bold uppercase tracking-wider text-neutral-400 bg-neutral-50 px-2 py-1 rounded-md">
+                                Uncategorized
+                              </span>
+                            )}
+                          </div>
+                          <h4 className="font-bold text-neutral-800 line-clamp-2 text-sm mb-1 leading-snug">{p.title}</h4>
+                          <p className="text-[11px] text-neutral-400 mt-1 line-clamp-3 font-light leading-relaxed mb-4 flex-1">{p.description}</p>
+                          
+                          <div className="pt-4 border-t border-neutral-50 mt-auto">
+                            <a href={p.affiliate_url} target="_blank" className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-blue-600 transition-colors">
+                              View Link <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
+                {(!products || products.length === 0) && (
+                  <div className="text-center py-24 bg-white rounded-[40px] border border-dashed border-neutral-200">
+                    <Package className="w-12 h-12 text-neutral-200 mx-auto mb-4" />
+                    <p className="text-neutral-400 font-medium">No products in your catalog yet.</p>
+                  </div>
+                )}
+              </div>
             </div>
+          </section>
 
-            <div className="bg-blue-600 text-white p-8 rounded-[40px] shadow-xl shadow-blue-100">
-                <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-                    <Upload className="w-5 h-5" /> Import Test
-                </h2>
-                <p className="text-blue-100 text-sm mb-6">If you can see this section, the import of "upsertProduct" and other actions is working.</p>
-                <div className="p-4 bg-blue-700/50 rounded-2xl border border-blue-400/20 text-xs font-mono">
-                    Actions Loaded: createCategory, deleteCategory, upsertProduct, ...
-                </div>
-            </div>
-        </div>
-
-        <div className="mt-12 flex gap-4">
-            <a href="/app/dashboard" className="px-8 py-4 bg-black text-white rounded-full font-bold">Back to Dashboard</a>
-            <a href="/shop" target="_blank" className="px-8 py-4 bg-white border border-neutral-200 text-neutral-600 rounded-full font-bold">Public Shop</a>
-        </div>
+        </main>
       </div>
     );
   } catch (err: any) {
-    if (err.message === 'NEXT_REDIRECT') throw err;
+    if (isRedirectError(err)) throw err;
     return (
       <div className="min-h-screen flex items-center justify-center p-12 bg-neutral-900 text-white font-mono">
         <div className="max-w-2xl w-full text-center">
-          <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-6" />
-          <h1 className="text-2xl font-black text-red-500 mb-4">CRASH AT LEVEL 3</h1>
-          <pre className="text-xs text-red-400 bg-black/50 p-6 rounded-2xl border border-red-900/50 overflow-auto text-left">
-            {err.message}
-          </pre>
-          <p className="mt-4 text-[10px] text-neutral-500">Hint: If it says 'Module not found', check the imports.</p>
-          <button onClick={() => window.location.reload()} className="mt-8 px-8 py-3 bg-white text-black rounded-full font-bold">Retry</button>
+          <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-6" />
+          <h1 className="text-2xl font-black text-yellow-500 mb-4">CRITICAL SYSTEM ERROR</h1>
+          <div className="bg-black/50 p-8 rounded-[40px] border border-neutral-800 text-left mb-8 shadow-2xl">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 mb-4">Diagnostic Trace</p>
+            <pre className="text-xs text-red-400 whitespace-pre-wrap overflow-auto max-h-[300px]">
+              {err.message}
+              {"\n\n"}
+              {err.stack}
+            </pre>
+          </div>
+          <button onClick={() => window.location.reload()} className="px-12 py-4 bg-white text-black rounded-full font-bold hover:bg-neutral-200 transition-all active:scale-95 shadow-xl shadow-white/10">
+            Hard Reload System
+          </button>
         </div>
       </div>
     );
