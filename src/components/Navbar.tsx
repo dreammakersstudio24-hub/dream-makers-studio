@@ -24,8 +24,12 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-2 sm:px-6 py-1 sm:py-0 sm:h-14 flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-6">
         
         {/* Logo - First Line on Mobile */}
-        <Link href="/" className="font-bold tracking-widest uppercase flex items-center gap-1 shrink-0 text-blue-900 group text-sm sm:text-sm">
-          Dream<span className="text-orange-500 group-hover:text-orange-400 transition-colors">Makers Studio</span>
+        <Link href="/" className="flex items-center gap-2 shrink-0 group py-1">
+          <img 
+            src="/logo-full.png" 
+            alt="Dream Makers Studio" 
+            className="h-6 sm:h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+          />
         </Link>
         
         <div className="w-px h-4 bg-neutral-200 shrink-0 hidden sm:block"></div>
