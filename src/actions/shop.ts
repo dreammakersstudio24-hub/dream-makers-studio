@@ -126,39 +126,63 @@ export async function importProductsFromCSV(formData: FormData) {
     if (!csvFile) return;
 
     const text = await csvFile.text();
-    const lines = text.split('\n');
-
-    // Helper to parse CSV lines with quotes
-    const parseCSVLine = (line: string) => {
-      const result = [];
-      let current = '';
+    
+    // Robust State-machine CSV Parser (Handles multi-line fields and escaped quotes)
+    const parseCSV = (csvText: string) => {
+      const rows = [];
+      let currentRow = [];
+      let currentField = '';
       let inQuotes = false;
-      for (let i = 0; i < line.length; i++) {
-        const char = line[i];
-        if (char === '"') {
-          inQuotes = !inQuotes;
-        } else if (char === ',' && !inQuotes) {
-          result.push(current.trim());
-          current = '';
+
+      for (let i = 0; i < csvText.length; i++) {
+        const char = csvText[i];
+        const nextChar = csvText[i + 1];
+
+        if (inQuotes) {
+          if (char === '"' && nextChar === '"') {
+            currentField += '"';
+            i++; // Skip next quote
+          } else if (char === '"') {
+            inQuotes = false;
+          } else {
+            currentField += char;
+          }
         } else {
-          current += char;
+          if (char === '"') {
+            inQuotes = true;
+          } else if (char === ',') {
+            currentRow.push(currentField.trim());
+            currentField = '';
+          } else if (char === '\n' || char === '\r') {
+            currentRow.push(currentField.trim());
+            if (currentRow.some(val => val !== '')) rows.push(currentRow);
+            currentRow = [];
+            currentField = '';
+            if (char === '\r' && nextChar === '\n') i++; // Handle CRLF
+          } else {
+            currentField += char;
+          }
         }
       }
-      result.push(current.trim());
-      return result;
+      if (currentField || currentRow.length > 0) {
+        currentRow.push(currentField.trim());
+        if (currentRow.some(val => val !== '')) rows.push(currentRow);
+      }
+      return rows;
     };
 
-    const header = parseCSVLine(lines[0]).map(h => h.trim().toLowerCase());
-    
+    const parsedRows = parseCSV(text);
+    if (parsedRows.length < 2) return; // Need header + data
+
+    const header = parsedRows[0].map((h: string) => h.toLowerCase());
     const supabase = createAdminClient();
 
     // Fetch all categories to map names to IDs
     const { data: allCategories } = await supabase.from('product_categories').select('id, name');
     const categoryMap = new Map(allCategories?.map(c => [c.name.toLowerCase(), c.id]));
 
-    for (let i = 1; i < lines.length; i++) {
-      if (!lines[i].trim()) continue;
-      const values = parseCSVLine(lines[i]);
+    for (let i = 1; i < parsedRows.length; i++) {
+      const values = parsedRows[i];
       const row: any = {};
       header.forEach((h, idx) => row[h] = values[idx]);
 
