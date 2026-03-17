@@ -17,8 +17,8 @@ export const metadata: Metadata = {
   description: "Official Dream Makers Studio AI Interior Design App.",
   manifest: "/manifest.json",
   icons: {
-    icon: "/icon.png",
-    apple: "/icon.png",
+    icon: "/icon.png?v=2",
+    apple: "/icon.png?v=2",
   },
   appleWebApp: {
     capable: true,

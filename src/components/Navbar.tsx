@@ -26,7 +26,7 @@ export function Navbar() {
         {/* Logo - First Line on Mobile */}
         <Link href="/" className="flex items-center gap-2 shrink-0 group py-1">
           <img 
-            src="/logo.png" 
+            src="/logo.png?v=2" 
             alt="Dream Makers Studio" 
             className="h-6 sm:h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
           />
