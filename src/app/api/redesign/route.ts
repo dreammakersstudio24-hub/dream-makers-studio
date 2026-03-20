@@ -161,10 +161,10 @@ export async function POST(req: Request) {
         {
           input: {
             image: formattedImage,
-            prompt: `A jaw-dropping, award-winning ${stylePrompt} style ${roomType} interior design. STRICTLY PRESERVE THE EXACT ROOM LAYOUT. The room features: ${styleSpecificFeatures}. It is FULLY FURNISHED with a ${roomSpecificObjects}. ${densityPrompt} Add beautiful layered rugs, stunning indoor plants, and cinematic photorealistic lighting. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
-            negative_prompt: dynamicNegativePrompt,
+            prompt: `A jaw-dropping, award-winning ${stylePrompt} style ${roomType} interior design. CLEAN SLATE: Remove all existing furniture and clutter. Design from scratch while preserving only the room shell (walls, floor, windows). The room features: ${styleSpecificFeatures}. It is FULLY FURNISHED with a ${roomSpecificObjects}. ${densityPrompt} Add beautiful layered rugs, stunning indoor plants, and cinematic photorealistic lighting. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
+            negative_prompt: dynamicNegativePrompt + ", old furniture, existing items, beds, tables, chairs, mess, clutter, redundant objects",
             guidance_scale: 15, // Default for this model
-            prompt_strength: 0.85, // 85% restyling, but geometry is held rigidly by the MLSD ControlNet beneath
+            prompt_strength: 0.95, // Increased for more creative freedom to delete old items
           }
         }
     );

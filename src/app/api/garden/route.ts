@@ -70,10 +70,10 @@ export async function POST(req: Request) {
     const fullPrompt = `${landscapeBase} Style: ${stylePrompt}. 
     Features to synthesize: ${features.join(", ")}. 
     Focus on ${materialFocus} and ${lightingStyle}. 
-    MUST BE ENTIRELY OUTDOOR/EXTERIOR. Absolutely NO indoor elements, no ceilings, no interior walls.
-    Lush exotic greenery, specimen trees, professional horticultural design.
-    STRICTLY PRESERVE the existing building structures and terrain geometry.
-    8k resolution, highly detailed, photorealistic, 100mm architectural lens.`;
+    CLEAN SLATE EXTERIOR: Remove all existing objects, furniture, and clutter.
+    ENTIRELY OUTDOOR DESIGN. No ceilings, no indoor walls, no domestic furniture.
+    Lush exotic greenery, specimens, professional horticultural synthesis.
+    8k resolution, masterpiece, 100mm architectural lens.`;
 
     const output = await replicate.run(
         "adirik/interior-design:76604baddc85b1b4616e1c6475eca080da339c8875bd4996705440484a6eac38",
@@ -81,9 +81,9 @@ export async function POST(req: Request) {
           input: {
             image: formattedImage,
             prompt: fullPrompt,
-            negative_prompt: "lowres, watermark, logo, text, deformed, blurry, indoor, interior, kitchen, living room, bedroom, room, people, faces",
+            negative_prompt: "indoor furniture, beds, interior items, ceiling, interior walls, clutter, mess, existing decor, old furniture, lowres, watermark, text, deformed, people",
             guidance_scale: 15,
-            prompt_strength: 0.85,
+            prompt_strength: 0.95,
           }
         }
     );
