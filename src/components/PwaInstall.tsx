@@ -1,15 +1,25 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Download, Share, PlusSquare, X } from 'lucide-react';
+import { Download, Share, PlusSquare, X, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 
 export function PwaInstall() {
+  const pathname = usePathname();
   const [showInstall, setShowInstall] = useState(false);
   const [platform, setPlatform] = useState<'ios' | 'android' | 'other' | null>(null);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
+  // Only show on AI App related pages
+  const isAppPage = pathname?.startsWith('/app') || pathname?.startsWith('/ai-redesign');
+
   useEffect(() => {
+    if (!isAppPage) {
+      setShowInstall(false);
+      return;
+    }
+
     // Check if already installed
     if (window.matchMedia('(display-mode: standalone)').matches) {
       return;
@@ -45,7 +55,9 @@ export function PwaInstall() {
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     };
-  }, []);
+  }, [isAppPage]);
+
+  if (!isAppPage) return null;
 
   const handleAndroidInstall = async () => {
     if (!deferredPrompt) return;
@@ -69,56 +81,60 @@ export function PwaInstall() {
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-sm"
+          className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-sm"
         >
-          <div className="bg-white/90 backdrop-blur-xl border border-neutral-200 rounded-3xl p-5 shadow-2xl flex flex-col gap-4">
+          <div className="bg-black/60 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-6 shadow-[0_40px_100px_rgba(0,0,0,1)] flex flex-col gap-5">
             <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-black flex items-center justify-center overflow-hidden">
-                  <img src="/icon.png" alt="App Icon" className="w-full h-full object-cover" />
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
+                  <img src="/icon.png" alt="App Icon" className="w-full h-full object-cover p-2" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-neutral-900">Install Studio AI</h3>
-                  <p className="text-[10px] text-neutral-500 uppercase tracking-widest font-medium">Official Application</p>
+                  <h3 className="font-black text-white uppercase tracking-tighter text-lg">Studio AI</h3>
+                  <p className="text-[9px] text-white/30 uppercase tracking-[0.3em] font-black">Elite Visionary App</p>
                 </div>
               </div>
               <button 
                 onClick={closeGuide}
-                className="w-8 h-8 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-400"
+                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/20 hover:text-white transition-colors"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
             {platform === 'ios' ? (
-              <div className="space-y-3 pb-2">
-                <p className="text-sm text-neutral-600 leading-relaxed">
-                  Install this app on your iPhone for the best experience:
+              <div className="space-y-4 pb-2">
+                <p className="text-xs text-white/40 leading-relaxed font-medium uppercase tracking-tight">
+                  Integrate this architectural instrument into your iPhone for an immersive experience:
                 </p>
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center gap-3 text-sm font-medium text-neutral-700 bg-neutral-50 p-2 rounded-xl">
-                    <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center"><Share className="w-4 h-4 text-blue-500" /></div>
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-4 text-[11px] font-black uppercase tracking-wider text-white/60 bg-white/5 p-3 rounded-2xl border border-white/5">
+                    <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center border border-white/10"><Share className="w-4 h-4 text-blue-400" /></div>
                     <span>1. Tap "Share" in Safari</span>
                   </div>
-                  <div className="flex items-center gap-3 text-sm font-medium text-neutral-700 bg-neutral-50 p-2 rounded-xl">
-                    <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center"><PlusSquare className="w-4 h-4" /></div>
-                    <span>2. Select "Add to Home Screen"</span>
+                  <div className="flex items-center gap-4 text-[11px] font-black uppercase tracking-wider text-white/60 bg-white/5 p-3 rounded-2xl border border-white/5">
+                    <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center border border-white/10"><PlusSquare className="w-4 h-4 text-white" /></div>
+                    <span>2. Add to Home Screen</span>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="space-y-4">
-                <p className="text-sm text-neutral-600">
-                  Add Studio AI to your home screen for quick access and a full-screen experience.
+              <div className="space-y-6">
+                <p className="text-xs text-white/40 leading-relaxed font-medium uppercase tracking-tight">
+                  Acquire the Studio AI application for full-screen synthesis and seamless access.
                 </p>
                 <button 
                   onClick={handleAndroidInstall}
-                  className="w-full bg-black text-white py-3 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-neutral-800 transition-colors"
+                  className="w-full bg-white text-black py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-white/90 transition-all shadow-xl shadow-white/5"
                 >
-                  <Download className="w-5 h-5" /> Install App
+                  <Download className="w-4 h-4" /> Install Application
                 </button>
               </div>
             )}
+
+            <div className="pt-2 flex justify-center text-[8px] font-black text-white/10 uppercase tracking-[0.5em]">
+              Dream Makers Studio © 2026
+            </div>
           </div>
         </motion.div>
       )}
