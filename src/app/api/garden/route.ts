@@ -46,12 +46,34 @@ export async function POST(req: Request) {
         ? `MUST INCLUDE the following luxury features: ${features.join(", ")}.` 
         : "";
 
-    // Specific Garden Prompting Logic
-    const fullPrompt = `A stunning, high-end professional landscape design and garden transformation in ${stylePrompt} style. 
-    Transform the space into a luxury outdoor oasis. ${featuresString} 
-    Include lush greenery, architectural lighting, premium stone paving, and high-quality outdoor furniture. 
-    STRICTLY PRESERVE the existing building structures and land geometry while completely redesigning the plants and hardscaping.
-    Professional architectural photography, 8k resolution, cinematic lighting, masterpiece.`;
+    // --- Elite Garden Prompt Engineering ---
+    const getRandomElement = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
+    
+    const landscapeBase = getRandomElement([
+        "Masterpiece landscape architecture, professional high-end garden redesign, luxury outdoor living space.",
+        "Stunning architectural garden transformation, elite backyard oasis, professional landscape photography.",
+        "Award-winning outdoor retreat, high-end landscape synthesis, cinematic architectural exterior."
+    ]);
+
+    const lightingStyle = getRandomElement([
+        "cinematic golden hour lighting, soft warm glows",
+        "professional architectural night lighting, subtle LED accents",
+        "crisp natural daylight, vibrant colors, clear shadows"
+    ]);
+
+    const materialFocus = getRandomElement([
+        "premium limestone paving, dark volcanic rock accents",
+        "luxury teak wood decking, polished granite features",
+        "modern concrete geometry, minimalist glass and steel elements"
+    ]);
+
+    const fullPrompt = `${landscapeBase} Style: ${stylePrompt}. 
+    Features to synthesize: ${features.join(", ")}. 
+    Focus on ${materialFocus} and ${lightingStyle}. 
+    MUST BE ENTIRELY OUTDOOR/EXTERIOR. Absolutely NO indoor elements, no ceilings, no interior walls.
+    Lush exotic greenery, specimen trees, professional horticultural design.
+    STRICTLY PRESERVE the existing building structures and terrain geometry.
+    8k resolution, highly detailed, photorealistic, 100mm architectural lens.`;
 
     const output = await replicate.run(
         "adirik/interior-design:76604baddc85b1b4616e1c6475eca080da339c8875bd4996705440484a6eac38",

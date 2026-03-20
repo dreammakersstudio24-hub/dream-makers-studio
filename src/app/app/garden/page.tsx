@@ -108,20 +108,21 @@ export default function GardenGeneratePage() {
             {authStatus === "authorized" && step === "style" && (
                 <motion.div key="style" className="space-y-10">
                     <div className="space-y-2">
-                        <h2 className="font-black uppercase tracking-tighter text-3xl">Architectural Style</h2>
-                        <p className="text-white/30 text-[10px] uppercase tracking-[0.4em] font-black">Select your preferred aesthetic</p>
+                        <h2 className="font-black uppercase tracking-tighter text-3xl text-white">Select Style</h2>
+                        <p className="text-white/30 text-[10px] uppercase tracking-[0.4em] font-black italic">Architectural Direction</p>
                     </div>
                     <div className="grid grid-cols-2 gap-5">
                         {GARDEN_STYLES.map(style => (
                             <button 
                                 key={style.id} 
                                 onClick={() => { setSelectedStyleId(style.id); setStep("features"); }} 
-                                className="group relative aspect-[4/5] rounded-[2rem] overflow-hidden border border-white/5 shadow-2xl hover:scale-105 transition-all duration-500"
+                                className="group relative aspect-[4/5] rounded-[2rem] overflow-hidden border border-white/5 shadow-2xl hover:scale-[1.03] transition-all duration-500"
                             >
-                                <img src={style.image} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[3000ms]" />
+                                <img src={style.image} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[4000ms]" />
                                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/40 to-transparent p-6 pt-12">
-                                    <span className="text-white text-[10px] font-black uppercase tracking-[0.2em] leading-tight block truncate">{style.nameKey}</span>
+                                    <span className="text-white text-[11px] font-black uppercase tracking-[0.2em] leading-tight block truncate group-hover:text-blue-400 transition-colors">{style.nameKey}</span>
                                 </div>
+                                <div className="absolute inset-0 border-2 border-white/0 group-hover:border-white/10 rounded-[2rem] transition-all pointer-events-none" />
                             </button>
                         ))}
                     </div>
@@ -131,8 +132,8 @@ export default function GardenGeneratePage() {
             {authStatus === "authorized" && step === "features" && (
                 <motion.div key="features" className="space-y-10">
                     <div className="space-y-2">
-                        <h2 className="font-black uppercase tracking-tighter text-3xl">Garden Assets</h2>
-                        <p className="text-white/30 text-[10px] uppercase tracking-[0.4em] font-black">Infuse luxury elements</p>
+                        <h2 className="font-black uppercase tracking-tighter text-3xl text-white">Enhancements</h2>
+                        <p className="text-white/30 text-[10px] uppercase tracking-[0.4em] font-black italic">Synthesize Assets</p>
                     </div>
                     
                     <div className="grid grid-cols-2 gap-4">
@@ -144,23 +145,30 @@ export default function GardenGeneratePage() {
                                 <button 
                                     key={f.id} 
                                     onClick={() => toggleFeature(f.id)} 
-                                    className={`relative p-6 rounded-[2.5rem] border transition-all duration-500 flex flex-col items-center gap-4 ${isSelected ? 'border-blue-500/50 bg-blue-500/10 shadow-[0_0_30px_rgba(59,130,246,0.2)]' : 'border-white/5 bg-white/5 hover:bg-white/10'}`}
+                                    className={`relative p-6 rounded-[2.5rem] border transition-all duration-700 flex flex-col items-center gap-4 group ${isSelected ? 'border-blue-500/50 bg-blue-500/10 shadow-[0_0_40px_rgba(59,130,246,0.15)] ring-1 ring-blue-500/20' : 'border-white/5 bg-white/5 hover:bg-white/10'}`}
                                 >
-                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 ${isSelected ? 'bg-blue-500 text-white shadow-[0_0_20px_rgba(59,130,246,0.5)]' : 'bg-white/5 text-white/20'}`}>
-                                        <Icon className="w-6 h-6" />
+                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 ${isSelected ? 'bg-blue-500 text-white shadow-[0_10px_30px_rgba(59,130,246,0.5)] scale-110' : 'bg-white/5 text-white/30 group-hover:text-white/60'}`}>
+                                        <Icon className="w-7 h-7" />
                                     </div>
-                                    <span className={`text-[9px] font-black uppercase tracking-widest text-center leading-tight ${isSelected ? 'text-white' : 'text-white/40'}`}>{f.label}</span>
-                                    {isSelected && <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.8)]" />}
+                                    <span className={`text-[9px] font-black uppercase tracking-widest text-center leading-tight transition-colors ${isSelected ? 'text-white' : 'text-white/40 group-hover:text-white/60'}`}>{f.label}</span>
+                                    {isSelected && (
+                                        <motion.div layoutId="active-dot" className="absolute top-5 right-5 w-2.5 h-2.5 rounded-full bg-blue-400 shadow-[0_0_15px_rgba(96,165,250,1)] ring-2 ring-blue-500/20" />
+                                    )}
                                 </button>
                             );
                         })}
                     </div>
-                    <button 
-                        onClick={handleGenerate} 
-                        className="w-full bg-white text-black py-6 rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] mt-8 flex items-center justify-center gap-3 shadow-[0_20px_50px_rgba(255,255,255,0.1)] hover:scale-[1.02] active:scale-95 transition-all"
-                    >
-                        <Sparkles className="w-5 h-5" /> Synthesize Landscape
-                    </button>
+                    
+                    <div className="pt-4">
+                        <button 
+                            onClick={handleGenerate} 
+                            className="w-full bg-white text-black py-6 rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-3 shadow-[0_20px_60px_rgba(255,255,255,0.15)] hover:scale-[1.02] active:scale-95 transition-all group overflow-hidden relative"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer" />
+                            <Sparkles className="w-5 h-5 text-blue-500" /> 
+                            <span>Synthesize Masterpiece</span>
+                        </button>
+                    </div>
                 </motion.div>
             )}
 
