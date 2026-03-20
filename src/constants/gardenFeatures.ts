@@ -3,38 +3,38 @@ import { Flame, UtensilsCrossed, Droplets, Tent, Waves, TreePine } from 'lucide-
 export const GARDEN_FEATURES = [
   {
     id: 'fire_pit',
-    label: 'Fire Pit / Fireplace',
-    prompt: 'modern fire pit with seating area',
+    label: 'Atmospheric Fire Pit',
+    prompt: 'luxury designer fire pit with integrated circular stone seating and warm architectural lighting',
     icon: Flame
   },
   {
     id: 'outdoor_kitchen',
-    label: 'Outdoor Kitchen / BBQ',
-    prompt: 'luxury outdoor kitchen and barbecue station',
+    label: 'Elite Culinary Station',
+    prompt: 'state-of-the-art outdoor gourmet kitchen with marble surfaces and premium professional BBQ',
     icon: UtensilsCrossed
   },
   {
     id: 'water_feature',
-    label: 'Pond / Waterfall',
-    prompt: 'serene koi pond with waterfall feature',
+    label: 'Serene Water Oasis',
+    prompt: 'multi-level architectural water feature, koi pond with crystalline water and soft ambient glow',
     icon: Droplets
   },
   {
     id: 'pergola',
-    label: 'Pergola / Gazebo',
-    prompt: 'wooden pergola with climbing plants and seating',
+    label: 'Architectural Pergola',
+    prompt: 'sophisticated minimalist pergola with automated louvers, integrated lighting, and climbing vines',
     icon: Tent
   },
   {
     id: 'swimming_pool',
-    label: 'Swimming Pool',
-    prompt: 'infinity swimming pool with turquoise water',
+    label: 'Infinity Pool Sanctuary',
+    prompt: 'luxury infinity-edge swimming pool with dark volcanic stone tiles and sunken lounge area',
     icon: Waves
   },
   {
     id: 'sitting_area',
-    label: 'Lounge / Sitting Area',
-    prompt: 'comfortable outdoor lounge furniture',
+    label: 'Lounge Sanctuary',
+    prompt: 'high-end boutique lounge furniture with designer textiles and integrated landscape lighting',
     icon: TreePine
   }
 ];

@@ -54,14 +54,16 @@ export async function POST(req: Request) {
     Professional architectural photography, 8k resolution, cinematic lighting, masterpiece.`;
 
     const output = await replicate.run(
-        "adirik/interior-design:76604baddc85b1b4616e1c6475eca080da339c8875bd4996705440484a6eac38",
+        "lucataco/controlnet-v11p-sd15-mlsd:8ef79c6a99256920fdf915830b8026778c80d8f070f80bc8bd781895a0224b45",
         {
           input: {
             image: formattedImage,
             prompt: fullPrompt,
-            negative_prompt: "lowres, watermark, logo, text, deformed, blurry, indoor, interior, kitchen, living room, bedroom",
-            guidance_scale: 15,
-            prompt_strength: 0.85,
+            negative_prompt: "lowres, watermark, logo, text, deformed, blurry, indoor, interior, kitchen, living room, bedroom, room, people, faces",
+            num_outputs: 1,
+            guidance_scale: 12,
+            prompt_strength: 1,
+            num_inference_steps: 40
           }
         }
     );
