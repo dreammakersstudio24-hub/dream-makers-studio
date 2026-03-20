@@ -49,6 +49,16 @@ export default function GardenGeneratePage() {
     setStep("processing");
     try {
       const styleInfo = GARDEN_STYLES.find(s => s.id === selectedStyleId);
+      
+      // Select a random prompt from the variations to ensure diversity (E-book enhancement)
+      let finalStylePrompt = "modern garden";
+      if (styleInfo) {
+        if (styleInfo.prompts && styleInfo.prompts.length > 0) {
+          const randomIndex = Math.floor(Math.random() * styleInfo.prompts.length);
+          finalStylePrompt = styleInfo.prompts[randomIndex];
+        }
+      }
+
       const featurePrompts = selectedFeatures.map(fid => GARDEN_FEATURES.find(f => f.id === fid)?.prompt).filter(Boolean);
 
       const response = await fetch("/api/garden", {
@@ -56,7 +66,7 @@ export default function GardenGeneratePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           image: selectedImage,
-          stylePrompt: styleInfo?.prompt || "modern garden",
+          stylePrompt: finalStylePrompt,
           features: featurePrompts
         }),
       });

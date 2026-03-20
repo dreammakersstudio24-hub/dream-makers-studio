@@ -88,12 +88,18 @@ export default function MobileGeneratePage() {
       const styleInfo = STYLES.find(s => s.id === selectedStyleId);
       const roomInfo = ROOM_TYPES.find(r => r.id === selectedRoomId);
       
+      // Select a random prompt from the variations to ensure diversity
+      let finalStylePrompt = styleInfo?.nameKey || "modern";
+      if (styleInfo?.prompts && styleInfo.prompts.length > 0) {
+        finalStylePrompt = styleInfo.prompts[Math.floor(Math.random() * styleInfo.prompts.length)];
+      }
+
       const response = await fetch("/api/redesign", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           image: compressed.url,
-          stylePrompt: styleInfo?.nameKey || "modern",
+          stylePrompt: finalStylePrompt,
           roomType: roomInfo?.nameKey || "room",
           aspectRatio: compressed.ratio
         }),
