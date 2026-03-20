@@ -130,9 +130,9 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                           href={product.affiliate_url} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="group bg-neutral-50 rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col border border-transparent hover:border-blue-200 hover:shadow-xl hover:shadow-blue-50 transition-all duration-300"
+                          className="group bg-white rounded-2xl overflow-hidden flex flex-col border border-neutral-100 hover:border-neutral-200 hover:shadow-[0_20px_40px_rgba(0,0,0,0.06)] transition-all duration-300"
                         >
-                            <div className="aspect-square overflow-hidden bg-white relative">
+                            <div className="aspect-square overflow-hidden bg-neutral-50 relative">
                                 {product.image_url ? (
                                     <img 
                                       src={product.image_url} 
@@ -143,15 +143,39 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                                     <div className="w-full h-full flex items-center justify-center text-neutral-200 bg-neutral-50"><ShoppingBag className="w-6 h-6" /></div>
                                 )}
                             </div>
-                            <div className="p-3 sm:p-4 flex flex-col flex-1">
-                                <h3 className="text-sm sm:text-base font-bold text-neutral-800 line-clamp-2 mb-1 group-hover:text-blue-600 transition-colors">{product.title}</h3>
-                                <p className="text-[10px] sm:text-xs text-neutral-400 font-light line-clamp-2 mb-3">
-                                    {product.description}
-                                </p>
-                                <div className="mt-auto flex items-center justify-between">
-                                    <span className="text-[10px] font-bold text-blue-600 uppercase tracking-tighter sm:tracking-normal group-hover:translate-x-1 transition-transform flex items-center gap-1">
-                                        Shop Now <ArrowRight className="w-3 h-3" />
-                                    </span>
+                            <div className="p-4 sm:p-5 flex flex-col flex-1">
+                                <div className="flex flex-col gap-1 mb-2">
+                                  <h3 className="text-xs sm:text-sm font-bold text-neutral-800 leading-tight uppercase tracking-tight group-hover:text-black transition-colors line-clamp-2 min-h-[2.5rem]">
+                                    {product.title}
+                                  </h3>
+                                  
+                                  {product.rating && (
+                                    <div className="flex items-center gap-0.5 text-amber-400">
+                                      {[...Array(5)].map((_, i) => (
+                                        <svg 
+                                          key={i} 
+                                          className={`w-2.5 h-2.5 ${i < Math.floor(product.rating) ? 'fill-current' : 'fill-neutral-100 text-neutral-100'}`} 
+                                          viewBox="0 0 20 20"
+                                        >
+                                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                        </svg>
+                                      ))}
+                                      <span className="text-[8px] font-bold ml-1 text-neutral-300 tracking-tighter uppercase">{product.rating.toFixed(1)}</span>
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className="mt-auto flex flex-col gap-4 border-t border-neutral-50 pt-4">
+                                    <div className="flex items-center justify-between">
+                                      {product.price ? (
+                                        <span className="text-sm font-black text-black tracking-widest">{product.price}</span>
+                                      ) : (
+                                        <span className="text-[10px] font-bold text-neutral-200 tracking-[0.2em] uppercase italic">Call for Price</span>
+                                      )}
+                                      <div className="w-8 h-8 rounded-full bg-neutral-50 border border-neutral-100 flex items-center justify-center group-hover:bg-black group-hover:text-white transition-all shadow-sm">
+                                        <ArrowRight className="w-4 h-4" />
+                                      </div>
+                                    </div>
                                 </div>
                             </div>
                         </a>
