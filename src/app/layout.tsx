@@ -41,6 +41,8 @@ export const metadata: Metadata = {
 };
 
 import { Navbar } from "@/components/Navbar";
+import { PwaInstall } from "@/components/PwaInstall";
+import { useEffect } from "react";
 
 export default function RootLayout({
   children,
@@ -54,7 +56,29 @@ export default function RootLayout({
       >
         <Navbar />
         {children}
+        <PwaInstall />
+        <ServiceWorkerRegister />
       </body>
     </html>
+  );
+}
+
+function ServiceWorkerRegister() {
+  return (
+    <script
+      dangerouslySetInnerHTML={{
+        __html: `
+          if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+              navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                console.log('SW registered');
+              }, function(err) {
+                console.log('SW failed: ', err);
+              });
+            });
+          }
+        `,
+      }}
+    />
   );
 }
