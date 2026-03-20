@@ -1,7 +1,7 @@
 import { createServerSupabaseClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft, Sparkles, Image as ImageIcon } from 'lucide-react'
+import { ChevronLeft, Sparkles, Image as ImageIcon, ArrowRight } from 'lucide-react'
 import { logout } from '@/actions/auth'
 
 export const metadata = {
@@ -29,79 +29,52 @@ export default async function HistoryPage() {
     .order('created_at', { ascending: false })
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-white/30 font-sans">
-      <nav className="fixed w-full z-40 top-0 border-b border-white/10 bg-black/80 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link 
-            href="/app/dashboard"
-            className="p-2 -ml-2 text-neutral-400 hover:text-white transition-colors flex items-center gap-2"
-          >
-             <ChevronLeft className="w-5 h-5" />
-             <span className="font-medium hidden sm:block">Dashboard</span>
-          </Link>
-          
-          <span className="text-lg font-medium tracking-wide">
-            My Designs
-          </span>
-          
-          <div className="flex items-center gap-6">
-            <form action={logout}>
-              <button 
-                type="submit"
-                className="text-sm font-medium hover:text-white text-neutral-400 transition-colors"
-               >
-                 Log Out
-              </button>
-            </form>
-          </div>
-        </div>
-      </nav>
-
-      <main className="max-w-7xl mx-auto pt-24 pb-32 px-4 sm:px-6 min-h-screen">
-        <div className="flex items-center gap-4 mb-12">
-            <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center border border-white/10">
-                <ImageIcon className="w-8 h-8 text-neutral-400" />
+    <div className="min-h-screen bg-[#020203] text-white selection:bg-white/10">
+      <main className="max-w-7xl mx-auto pt-32 pb-32 px-4 sm:px-6 min-h-screen">
+        <div className="flex items-center gap-6 mb-16">
+            <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center border border-white/10 shadow-2xl backdrop-blur-3xl">
+                <ImageIcon className="w-8 h-8 text-white/20" />
             </div>
             <div>
-                <h1 className="text-3xl font-light">Design History</h1>
-                <p className="text-neutral-400 font-light mt-1 text-sm">Your past transformations</p>
+                <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter">Your Archive</h1>
+                <p className="text-white/30 font-black uppercase tracking-[0.3em] mt-2 text-[10px]">Elite Transformations History</p>
             </div>
         </div>
 
         {!generations || generations.length === 0 ? (
-            <div className="text-center py-24 bg-white/5 rounded-3xl border border-white/10">
-                <Sparkles className="w-12 h-12 text-neutral-500 mx-auto mb-4" />
-                <h3 className="text-xl font-medium mb-2">No designs yet</h3>
-                <p className="text-neutral-400 mb-8 font-light">Start your first room transformation in the studio.</p>
+            <div className="text-center py-32 bg-white/5 rounded-[3rem] border border-white/10 backdrop-blur-3xl">
+                <Sparkles className="w-16 h-16 text-white/10 mx-auto mb-6" />
+                <h3 className="text-2xl font-black uppercase tracking-tighter mb-4">The Archive is Empty</h3>
+                <p className="text-white/30 mb-10 font-medium tracking-tight uppercase text-xs">Initiate your first architectural vision in the studio.</p>
                 <Link 
-                    href="/app/generate"
-                    className="bg-white text-black px-8 py-3 rounded-full font-medium hover:bg-neutral-200 transition-colors"
+                    href="/app/dashboard"
+                    className="bg-white text-black px-10 py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] hover:bg-white/90 transition-all shadow-xl"
                 >
-                    Create Design
+                    Enter Studio
                 </Link>
             </div>
         ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                 {generations.map((gen: any) => (
-                    <div key={gen.id} className="bg-neutral-900 rounded-3xl overflow-hidden border border-white/10 flex flex-col group">
-                        <div className="relative aspect-[4/5] overflow-hidden">
+                    <div key={gen.id} className="bg-white/5 rounded-[2.5rem] overflow-hidden border border-white/10 flex flex-col group transition-all duration-500 hover:border-white/20 hover:shadow-[0_40px_100px_rgba(0,0,0,0.8)]">
+                        <div className="relative aspect-[4/5] overflow-hidden bg-black">
                             <img 
                                 src={gen.generated_image_url} 
                                 alt={`Generated ${gen.room_type} in ${gen.style}`}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 bg-black"
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                             />
-                            <div className="absolute top-4 left-4 flex flex-col gap-2">
-                                <span className="px-3 py-1.5 bg-black/60 backdrop-blur-md rounded-full text-xs font-medium uppercase tracking-widest border border-white/10 text-white shadow-lg w-fit">
+                            <div className="absolute top-6 left-6 flex flex-col gap-2">
+                                <span className="px-4 py-2 bg-black/60 backdrop-blur-xl rounded-full text-[9px] font-black uppercase tracking-[0.2em] border border-white/10 text-white shadow-2xl w-fit">
                                     {gen.room_type}
                                 </span>
-                                <span className="px-3 py-1.5 bg-white/10 backdrop-blur-md rounded-full text-xs font-medium uppercase tracking-widest border border-white/10 text-white shadow-lg w-fit">
+                                <span className="px-4 py-2 bg-white/10 backdrop-blur-xl rounded-full text-[9px] font-black uppercase tracking-[0.2em] border border-white/10 text-white shadow-2xl w-fit">
                                     {gen.style}
                                 </span>
                             </div>
                         </div>
                         
-                        <div className="p-4 bg-neutral-900 flex justify-between items-center border-t border-white/5">
-                            <div className="text-xs text-neutral-500 font-medium tracking-wide">
+                        <div className="p-8 flex justify-between items-center bg-[#0a0a0b] border-t border-white/5">
+                            <div className="text-[10px] text-white/20 font-black uppercase tracking-[0.2em]">
                                 {new Date(gen.created_at).toLocaleDateString(undefined, {
                                     year: 'numeric',
                                     month: 'short',
@@ -113,9 +86,9 @@ export default async function HistoryPage() {
                                 download={`design-${gen.id}.jpg`}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="text-xs font-medium text-white hover:text-neutral-300 transition-colors uppercase tracking-widest flex items-center gap-1"
+                                className="text-[10px] font-black text-white hover:text-white/70 transition-all uppercase tracking-[0.3em] flex items-center gap-2"
                             >
-                                Download
+                                Acquire <ArrowRight className="w-3 h-3" />
                             </a>
                         </div>
                     </div>
