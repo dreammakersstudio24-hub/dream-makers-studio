@@ -1,8 +1,9 @@
 import { createServerSupabaseClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Sparkles, History, ImageIcon, Download, Settings, Crown, ChevronLeft } from 'lucide-react'
+import { Sparkles, History, ImageIcon, Download, Settings, Crown, ChevronLeft, Armchair, Flame, Home } from 'lucide-react'
 import { logout } from '@/actions/auth'
+
 export const metadata = {
   title: 'Dashboard - Transformation App',
 }
@@ -26,129 +27,117 @@ export default async function MobileDashboard() {
   const hasCredits = credits > 0
 
   return (
-    <div className="min-h-screen bg-neutral-50 text-neutral-900 pb-24 font-sans selection:bg-black/10">
+    <div className="min-h-screen bg-[#0f1115] text-white pb-32 font-sans selection:bg-white/10 overflow-x-hidden">
       
-      {/* Settings / Logout Bar */}
       {/* Premium Launcher Body */}
-      <main className="px-6 pt-16 space-y-10 max-w-lg mx-auto">
+      <main className="px-6 pt-16 space-y-12 max-w-lg mx-auto">
          
          {/* Title Section */}
-         <header className="text-center space-y-3">
-            <h1 className="text-4xl font-extrabold tracking-tight text-neutral-900 leading-none">
+         <header className="text-center space-y-4">
+            <div className="flex items-center justify-center gap-2 mb-2">
+                <div className="w-8 h-8 rounded-full bg-yellow-400/20 flex items-center justify-center border border-yellow-400/50 shadow-[0_0_15px_rgba(250,204,21,0.3)]">
+                    <Sparkles className="w-4 h-4 text-yellow-500" />
+                </div>
+                <span className="text-[11px] font-black uppercase tracking-[0.4em] text-white/80">Dream Makers Studio AI</span>
+            </div>
+            <h1 className="text-4xl font-black tracking-tight text-white leading-none">
                Transform <br/> 
-               <span className="text-neutral-400 font-medium">Your Space</span>
+               <span className="text-white/40 font-medium">Your Space</span>
             </h1>
-            <p className="text-[10px] text-neutral-400 font-black uppercase tracking-[0.4em]">AI Selection Center</p>
          </header>
 
-         {/* Credit Status (Glassmorphism Capsule) */}
-         <div className="mx-auto flex items-center justify-between border border-neutral-200 bg-white shadow-xl rounded-[2rem] px-6 py-4">
-            <div className="flex items-center gap-3">
-               <div className="w-10 h-10 bg-black text-white rounded-xl flex items-center justify-center">
-                  <Crown className="w-5 h-5" />
-               </div>
-               <div>
-                  <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest leading-none mb-1">Total Balance</p>
-                  <p className="text-lg font-black text-neutral-900 leading-none">{credits} <span className="text-[10px] text-neutral-400 font-bold">Credits</span></p>
-               </div>
-            </div>
-            {!hasCredits && (
-               <button className="text-[10px] font-black text-red-600 uppercase tracking-widest bg-red-50 px-3 py-1.5 rounded-lg">Top Up</button>
-            )}
-         </div>
-
          {/* 2-Column Grid Transformation Choices */}
-         <section className="grid grid-cols-2 gap-4">
+         <section className="grid grid-cols-2 gap-5 pt-4">
             
             {/* Interior Transformation Card */}
             <Link 
                href="/app/generate"
-               className="group relative aspect-[3/4] rounded-[2.5rem] overflow-hidden shadow-2xl transition-all duration-500 hover:scale-[1.02] active:scale-95 bg-neutral-950 border border-white/10"
+               className="group relative aspect-[0.75/1] rounded-[2.5rem] overflow-hidden shadow-2xl transition-all duration-700 hover:scale-[1.04] active:scale-95 bg-neutral-900 border border-white/10"
             >
                <img 
                   src="https://images.unsplash.com/photo-1618221195710-dd6b41fa33a8?q=80&w=400&auto=format&fit=crop" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-[3000ms]" 
+                  className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-[4000ms]" 
                   alt="Interior"
                />
-               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
+               <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-900/40 to-transparent z-10" />
                
-               {/* Glowing Center Icon */}
+               {/* Glowing Center Icon (Mockup Style) */}
                <div className="absolute inset-0 flex items-center justify-center z-20">
-                   <div className="w-16 h-16 rounded-full bg-blue-500/20 backdrop-blur-md border border-blue-400/50 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.5)] group-hover:scale-110 transition-transform">
-                       <ImageIcon className="w-7 h-7 text-blue-300" />
+                   <div className="w-20 h-20 rounded-full bg-white/5 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-[0_0_30px_rgba(255,255,255,0.1)] group-hover:border-blue-400/50 group-hover:shadow-[0_0_40px_rgba(59,130,246,0.3)] transition-all">
+                       <Armchair className="w-8 h-8 text-blue-300 drop-shadow-[0_0_8px_rgba(147,197,253,0.8)]" />
                    </div>
                </div>
 
-               {/* Bottom Content */}
-               <div className="absolute inset-x-0 bottom-0 p-6 text-center z-20">
-                  <h3 className="text-lg font-black text-white tracking-tight mb-1">Interior <span className="text-white/40 italic">Redesign</span></h3>
-                  <p className="text-[8px] text-white/50 font-bold uppercase tracking-widest leading-relaxed">Create stunning, personalized living spaces</p>
+               {/* Bottom Content (Mockup Style) */}
+               <div className="absolute inset-x-0 bottom-0 p-6 text-center z-20 space-y-1">
+                  <h3 className="text-lg font-black text-white tracking-tight leading-none">Interior <span className="text-white/40 italic">Redesign</span></h3>
+                  <p className="text-[9px] text-white/40 font-medium leading-tight">Create stunning, personalized living spaces.</p>
                </div>
             </Link>
 
             {/* Garden & Exterior Card */}
             <Link 
                href="/app/garden"
-               className="group relative aspect-[3/4] rounded-[2.5rem] overflow-hidden shadow-2xl transition-all duration-500 hover:scale-[1.02] active:scale-95 bg-emerald-950 border border-white/10"
+               className="group relative aspect-[0.75/1] rounded-[2.5rem] overflow-hidden shadow-2xl transition-all duration-700 hover:scale-[1.04] active:scale-95 bg-neutral-900 border border-white/10"
             >
                <img 
                   src="https://images.unsplash.com/photo-1558904541-efa8c1ae65f4?q=80&w=400&auto=format&fit=crop" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-[3000ms]" 
+                  className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-[4000ms]" 
                   alt="Garden"
                />
-               <div className="absolute inset-0 bg-gradient-to-t from-black via-emerald-950/40 to-transparent z-10" />
+               <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-900/40 to-transparent z-10" />
                
-               {/* Glowing Center Icon */}
+               {/* Glowing Center Icon (Mockup Style) */}
                <div className="absolute inset-0 flex items-center justify-center z-20">
-                   <div className="w-16 h-16 rounded-full bg-orange-500/20 backdrop-blur-md border border-orange-400/50 flex items-center justify-center shadow-[0_0_20px_rgba(249,115,22,0.5)] group-hover:scale-110 transition-transform">
-                       <Sparkles className="w-7 h-7 text-orange-300" />
+                   <div className="w-20 h-20 rounded-full bg-white/5 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-[0_0_30px_rgba(255,255,255,0.1)] group-hover:border-orange-400/50 group-hover:shadow-[0_0_40px_rgba(249,115,22,0.3)] transition-all">
+                       <Flame className="w-8 h-8 text-orange-300 drop-shadow-[0_0_8px_rgba(253,186,116,0.8)]" />
                    </div>
                </div>
 
-               {/* Bottom Content */}
-               <div className="absolute inset-x-0 bottom-0 p-6 text-center z-20">
-                  <h3 className="text-lg font-black text-white tracking-tight mb-1">Garden <span className="text-white/40 italic">& Outdoor</span></h3>
-                  <p className="text-[8px] text-white/50 font-bold uppercase tracking-widest leading-relaxed">Design dream patios, gardens & outdoor retreats</p>
+               {/* Bottom Content (Mockup Style) */}
+               <div className="absolute inset-x-0 bottom-0 p-6 text-center z-20 space-y-1">
+                  <h3 className="text-lg font-black text-white tracking-tight leading-none">Garden <span className="text-white/40 italic">& Outdoor</span></h3>
+                  <p className="text-[9px] text-white/40 font-medium leading-tight">Design dream patios, gardens & outdoor retreats.</p>
                </div>
             </Link>
 
          </section>
 
-         {/* "Popular Tools" Minimalist List */}
-         <div className="space-y-4 pt-4">
-            <h2 className="text-xs font-black text-neutral-400 uppercase tracking-[0.3em] text-center">Popular Tools</h2>
-            <div className="flex justify-center gap-3">
-                <Link href="/history" className="bg-white border border-neutral-100 px-6 py-4 rounded-2xl flex items-center gap-3 shadow-sm hover:shadow-md transition-all active:scale-95">
-                    <History className="w-4 h-4 text-neutral-400" />
-                    <span className="text-sm font-bold text-neutral-800 tracking-tight">Project History</span>
+         {/* "Popular Tools" Minimalist List (Mockup Style) */}
+         <div className="space-y-6 pt-4">
+            <h2 className="text-[11px] font-black text-white/30 uppercase tracking-[0.4em] text-center">Popular tools</h2>
+            <div className="grid grid-cols-2 gap-4">
+                <Link href="/history" className="bg-[#1a1d23] border border-white/5 p-5 rounded-3xl flex items-center justify-center gap-3 shadow-lg hover:bg-[#22262e] transition-all active:scale-95 group">
+                    <History className="w-4 h-4 text-white/30 group-hover:text-white" />
+                    <span className="text-xs font-bold text-white/80 tracking-tight">Style Inspiration</span>
                 </Link>
-                <Link href="/shop" className="bg-white border border-neutral-100 px-6 py-4 rounded-2xl flex items-center gap-3 shadow-sm hover:shadow-md transition-all active:scale-95">
-                    <Download className="w-4 h-4 text-neutral-400" />
-                    <span className="text-sm font-bold text-neutral-800 tracking-tight">Style Inspiration</span>
+                <Link href="/shop" className="bg-[#1a1d23] border border-white/5 p-5 rounded-3xl flex items-center justify-center gap-3 shadow-lg hover:bg-[#22262e] transition-all active:scale-95 group">
+                    <Download className="w-4 h-4 text-white/30 group-hover:text-white" />
+                    <span className="text-xs font-bold text-white/80 tracking-tight">Project History</span>
                 </Link>
             </div>
          </div>
 
-         {/* Floating Bottom Nav */}
-         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-fit bg-black/90 backdrop-blur-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-full px-8 py-4 flex items-center gap-10 z-[100]">
+         {/* Floating Bottom Nav (Mockup Style) */}
+         <div className="fixed bottom-10 left-1/2 -translate-x-1/2 w-[90%] max-w-sm bg-[#1a1d23]/80 backdrop-blur-3xl border border-white/10 shadow-[0_25px_60px_rgba(0,0,0,0.5)] rounded-[2.5rem] px-8 py-5 flex items-center justify-between z-[100]">
             <Link href="/app/dashboard" className="flex flex-col items-center gap-1 group">
-               <div className="p-2 bg-white/10 rounded-xl group-hover:bg-white group-hover:text-black transition-all">
-                  <ImageIcon className="w-5 h-5 text-white group-hover:text-black" />
+               <div className="p-1 rounded-xl transition-all">
+                  <Home className="w-6 h-6 text-blue-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.4)]" />
                </div>
-               <span className="text-[8px] font-black text-white/50 uppercase tracking-widest">Home</span>
+               <span className="text-[10px] font-bold text-blue-400">Home</span>
             </Link>
             <Link href="/history" className="flex flex-col items-center gap-1 group">
-               <div className="p-2 hover:bg-white/10 rounded-xl transition-all">
-                  <History className="w-5 h-5 text-white/40 group-hover:text-white" />
+               <div className="p-1 rounded-xl transition-all">
+                  <History className="w-6 h-6 text-white/20 group-hover:text-white" />
                </div>
-               <span className="text-[8px] font-black text-white/30 uppercase tracking-widest">History</span>
+               <span className="text-[10px] font-bold text-white/20 group-hover:text-white">History</span>
             </Link>
-            <Link href="/shop" className="flex flex-col items-center gap-1 group">
-               <div className="p-2 hover:bg-white/10 rounded-xl transition-all">
-                  <Download className="w-5 h-5 text-white/40 group-hover:text-white" />
+            <div className="flex flex-col items-center gap-1 group opacity-40">
+               <div className="p-1 rounded-xl transition-all">
+                  <Crown className="w-6 h-6 text-white/20" />
                </div>
-               <span className="text-[8px] font-black text-white/30 uppercase tracking-widest">Credits</span>
-            </Link>
+               <span className="text-[10px] font-bold text-white/20">{credits} Credits</span>
+            </div>
          </div>
 
       </main>
