@@ -78,11 +78,16 @@ export async function upsertProduct(formData: FormData) {
       image_url = supabase.storage.from('images').getPublicUrl(fileName).data.publicUrl;
     }
 
+    const price = formData.get('price') as string;
+    const rating = formData.get('rating') as string;
+
     const productData = {
       title,
       description,
       affiliate_url,
       image_url,
+      price,
+      rating: rating ? parseFloat(rating) : null,
       is_active: true
     };
 
@@ -192,8 +197,10 @@ export async function importProductsFromCSV(formData: FormData) {
       const productData = {
         title: row.title,
         description: row.description || '',
-        image_url: row.image || row.image_url,
+        image_url: row.image || row.image_url || row.pictures, // Support 'pictures' from Instant Data Scraper
         affiliate_url: row.url || row.affiliate_url,
+        price: row.price || row.amount || '', // Support various price headers
+        rating: row.rating ? parseFloat(row.rating) : null,
         is_active: true
       };
 

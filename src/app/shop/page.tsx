@@ -97,31 +97,64 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                           rel="noopener noreferrer"
                           className="group bg-white/5 rounded-3xl overflow-hidden flex flex-col border border-white/5 hover:border-white/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-500"
                         >
-                            <div className="aspect-[4/5] overflow-hidden bg-[#0a0a0b] relative">
+                            <div className="aspect-square overflow-hidden bg-[#0a0a0b] relative group-hover:bg-[#111112] transition-colors">
                                 {product.image_url ? (
                                     <img 
                                       src={product.image_url} 
                                       alt={product.title} 
-                                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                                     />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-white/5"><ShoppingBag className="w-8 h-8" /></div>
+                                    <div className="w-full h-full flex items-center justify-center text-white/5"><ShoppingBag className="w-10 h-10" /></div>
                                 )}
-                                <div className="absolute top-4 left-4">
-                                    <span className="px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-xl border border-white/10 text-[9px] font-black uppercase tracking-[0.2em] text-white/50">
+                                
+                                <div className="absolute top-4 left-4 z-10">
+                                    <span className="px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-xl border border-white/10 text-[8px] font-black uppercase tracking-[0.2em] text-white/50 shadow-2xl">
                                         {(product as any).product_category_assignment?.[0]?.product_categories?.name || 'Exclusive'}
                                     </span>
                                 </div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#020203]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                             </div>
-                            <div className="p-6 flex flex-col flex-1">
-                                <h3 className="text-sm sm:text-base font-black text-white mb-2 leading-tight uppercase tracking-tighter group-hover:text-white transition-colors">{product.title}</h3>
-                                <p className="text-[10px] text-white/30 font-medium line-clamp-2 mb-4 uppercase tracking-[0.1em]">
-                                    {product.description}
-                                </p>
-                                <div className="mt-auto flex items-center justify-between border-t border-white/5 pt-4">
-                                    <span className="text-[10px] font-black text-white uppercase tracking-[0.3em] group-hover:translate-x-1 transition-all flex items-center gap-2">
-                                        Acquire <ArrowRight className="w-3 h-3" />
-                                    </span>
+
+                            <div className="p-5 sm:p-6 flex flex-col flex-1 bg-[#020203]/40 backdrop-blur-sm">
+                                <div className="flex flex-col gap-1 mb-2">
+                                  <h3 className="text-xs sm:text-sm font-black text-white leading-tight uppercase tracking-tight group-hover:text-white transition-colors line-clamp-2 min-h-[2.5rem]">
+                                    {product.title}
+                                  </h3>
+                                  
+                                  {product.rating && (
+                                    <div className="flex items-center gap-0.5 text-amber-400 mb-1">
+                                      {[...Array(5)].map((_, i) => (
+                                        <svg 
+                                          key={i} 
+                                          className={`w-2.5 h-2.5 ${i < Math.floor(product.rating) ? 'fill-current' : 'fill-white/10 text-white/10'}`} 
+                                          viewBox="0 0 20 20"
+                                        >
+                                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                        </svg>
+                                      ))}
+                                      <span className="text-[8px] font-black ml-1 text-white/20 tracking-tighter uppercase">{product.rating.toFixed(1)}</span>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {product.description && (
+                                  <p className="text-[9px] text-white/30 font-medium line-clamp-1 mb-4 uppercase tracking-[0.1em] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                      {product.description}
+                                  </p>
+                                )}
+
+                                <div className="mt-auto flex flex-col gap-4 border-t border-white/5 pt-4">
+                                    <div className="flex items-center justify-between">
+                                      {product.price ? (
+                                        <span className="text-sm font-black text-white tracking-widest">{product.price}</span>
+                                      ) : (
+                                        <span className="text-[10px] font-black text-white/10 tracking-[0.3em] uppercase">Value On Request</span>
+                                      )}
+                                      <div className="w-8 h-8 rounded-full bg-white/5 border border-white/5 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
+                                        <ArrowRight className="w-4 h-4" />
+                                      </div>
+                                    </div>
                                 </div>
                             </div>
                         </a>
