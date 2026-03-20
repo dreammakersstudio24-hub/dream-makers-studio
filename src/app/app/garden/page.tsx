@@ -8,6 +8,33 @@ import { GARDEN_STYLES } from "@/constants/gardenStyles";
 import { GARDEN_FEATURES } from "@/constants/gardenFeatures";
 import { CompareSlider } from "@/components/CompareSlider";
 
+// Utility to compress image
+const compressImage = (dataUrl: string, maxWidth = 1024): Promise<{url: string, ratio: string}> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.src = dataUrl;
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      let width = img.width;
+      let height = img.height;
+      let ratio = "1:1";
+      if (width / height > 1.5) ratio = "16:9";
+      else if (height / width > 1.5) ratio = "9:16";
+      else if (width / height > 1.2) ratio = "3:2";
+      else if (height / width > 1.2) ratio = "2:3";
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width);
+        width = maxWidth;
+      }
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      ctx?.drawImage(img, 0, 0, width, height);
+      resolve({ url: canvas.toDataURL("image/jpeg", 0.8), ratio });
+    };
+  });
+};
+
 export default function GardenGeneratePage() {
   const [step, setStep] = useState<"upload" | "style" | "features" | "processing" | "result">("upload");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -59,13 +86,15 @@ export default function GardenGeneratePage() {
         }
       }
 
+      const compressed = await compressImage(selectedImage!);
       const featurePrompts = selectedFeatures.map(fid => GARDEN_FEATURES.find(f => f.id === fid)?.prompt).filter(Boolean);
 
       const response = await fetch("/api/garden", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          image: selectedImage,
+          image: compressed.url,
+          styleId: selectedStyleId,
           stylePrompt: finalStylePrompt,
           features: featurePrompts
         }),

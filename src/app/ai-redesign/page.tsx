@@ -97,7 +97,12 @@ export default function AiRedesignPage() {
       const compressed = await compressImage(selectedImage);
       
       const styleInfo = STYLES.find(s => s.id === selectedStyleId);
-      const stylePrompt = styleInfo?.nameKey || "modern";
+      
+      // Select a random prompt from the variations to ensure diversity
+      let finalStylePrompt = styleInfo?.nameKey || "modern";
+      if (styleInfo?.prompts && styleInfo.prompts.length > 0) {
+        finalStylePrompt = styleInfo.prompts[Math.floor(Math.random() * styleInfo.prompts.length)];
+      }
       
       const roomInfo = ROOM_TYPES.find(r => r.id === selectedRoomId);
       const roomType = roomInfo?.nameKey || "room";
@@ -110,7 +115,7 @@ export default function AiRedesignPage() {
         },
         body: JSON.stringify({
           image: compressed.url,
-          stylePrompt: stylePrompt,
+          stylePrompt: finalStylePrompt,
           roomType: roomType,
           aspectRatio: compressed.ratio
         }),
