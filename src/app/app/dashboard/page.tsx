@@ -52,58 +52,60 @@ export default async function MobileDashboard() {
             {/* Interior Transformation Card */}
             <Link 
                href="/app/generate"
-               className="group relative aspect-[0.75/1] rounded-[2.5rem] overflow-hidden shadow-2xl transition-all duration-700 hover:scale-[1.04] active:scale-95 bg-neutral-900 border border-white/10"
+               className="group relative aspect-[0.75/1] rounded-[2.5rem] overflow-hidden shadow-2xl transition-all duration-700 hover:scale-[1.04] active:scale-95 bg-neutral-900 border border-white/5"
             >
+               {/* Premium Generated Asset */}
                <img 
-                  src="https://images.unsplash.com/photo-1618221195710-dd6b41fa33a8?q=80&w=400&auto=format&fit=crop" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-[4000ms]" 
+                  src="/dashboard-interior.png" 
+                  className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-[4000ms]" 
                   alt="Interior"
                />
-               <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-900/40 to-transparent z-10" />
+               <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-900/10 to-transparent z-10" />
                
-               {/* Glowing Center Icon (Mockup Style) */}
+               {/* Glowing Center Icon */}
                <div className="absolute inset-0 flex items-center justify-center z-20">
-                   <div className="w-20 h-20 rounded-full bg-white/5 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-[0_0_30px_rgba(255,255,255,0.1)] group-hover:border-blue-400/50 group-hover:shadow-[0_0_40px_rgba(59,130,246,0.3)] transition-all">
+                   <div className="w-20 h-20 rounded-full bg-white/5 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-[0_0_30px_rgba(255,255,255,0.05)] group-hover:border-blue-400/50 group-hover:shadow-[0_0_40px_rgba(59,130,246,0.3)] transition-all">
                        <Armchair className="w-8 h-8 text-blue-300 drop-shadow-[0_0_8px_rgba(147,197,253,0.8)]" />
                    </div>
                </div>
 
-               {/* Bottom Content (Mockup Style) */}
+               {/* Bottom Content */}
                <div className="absolute inset-x-0 bottom-0 p-6 text-center z-20 space-y-1">
-                  <h3 className="text-lg font-black text-white tracking-tight leading-none">Interior <span className="text-white/40 italic">Redesign</span></h3>
-                  <p className="text-[9px] text-white/40 font-medium leading-tight">Create stunning, personalized living spaces.</p>
+                  <h3 className="text-lg font-black text-white tracking-tight leading-none shadow-black drop-shadow-lg">Interior <span className="text-white/40 italic">Redesign</span></h3>
+                  <p className="text-[9px] text-white/60 font-medium leading-tight drop-shadow-md">Create stunning, personalized living spaces.</p>
                </div>
             </Link>
 
             {/* Garden & Exterior Card */}
             <Link 
                href="/app/garden"
-               className="group relative aspect-[0.75/1] rounded-[2.5rem] overflow-hidden shadow-2xl transition-all duration-700 hover:scale-[1.04] active:scale-95 bg-neutral-900 border border-white/10"
+               className="group relative aspect-[0.75/1] rounded-[2.5rem] overflow-hidden shadow-2xl transition-all duration-700 hover:scale-[1.04] active:scale-95 bg-neutral-900 border border-white/5"
             >
+               {/* Premium Generated Asset */}
                <img 
-                  src="https://images.unsplash.com/photo-1558904541-efa8c1ae65f4?q=80&w=400&auto=format&fit=crop" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-[4000ms]" 
+                  src="/dashboard-garden.png" 
+                  className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-[4000ms]" 
                   alt="Garden"
                />
-               <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-900/40 to-transparent z-10" />
+               <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-900/10 to-transparent z-10" />
                
-               {/* Glowing Center Icon (Mockup Style) */}
+               {/* Glowing Center Icon */}
                <div className="absolute inset-0 flex items-center justify-center z-20">
-                   <div className="w-20 h-20 rounded-full bg-white/5 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-[0_0_30px_rgba(255,255,255,0.1)] group-hover:border-orange-400/50 group-hover:shadow-[0_0_40px_rgba(249,115,22,0.3)] transition-all">
+                   <div className="w-20 h-20 rounded-full bg-white/5 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-[0_0_30px_rgba(255,255,255,0.05)] group-hover:border-orange-400/50 group-hover:shadow-[0_0_40px_rgba(249,115,22,0.3)] transition-all">
                        <Flame className="w-8 h-8 text-orange-300 drop-shadow-[0_0_8px_rgba(253,186,116,0.8)]" />
                    </div>
                </div>
 
-               {/* Bottom Content (Mockup Style) */}
+               {/* Bottom Content */}
                <div className="absolute inset-x-0 bottom-0 p-6 text-center z-20 space-y-1">
-                  <h3 className="text-lg font-black text-white tracking-tight leading-none">Garden <span className="text-white/40 italic">& Outdoor</span></h3>
-                  <p className="text-[9px] text-white/40 font-medium leading-tight">Design dream patios, gardens & outdoor retreats.</p>
+                  <h3 className="text-lg font-black text-white tracking-tight leading-none shadow-black drop-shadow-lg">Garden <span className="text-white/40 italic">& Outdoor</span></h3>
+                  <p className="text-[9px] text-white/60 font-medium leading-tight drop-shadow-md">Design dream patios, gardens & outdoor retreats.</p>
                </div>
             </Link>
 
          </section>
 
-         {/* "Popular Tools" Minimalist List (Mockup Style) */}
+         {/* "Popular Tools" Minimalist List */}
          <div className="space-y-6 pt-4">
             <h2 className="text-[11px] font-black text-white/30 uppercase tracking-[0.4em] text-center">Popular tools</h2>
             <div className="grid grid-cols-2 gap-4">
@@ -118,7 +120,7 @@ export default async function MobileDashboard() {
             </div>
          </div>
 
-         {/* Floating Bottom Nav (Mockup Style) */}
+         {/* Floating Bottom Nav */}
          <div className="fixed bottom-10 left-1/2 -translate-x-1/2 w-[90%] max-w-sm bg-[#1a1d23]/80 backdrop-blur-3xl border border-white/10 shadow-[0_25px_60px_rgba(0,0,0,0.5)] rounded-[2.5rem] px-8 py-5 flex items-center justify-between z-[100]">
             <Link href="/app/dashboard" className="flex flex-col items-center gap-1 group">
                <div className="p-1 rounded-xl transition-all">
