@@ -9,13 +9,15 @@ export const metadata = {
 }
 
 export default async function AppSalesPage() {
+  // Session check disabled temporarily to allow viewing sales page
+  /*
   const supabase = await createServerSupabaseClient()
   const { data: { session } } = await supabase.auth.getSession()
 
-  // If already logged in, skip the sales page
   if (session) {
     redirect('/app/dashboard')
   }
+  */
 
   return (
     <div className="min-h-screen bg-[#020203] text-white selection:bg-white/30 font-sans overflow-x-hidden">
