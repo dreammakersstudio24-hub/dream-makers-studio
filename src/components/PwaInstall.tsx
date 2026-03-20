@@ -11,12 +11,19 @@ export function PwaInstall() {
   const [platform, setPlatform] = useState<'ios' | 'android' | 'other' | null>(null);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
-  // Only show on AI App related pages
-  const isAppPage = pathname?.startsWith('/app') || pathname?.startsWith('/ai-redesign');
+  // Only show on AI App related pages, EXCLUDING the sales landing page
+  const isSalesPage = pathname === '/app';
+  const isAppPage = (pathname?.startsWith('/app') || pathname?.startsWith('/ai-redesign')) && !isSalesPage;
 
   useEffect(() => {
     if (!isAppPage) {
       setShowInstall(false);
+      return;
+    }
+
+    // Check if shown in THIS session
+    const hasShownInSession = sessionStorage.getItem('pwa-popup-this-session');
+    if (hasShownInSession) {
       return;
     }
 
@@ -40,6 +47,7 @@ export function PwaInstall() {
       e.preventDefault();
       setDeferredPrompt(e);
       setShowInstall(true);
+      sessionStorage.setItem('pwa-popup-this-session', 'true');
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -48,7 +56,10 @@ export function PwaInstall() {
     if (/iphone|ipad|ipod/.test(userAgent)) {
       const hasShownGuide = localStorage.getItem('pwa-guide-shown');
       if (!hasShownGuide) {
-        setTimeout(() => setShowInstall(true), 3000);
+        setTimeout(() => {
+            setShowInstall(true);
+            sessionStorage.setItem('pwa-popup-this-session', 'true');
+        }, 3000);
       }
     }
 
