@@ -14,7 +14,7 @@ export default function LoginPage({
   const [isSignUp, setIsSignUp] = useState(searchParams?.mode === 'signup')
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState(searchParams?.message || (searchParams?.error ? "Invalid email or password." : ""))
-  const nextUrl = searchParams?.next || '/ai-redesign'
+  const nextUrl = searchParams?.next || '/app/dashboard'
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
