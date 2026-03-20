@@ -54,23 +54,43 @@ export async function POST(req: Request) {
     Professional architectural photography, 8k resolution, cinematic lighting, masterpiece.`;
 
     const output = await replicate.run(
-        "lucataco/controlnet-v11p-sd15-mlsd:8ef79c6a99256920fdf915830b8026778c80d8f070f80bc8bd781895a0224b45",
+        "adirik/interior-design:76604baddc85b1b4616e1c6475eca080da339c8875bd4996705440484a6eac38",
         {
           input: {
             image: formattedImage,
             prompt: fullPrompt,
             negative_prompt: "lowres, watermark, logo, text, deformed, blurry, indoor, interior, kitchen, living room, bedroom, room, people, faces",
-            num_outputs: 1,
-            guidance_scale: 12,
-            prompt_strength: 1,
-            num_inference_steps: 40
+            guidance_scale: 15,
+            prompt_strength: 0.85,
           }
         }
     );
 
     let resultUrl = "";
-    if (Array.isArray(output) && output.length > 0) resultUrl = String(output[output.length - 1]);
-    else if (typeof output === "string") resultUrl = output;
+    try {
+        if (Array.isArray(output) && output.length > 0) {
+            const lastItem = output[output.length - 1];
+            if (typeof lastItem === 'string') {
+                resultUrl = lastItem;
+            } else if (lastItem && typeof lastItem.url === 'function') {
+                resultUrl = lastItem.url().toString();
+            } else if (lastItem && lastItem.url) {
+                resultUrl = String(lastItem.url);
+            }
+        } else if (typeof output === "string") {
+            resultUrl = output;
+        } else if (output && typeof (output as any).url === 'function') {
+            resultUrl = (output as any).url().toString();
+        } else if (output && typeof output === "object" && 'url' in output) {
+            resultUrl = String((output as any).url);
+        }
+
+        if (resultUrl) {
+           resultUrl = resultUrl.toString().trim();
+        }
+    } catch (parseError) {
+        console.error("Error parsing Replicate output:", parseError, "Raw output:", output);
+    }
 
     if (!resultUrl) throw new Error("Failed to generate image URL.");
 
