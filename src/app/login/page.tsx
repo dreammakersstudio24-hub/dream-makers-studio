@@ -61,7 +61,25 @@ export default function LoginPage({
          </p>
       </div>
 
-      <div className="w-full max-w-md bg-white border border-neutral-200 shadow-xl rounded-[2rem] overflow-hidden">
+      <div className="w-full max-w-md bg-white border border-neutral-200 shadow-2xl rounded-[2.5rem] overflow-hidden">
+        {/* Mode Switcher Tabs */}
+        <div className="flex p-2 bg-neutral-50/50 border-b border-neutral-100">
+            <button 
+                type="button"
+                onClick={() => {setIsSignUp(false); setErrorMessage("");}}
+                className={`flex-1 py-4 text-xs font-black uppercase tracking-[0.2em] rounded-2xl transition-all ${!isSignUp ? 'bg-black text-white shadow-lg' : 'text-neutral-400 hover:text-black hover:bg-neutral-100'}`}
+            >
+                Log In
+            </button>
+            <button 
+                type="button"
+                onClick={() => {setIsSignUp(true); setErrorMessage("");}}
+                className={`flex-1 py-4 text-xs font-black uppercase tracking-[0.2em] rounded-2xl transition-all ${isSignUp ? 'bg-black text-white shadow-lg' : 'text-neutral-400 hover:text-black hover:bg-neutral-100'}`}
+            >
+                Sign Up
+            </button>
+        </div>
+
         {/* Form Body */}
         <div className="p-8">
           <form className="space-y-6" onSubmit={handleSubmit}>
@@ -110,13 +128,10 @@ export default function LoginPage({
             </button>
           </form>
 
-          {/* Toggle Mode Link */}
-          <div className="mt-6 text-center text-sm text-neutral-500">
-            {isSignUp ? (
-                <p>Already have an account? <button type="button" onClick={() => {setIsSignUp(false); setErrorMessage("");}} className="text-black font-bold hover:underline">Log in</button></p>
-            ) : (
-                <p>Don't have an account? <button type="button" onClick={() => {setIsSignUp(true); setErrorMessage("");}} className="text-black font-bold hover:underline">Sign up</button></p>
-            )}
+          <div className="mt-8 pt-6 border-t border-neutral-50 text-center">
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-200 italic">
+                Dream Makers Studio • Elite Edition
+            </p>
           </div>
         </div>
       </div>

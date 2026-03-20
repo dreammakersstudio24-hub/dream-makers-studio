@@ -32,9 +32,20 @@ export default async function MobileDashboard() {
       {/* Premium Launcher Body */}
       <main className="px-6 pt-16 space-y-12 max-w-lg mx-auto">
          
-         {/* Title Section */}
-         <header className="text-center space-y-4">
-            <div className="flex items-center justify-center gap-2 mb-2">
+          {/* Title Section & Logout */}
+          <header className="relative text-center space-y-4">
+             <div className="absolute right-0 top-0">
+                <form action={logout}>
+                   <button 
+                     type="submit"
+                     className="p-3 rounded-2xl bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 transition-all active:scale-95 shadow-xl"
+                   >
+                     <Settings className="w-5 h-5" />
+                   </button>
+                </form>
+             </div>
+
+             <div className="flex items-center justify-center gap-2 mb-2">
                 <div className="w-8 h-8 rounded-full bg-yellow-400/20 flex items-center justify-center border border-yellow-400/50 shadow-[0_0_15px_rgba(250,204,21,0.3)]">
                     <Sparkles className="w-4 h-4 text-yellow-500" />
                 </div>
@@ -44,7 +55,7 @@ export default async function MobileDashboard() {
                Transform <br/> 
                <span className="text-white/40 font-medium">Your Space</span>
             </h1>
-         </header>
+          </header>
 
          {/* 2-Column Grid Transformation Choices */}
          <section className="grid grid-cols-2 gap-5 pt-4">
