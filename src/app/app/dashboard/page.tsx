@@ -57,61 +57,61 @@ export default async function MobileDashboard() {
          </div>
 
          {/* The "WOW" Launchpad Cards */}
-         <section className="grid gap-6">
+         <section className="grid gap-8">
             
             {/* Interior Transformation Card */}
             <Link 
                href="/app/generate"
-               className="group relative h-64 rounded-[3rem] overflow-hidden bg-neutral-900 shadow-2xl transition-all duration-500 hover:scale-[1.03] active:scale-95 border border-black/5"
+               className="group relative h-72 rounded-[3.5rem] overflow-hidden shadow-2xl transition-all duration-700 hover:scale-[1.03] active:scale-95 border border-white/10"
             >
-               {/* High-res Image with Parallax-like feel */}
+               {/* High-res Image - Full Opacity but with dark bottom gradient */}
                <img 
                   src="https://images.unsplash.com/photo-1618221195710-dd6b41fa33a8?q=80&w=800&auto=format&fit=crop" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:scale-110 transition-transform duration-[2000ms] ease-out" 
-                  alt="Interior"
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[3000ms] ease-out" 
+                  alt="Interior Design"
                />
-               {/* Dynamic Overlay */}
-               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent z-10 opacity-80 group-hover:opacity-100 transition-opacity" />
+               {/* Dynamic Gradient Overlay - Only darkens the bottom where text is */}
+               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent z-10 opacity-90 group-hover:opacity-100 transition-opacity" />
                
                {/* Content */}
                <div className="absolute inset-0 p-10 flex flex-col justify-end z-20">
-                  <div className="flex items-center gap-2 mb-3 bg-white/10 w-fit px-3 py-1 rounded-full backdrop-blur-md border border-white/10">
+                  <div className="flex items-center gap-2 mb-3 bg-white/20 w-fit px-4 py-1.5 rounded-full backdrop-blur-xl border border-white/20 shadow-sm">
                      <Sparkles className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                     <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Ready to Redesign</span>
+                     <span className="text-[10px] font-black text-white uppercase tracking-[0.2em] shadow-sm">Dream Makers Studio</span>
                   </div>
-                  <h3 className="text-3xl font-black text-white tracking-tighter mb-1">Interior <span className="text-white/40">Studio</span></h3>
-                  <p className="text-xs text-white/50 font-bold uppercase tracking-widest">Rooms, Kitchens, Suites</p>
+                  <h3 className="text-4xl font-black text-white tracking-tighter mb-1 drop-shadow-lg">Interior <span className="text-white/50">Studio</span></h3>
+                  <p className="text-xs text-white/70 font-bold uppercase tracking-[0.3em] drop-shadow-md">Luxury Room Redesign</p>
                </div>
 
-               {/* Decorative Element */}
-               <div className="absolute top-8 right-8 w-12 h-12 rounded-full border border-white/20 flex items-center justify-center z-20 opacity-0 group-hover:opacity-100 transition-all scale-50 group-hover:scale-100">
-                  <ChevronLeft className="w-6 h-6 text-white rotate-180" />
+               {/* Interaction Indicator */}
+               <div className="absolute top-10 right-10 w-14 h-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center z-20 group-hover:bg-white group-hover:text-black transition-all">
+                  <ChevronLeft className="w-7 h-7 rotate-180" />
                </div>
             </Link>
 
             {/* Garden & Exterior Card */}
             <Link 
                href="/app/garden"
-               className="group relative h-64 rounded-[3rem] overflow-hidden bg-emerald-950 shadow-2xl transition-all duration-500 hover:scale-[1.03] active:scale-95 border border-black/5"
+               className="group relative h-72 rounded-[3.5rem] overflow-hidden shadow-2xl transition-all duration-700 hover:scale-[1.03] active:scale-95 border border-white/10"
             >
                <img 
                   src="https://images.unsplash.com/photo-1558904541-efa8c1ae65f4?q=80&w=800&auto=format&fit=crop" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:scale-110 transition-transform duration-[2000ms] ease-out" 
-                  alt="Garden"
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[3000ms] ease-out" 
+                  alt="Garden Design"
                />
-               <div className="absolute inset-0 bg-gradient-to-t from-black via-emerald-950/20 to-transparent z-10 opacity-80 group-hover:opacity-100 transition-opacity" />
+               <div className="absolute inset-0 bg-gradient-to-t from-emerald-950 via-black/30 to-transparent z-10 opacity-90 group-hover:opacity-100 transition-opacity" />
                
                <div className="absolute inset-0 p-10 flex flex-col justify-end z-20">
-                  <div className="flex items-center gap-2 mb-3 bg-white/10 w-fit px-3 py-1 rounded-full backdrop-blur-md border border-white/10">
+                  <div className="flex items-center gap-2 mb-3 bg-white/20 w-fit px-4 py-1.5 rounded-full backdrop-blur-xl border border-white/20 shadow-sm">
                      <Crown className="w-4 h-4 text-emerald-400" />
-                     <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Luxury Landscaping</span>
+                     <span className="text-[10px] font-black text-white uppercase tracking-[0.2em] shadow-sm">Premium Landscape</span>
                   </div>
-                  <h3 className="text-3xl font-black text-white tracking-tighter mb-1">Garden <span className="text-white/40">& Pool</span></h3>
-                  <p className="text-xs text-white/50 font-bold uppercase tracking-widest">Backyards, Patios, Zen</p>
+                  <h3 className="text-4xl font-black text-white tracking-tighter mb-1 drop-shadow-lg">Garden <span className="text-white/50">& Pool</span></h3>
+                  <p className="text-xs text-white/70 font-bold uppercase tracking-[0.3em] drop-shadow-md">Exterior Architecture</p>
                </div>
 
-               <div className="absolute top-8 right-8 w-12 h-12 rounded-full border border-white/20 flex items-center justify-center z-20 opacity-0 group-hover:opacity-100 transition-all scale-50 group-hover:scale-100">
-                  <ChevronLeft className="w-6 h-6 text-white rotate-180" />
+               <div className="absolute top-10 right-10 w-14 h-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center z-20 group-hover:bg-white group-hover:text-black transition-all">
+                  <ChevronLeft className="w-7 h-7 rotate-180" />
                </div>
             </Link>
 
