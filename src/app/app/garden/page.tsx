@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Camera, ImageIcon, X, Loader2, Sparkles, ChevronLeft, Check, Lock, Share, Flame, UtensilsCrossed, Droplets, Waves, Tent, TreePine } from "lucide-react";
+import { Camera, ImageIcon, Loader2, Sparkles, ChevronLeft, Check, Lock, Share, Flame, UtensilsCrossed, Droplets, Waves, Tent, TreePine } from "lucide-react";
 import Link from "next/link";
 import { GARDEN_STYLES } from "@/constants/gardenStyles";
 import { GARDEN_FEATURES } from "@/constants/gardenFeatures";
@@ -121,6 +121,7 @@ export default function GardenGeneratePage() {
                     <p className="text-sm text-neutral-500 mb-6">Select elements to include in your new garden.</p>
                     <div className="grid grid-cols-2 gap-3">
                         {GARDEN_FEATURES.map(f => {
+                            if (!f) return null;
                             const Icon = f.icon;
                             const isSelected = selectedFeatures.includes(f.id);
                             return (

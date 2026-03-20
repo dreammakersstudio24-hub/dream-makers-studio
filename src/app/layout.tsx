@@ -28,21 +28,21 @@ export const metadata: Metadata = {
       "/icon.png"
     ]
   },
-  themeColor: "#000000",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-  },
   other: {
     "p:domain_verify": "568974dd6d79ee4cfbe0fc5ffda56994",
   },
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: "#000000",
+};
+
 import { Navbar } from "@/components/Navbar";
 import { PwaInstall } from "@/components/PwaInstall";
-import { useEffect } from "react";
 
 export default function RootLayout({
   children,
