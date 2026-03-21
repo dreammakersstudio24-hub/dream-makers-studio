@@ -75,6 +75,15 @@ export async function POST(req: Request) {
     Lush exotic greenery, specimens, professional horticultural synthesis.
     8k resolution, masterpiece, 100mm architectural lens.`;
 
+    // --- 1. Save Original Image to Supabase FIRST ---
+    const timestamp = Date.now();
+    const base64Data = formattedImage.split(',')[1];
+    const originalBuffer = Buffer.from(base64Data, 'base64');
+    const originalFileName = `${user.id}/${timestamp}_garden_original.jpg`;
+    
+    await supabase.storage.from('images').upload(originalFileName, originalBuffer, { contentType: 'image/jpeg' });
+    const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
+
     // Map frontend aspect ratio to Ideogram v3 Turbo supported enums
     let mappedAspectRatio = "1:1";
     if (aspectRatio === "9:16") mappedAspectRatio = "9:16";
@@ -82,18 +91,18 @@ export async function POST(req: Request) {
     else if (aspectRatio === "2:3") mappedAspectRatio = "2:3";
     else if (aspectRatio === "3:2") mappedAspectRatio = "3:2";
 
-    console.log(`[GARDEN] Using Ideogram v3 Turbo with aspectRatio: ${aspectRatio}, mapped: ${mappedAspectRatio}`);
+    console.log(`[GARDEN] Using Ideogram v3 Turbo with originalUrl: ${originalUrl}, aspectRatio: ${mappedAspectRatio}`);
 
-    // Switch to Ideogram v3 Turbo
+    // Call Replicate with URL instead of Base64
     const output = await replicate.run(
         "ideogram-ai/ideogram-v3-turbo",
         {
           input: {
-            image: formattedImage,
+            image: originalUrl,
             prompt: `Redesign this outdoor space while strictly preserving the existing architecture, building structure, and land contours. ${fullPrompt}`,
             aspect_ratio: mappedAspectRatio,
-            image_weight: 90, // High weight to preserve structure
-            style_type: "REALISTIC"
+            image_weight: 90, 
+            style_type: "Realistic" // Fixed casing
           }
         }
     );
@@ -102,7 +111,9 @@ export async function POST(req: Request) {
 
     let resultUrl = "";
     try {
-        if (Array.isArray(output) && output.length > 0) {
+        if (output && typeof (output as any).url === 'function') {
+            resultUrl = (output as any).url().toString();
+        } else if (Array.isArray(output) && output.length > 0) {
             const firstItem = output[0];
             if (typeof firstItem === 'string') {
                 resultUrl = firstItem;
@@ -129,15 +140,7 @@ export async function POST(req: Request) {
        throw new Error(`Failed to generate a valid image URL. Please check server logs. Raw response: ${JSON.stringify(output)}`);
     }
 
-    // --- Save & Deduct ---
-    const timestamp = Date.now();
-    const base64Data = formattedImage.split(',')[1];
-    const originalBuffer = Buffer.from(base64Data, 'base64');
-    const originalFileName = `${user.id}/${timestamp}_garden_original.jpg`;
-    
-    await supabase.storage.from('images').upload(originalFileName, originalBuffer, { contentType: 'image/jpeg' });
-    const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
-
+    // --- 2. Save & Deduct ---
     const imageResponse = await fetch(resultUrl);
     const imageBlob = await imageResponse.blob();
     const generatedFileName = `${user.id}/${timestamp}_garden_result.jpg`;

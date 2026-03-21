@@ -154,6 +154,17 @@ export async function POST(req: Request) {
     // Dynamic negative prompt to help ControlNet shape the output better
     let dynamicNegativePrompt = "lowres, watermark, banner, logo, text, deformed, blurry, blur, out of focus, surreal, extra, ugly, bad architecture, weird proportions, crooked walls";
 
+    // --- 1. Save Original Image to Supabase FIRST ---
+    const timestamp = Date.now();
+    const base64Data = formattedImage.split(',')[1];
+    const originalBuffer = Buffer.from(base64Data, 'base64');
+    const originalFileName = `${user.id}/${timestamp}_original.jpg`;
+    
+    await supabase.storage.from('images').upload(originalFileName, originalBuffer, {
+        contentType: 'image/jpeg',
+    });
+    const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
+
     // Map frontend aspect ratio to Ideogram v3 Turbo supported enums
     // Ideogram supports: "1:1", "16:9", "9:16", "4:3", "3:4", "3:2", "2:3"
     let mappedAspectRatio = "1:1";
@@ -162,18 +173,18 @@ export async function POST(req: Request) {
     else if (aspectRatio === "2:3") mappedAspectRatio = "2:3";
     else if (aspectRatio === "3:2") mappedAspectRatio = "3:2";
 
-    console.log(`[REIGN] Using Ideogram v3 Turbo with aspectRatio: ${aspectRatio}, mapped: ${mappedAspectRatio}`);
+    console.log(`[REIGN] Using Ideogram v3 Turbo with originalUrl: ${originalUrl}, aspectRatio: ${mappedAspectRatio}`);
 
-    // Switch to Ideogram v3 Turbo
+    // Call Replicate with URL instead of Base64
     const output = await replicate.run(
         "ideogram-ai/ideogram-v3-turbo",
         {
           input: {
-            image: formattedImage,
+            image: originalUrl,
             prompt: `A jaw-dropping, award-winning ${stylePrompt} style ${roomType} interior design. Redesign this space while strictly preserving the existing architecture, walls, floor, and window positions. The room features: ${styleSpecificFeatures}. It is FULLY FURNISHED with a ${roomSpecificObjects}. ${densityPrompt} Add beautiful layered rugs, stunning indoor plants, and cinematic photorealistic lighting. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
             aspect_ratio: mappedAspectRatio,
-            image_weight: 90, // High weight to preserve structure
-            style_type: "REALISTIC"
+            image_weight: 90, 
+            style_type: "Realistic" // Fixed casing
           }
         }
     );
@@ -182,7 +193,9 @@ export async function POST(req: Request) {
     console.log(`[REIGN] Raw Output Type: ${typeof output}, IsArray: ${Array.isArray(output)}, Value:`, JSON.stringify(output));
 
     try {
-        if (Array.isArray(output) && output.length > 0) {
+        if (output && typeof (output as any).url === 'function') {
+            resultUrl = (output as any).url().toString();
+        } else if (Array.isArray(output) && output.length > 0) {
             const firstItem = output[0];
             if (typeof firstItem === 'string') {
                 resultUrl = firstItem;
@@ -193,13 +206,7 @@ export async function POST(req: Request) {
             resultUrl = output;
         } else if (output && typeof output === "object") {
             const obj = output as any;
-            // Handle common object-wrapped outputs like { output: ["url"] } or { images: ["url"] }
-            const candidate = obj.output?.[0] || obj.images?.[0] || obj.url || (typeof obj.url === 'function' ? obj.url() : "");
-            if (typeof candidate === 'string') {
-                resultUrl = candidate;
-            } else if (Array.isArray(obj.output) && typeof obj.output[0] === 'string') {
-                resultUrl = obj.output[0];
-            }
+            resultUrl = obj.images?.[0] || obj.output?.[0] || obj.url || (typeof obj.url === 'function' ? obj.url() : "");
         }
 
         if (resultUrl) {
@@ -215,20 +222,7 @@ export async function POST(req: Request) {
        throw new Error(`Failed to generate a valid image URL. Please check server logs. Raw response: ${JSON.stringify(output)}`);
     }
 
-    // --- Save to Supabase Storage ---
-    const timestamp = Date.now();
-    
-    // 1. Upload original image
-    const base64Data = formattedImage.split(',')[1];
-    const originalBuffer = Buffer.from(base64Data, 'base64');
-    const originalFileName = `${user.id}/${timestamp}_original.jpg`;
-    
-    await supabase.storage.from('images').upload(originalFileName, originalBuffer, {
-        contentType: 'image/jpeg',
-    });
-    const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
-
-    // 2. Fetch and upload generated image
+    // --- 2. Fetch and upload generated image ---
     const imageResponse = await fetch(resultUrl);
     const imageBlob = await imageResponse.blob();
     const generatedFileName = `${user.id}/${timestamp}_generated.jpg`;
@@ -238,7 +232,7 @@ export async function POST(req: Request) {
     });
     const finalUrl = supabase.storage.from('images').getPublicUrl(generatedFileName).data.publicUrl;
 
-    // 3. Deduct credit (using admin client to bypass RLS policies)
+    // --- 3. Deduct credit ---
     const supabaseAdmin = createAdminClient();
     const { error: deductError } = await supabaseAdmin
       .from('users_metadata')
@@ -247,10 +241,9 @@ export async function POST(req: Request) {
 
     if (deductError) {
        console.error("Failed to deduct credit:", deductError);
-       // We still continue to save the generation even if this fails, but it's logged
     }
 
-    // 4. Save generation record to database
+    // --- 4. Save generation record ---
     await supabase.from('generations').insert({
         user_id: user.id,
         original_image_url: originalUrl,
