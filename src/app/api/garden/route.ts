@@ -97,18 +97,19 @@ export async function POST(req: Request) {
 
     console.log(`[GARDEN] Using Flux ControlNet (Depth) with originalUrl: ${originalUrl}, dims: ${width}x${height}`);
 
-    // Flux Dev with ControlNet (Depth)
+    // xlabs-ai/flux-dev-controlnet on Replicate
     const output = await replicate.run(
-        "lucataco/flux-dev-controlnet-depth:04f326a02b66ec074d610816cfbcbf4ae9355555555555555555555555555555",
+        "xlabs-ai/flux-dev-controlnet:9a8db105db745f8b11ad3afe5c8bd892428b2a43ade0b67edc4e0ccd52ff2fda",
         {
           input: {
-            control_image: originalUrl,
+            image: originalUrl,
             prompt: `Redesign this outdoor space while strictly preserving the existing architecture, building structure, and land contours. ${fullPrompt}`,
+            control_type: "depth",
             width: width,
             height: height,
             guidance_scale: 3.5,
             num_inference_steps: 28,
-            control_conditioning_scale: 0.8
+            control_net_weight: 0.8
           }
         }
     );
