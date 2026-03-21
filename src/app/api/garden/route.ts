@@ -75,15 +75,15 @@ export async function POST(req: Request) {
     Lush exotic greenery, specimens, professional horticultural synthesis.
     8k resolution, masterpiece, 100mm architectural lens.`;
 
+    // Switch to OpenAI's GPT-Image-1.5 (Medium Variant - $0.05)
     const output = await replicate.run(
-        "adirik/interior-design:76604baddc85b1b4616e1c6475eca080da339c8875bd4996705440484a6eac38",
+        "openai/gpt-image-1.5",
         {
           input: {
             image: formattedImage,
             prompt: fullPrompt,
-            negative_prompt: "indoor furniture, beds, interior items, ceiling, interior walls, clutter, mess, existing decor, old furniture, lowres, watermark, text, deformed, people",
-            guidance_scale: 15,
-            prompt_strength: 0.95,
+            quality: "medium",
+            size: "1024x1024"
           }
         }
     );

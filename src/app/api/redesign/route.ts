@@ -154,17 +154,15 @@ export async function POST(req: Request) {
     // Dynamic negative prompt to help ControlNet shape the output better
     let dynamicNegativePrompt = "lowres, watermark, banner, logo, text, deformed, blurry, blur, out of focus, surreal, extra, ugly, bad architecture, weird proportions, crooked walls";
 
-    // Switch to a specialized MLSD ControlNet pipeline to absolutely guarantee structure locking
-    // adirik/interior-design natively handles edge-detection to map and preserve walls, doors, and windows
+    // Switch to OpenAI's GPT-Image-1.5 (Medium Variant - $0.05)
     const output = await replicate.run(
-        "adirik/interior-design:76604baddc85b1b4616e1c6475eca080da339c8875bd4996705440484a6eac38",
+        "openai/gpt-image-1.5",
         {
           input: {
             image: formattedImage,
             prompt: `A jaw-dropping, award-winning ${stylePrompt} style ${roomType} interior design. CLEAN SLATE: Remove all existing furniture and clutter. Design from scratch while preserving only the room shell (walls, floor, windows). The room features: ${styleSpecificFeatures}. It is FULLY FURNISHED with a ${roomSpecificObjects}. ${densityPrompt} Add beautiful layered rugs, stunning indoor plants, and cinematic photorealistic lighting. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
-            negative_prompt: dynamicNegativePrompt + ", old furniture, existing items, beds, tables, chairs, mess, clutter, redundant objects",
-            guidance_scale: 15, // Default for this model
-            prompt_strength: 0.95, // Increased for more creative freedom to delete old items
+            quality: "medium",
+            size: "1024x1024"
           }
         }
     );
