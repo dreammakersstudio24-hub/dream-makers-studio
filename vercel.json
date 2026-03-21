@@ -1,4 +1,12 @@
 {
   "regions": ["sin1"],
-  "crons": []
+  "crons": [],
+  "functions": {
+    "src/app/api/redesign/route.ts": {
+      "maxDuration": 300
+    },
+    "src/app/api/garden/route.ts": {
+      "maxDuration": 300
+    }
+  }
 }

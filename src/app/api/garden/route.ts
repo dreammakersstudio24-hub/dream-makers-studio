@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import Replicate from "replicate";
 import { createServerSupabaseClient, createAdminClient } from "@/utils/supabase/server";
 
-export const maxDuration = 60;
+export const maxDuration = 300; // Increase to 300s to avoid 504 timeouts on Flux Dev
 
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
@@ -108,7 +108,7 @@ export async function POST(req: Request) {
             width: width,
             height: height,
             guidance_scale: 3.5,
-            num_inference_steps: 28,
+            num_inference_steps: 16, // Speed up from 28 to 16 for better response time
             control_net_weight: 0.8
           }
         }
