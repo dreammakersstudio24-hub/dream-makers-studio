@@ -116,23 +116,25 @@ export async function POST(req: Request) {
     console.log(`[GARDEN] GPT-1.5 Raw Output:`, JSON.stringify(output));
 
     if (Array.isArray(output) && output.length > 0) {
-        resultUrl = output[0];
+        const first = output[0];
+        if (typeof first === 'string') resultUrl = first;
+        else if (first && typeof first === 'object') resultUrl = (first as any).url || (first as any).image || "";
     } else if (typeof output === 'string') {
         resultUrl = output;
-    } else if (output && typeof (output as any).url === 'function') {
-        resultUrl = (output as any).url().toString();
     } else if (output && typeof output === 'object') {
         const obj = output as any;
-        resultUrl = obj.images?.[0] || obj.output?.[0] || obj.url || "";
+        resultUrl = obj.url || obj.image || obj.images?.[0] || obj.output?.[0] || (typeof obj.url === 'function' ? obj.url().toString() : "");
     }
 
-    if (resultUrl && typeof resultUrl === 'string') {
-        resultUrl = resultUrl.trim();
+    // FINAL SAFETY: Force string and validate
+    if (typeof resultUrl !== 'string') {
+        resultUrl = String(resultUrl || "");
     }
+    resultUrl = resultUrl.trim();
 
     if (!resultUrl || !resultUrl.startsWith('http')) {
         console.error("Invalid output format from Replicate. Raw output:", output);
-        throw new Error(`Failed to generate a valid image URL. Please check server logs. Raw response: ${JSON.stringify(output)}`);
+        throw new Error(`Failed to generate a valid image URL. Raw response: ${JSON.stringify(output)}`);
     }
 
     // --- 2. Save & Deduct ---
