@@ -174,8 +174,9 @@ export async function POST(req: Request) {
     console.log(`[REIGN] Reverting to adirik/interior-design with originalUrl: ${originalUrl}, aspect_ratio: ${mappedAspectRatio}`);
 
     // adirik/interior-design is the standard for interior preservation
+    // Latest hash: 76604baddc85b1b4616e1c6475eca080da339c8875bd4996705440484a6eac38
     const output = await replicate.run(
-        "adirik/interior-design:76604a3c0245f7d2479e0a811d33ed41ec02a3a0e716f4fc47610f44bb5cd020",
+        "adirik/interior-design:76604baddc85b1b4616e1c6475eca080da339c8875bd4996705440484a6eac38",
         {
           input: {
             image: originalUrl,
