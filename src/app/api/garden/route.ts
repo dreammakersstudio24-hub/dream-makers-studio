@@ -77,8 +77,8 @@ export async function POST(req: Request) {
 
     // Set size based on aspect ratio
     let targetSize = "1024x1024";
-    if (aspectRatio === "9:16" || aspectRatio === "2:3") targetSize = "1024x1536";
-    else if (aspectRatio === "16:9" || aspectRatio === "3:2") targetSize = "1536x1024";
+    if (aspectRatio === "9:16" || aspectRatio === "2:3") targetSize = "1024x1792";
+    else if (aspectRatio === "16:9" || aspectRatio === "3:2") targetSize = "1792x1024";
 
     // Switch to OpenAI's GPT-Image-1.5 (Medium Variant - $0.05)
     const output = await replicate.run(
