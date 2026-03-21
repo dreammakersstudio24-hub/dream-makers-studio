@@ -102,7 +102,7 @@ export async function POST(req: Request) {
             image: originalUrl,
             prompt: `Redesign this outdoor space while strictly preserving the existing architecture, building structure, and land contours. ${fullPrompt}`,
             aspect_ratio: mappedAspectRatio,
-            safety_filter_level: "block_few"
+            safety_filter_level: "block_only_high"
           }
         }
     );
