@@ -165,28 +165,29 @@ export async function POST(req: Request) {
     });
     const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
 
-    // Map frontend aspect ratio to Flux ControlNet Union supported enums
+    // Map frontend aspect ratio to GPT-1.5 (OpenAI) supported enums
+    // GPT-1.5 natively supports 1:1, 2:3 (Portrait), and 3:2 (Landscape)
     let mappedAspectRatio = "1:1";
-    if (aspectRatio === "9:16") mappedAspectRatio = "9:16";
-    else if (aspectRatio === "16:9") mappedAspectRatio = "16:9";
+    if (aspectRatio === "9:16") mappedAspectRatio = "2:3"; 
+    else if (aspectRatio === "16:9") mappedAspectRatio = "3:2";
 
-    console.log(`[REIGN] Using Flux ControlNet Union (Depth) for Absolute Lock. Aspect: ${mappedAspectRatio}`);
+    console.log(`[REIGN] Using GPT-1.5 for Best Aesthetic & High Fidelity. Aspect: ${mappedAspectRatio}`);
 
-    // Flux ControlNet Union (Absolute Structure Lock)
-    // Supports 'control_image', 'prompt', 'control_type', 'aspect_ratio', 'control_strength'
+    // GPT-1.5 (Google Imagen 1.5 Technology via OpenAI)
+    // Most controllable and high-quality "Edit" model
     const output = await replicate.run(
-        "lucataco/controlnet-union-pro:bd0dacc60e6247a2a4c28502434a6d6dd5d63f93c39950e5f366775d7a9b114a",
+        "openai/gpt-image-1.5",
         {
           input: {
-            control_image: originalUrl,
-            control_type: "depth",
-            control_strength: 0.75, // Strong structure lock
-            prompt: `STRUCTURE LOCK – ABSOLUTE RULE: Keep EXACT same layout, camera, and object positions as the reference image. No changes to structure, no repositioning, no perspective shift. This is a STRICT OVERLAY transformation. Only materials, lighting, and atmosphere may change. Camera locked (40–50mm, eye-level).
+            input_images: [originalUrl],
+            prompt: `STRUCTURE LOCK – ABSOLUTE RULE: Keep EXACT same layout, camera, and object positions. No changes to structure, no repositioning, no perspective shift. This is a STRICT OVERLAY transformation. Only materials, lighting, and atmosphere may change. Camera locked (40–50mm, eye-level).
             
             Redesign this interior in award-winning ${stylePrompt} style ${roomType}. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
+            input_fidelity: "high",
             aspect_ratio: mappedAspectRatio,
-            steps: 28,
-            guidance_scale: 3.5
+            action: "edit",
+            number_of_images: 1,
+            quality: "high"
           }
         }
     );
