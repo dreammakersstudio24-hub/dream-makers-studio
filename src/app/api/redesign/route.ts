@@ -154,6 +154,11 @@ export async function POST(req: Request) {
     // Dynamic negative prompt to help ControlNet shape the output better
     let dynamicNegativePrompt = "lowres, watermark, banner, logo, text, deformed, blurry, blur, out of focus, surreal, extra, ugly, bad architecture, weird proportions, crooked walls";
 
+    // Set size based on aspect ratio
+    let targetSize = "1024x1024";
+    if (aspectRatio === "9:16" || aspectRatio === "2:3") targetSize = "1024x1536";
+    else if (aspectRatio === "16:9" || aspectRatio === "3:2") targetSize = "1536x1024";
+
     // Switch to OpenAI's GPT-Image-1.5 (Medium Variant - $0.05)
     const output = await replicate.run(
         "openai/gpt-image-1.5",
@@ -162,7 +167,8 @@ export async function POST(req: Request) {
             image: formattedImage,
             prompt: `A jaw-dropping, award-winning ${stylePrompt} style ${roomType} interior design. CLEAN SLATE: Remove all existing furniture and clutter. Design from scratch while preserving only the room shell (walls, floor, windows). The room features: ${styleSpecificFeatures}. It is FULLY FURNISHED with a ${roomSpecificObjects}. ${densityPrompt} Add beautiful layered rugs, stunning indoor plants, and cinematic photorealistic lighting. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
             quality: "medium",
-            size: "1024x1024"
+            size: targetSize,
+            input_fidelity: "high" // Essential for structure locking
           }
         }
     );

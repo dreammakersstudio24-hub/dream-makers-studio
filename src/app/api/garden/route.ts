@@ -75,6 +75,11 @@ export async function POST(req: Request) {
     Lush exotic greenery, specimens, professional horticultural synthesis.
     8k resolution, masterpiece, 100mm architectural lens.`;
 
+    // Set size based on aspect ratio
+    let targetSize = "1024x1024";
+    if (aspectRatio === "9:16" || aspectRatio === "2:3") targetSize = "1024x1536";
+    else if (aspectRatio === "16:9" || aspectRatio === "3:2") targetSize = "1536x1024";
+
     // Switch to OpenAI's GPT-Image-1.5 (Medium Variant - $0.05)
     const output = await replicate.run(
         "openai/gpt-image-1.5",
@@ -83,7 +88,8 @@ export async function POST(req: Request) {
             image: formattedImage,
             prompt: fullPrompt,
             quality: "medium",
-            size: "1024x1024"
+            size: targetSize,
+            input_fidelity: "high" // Essential for structure locking
           }
         }
     );
