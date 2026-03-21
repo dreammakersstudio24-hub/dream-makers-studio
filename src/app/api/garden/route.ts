@@ -102,7 +102,7 @@ export async function POST(req: Request) {
         "xlabs-ai/flux-dev-controlnet:9a8db105db745f8b11ad3afe5c8bd892428b2a43ade0b67edc4e0ccd52ff2fda",
         {
           input: {
-            image: originalUrl,
+            control_image: originalUrl,
             prompt: `Redesign this outdoor space while strictly preserving the existing architecture, building structure, and land contours. ${fullPrompt}`,
             control_type: "depth",
             width: width,

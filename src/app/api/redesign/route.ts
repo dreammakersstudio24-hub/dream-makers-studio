@@ -180,12 +180,12 @@ export async function POST(req: Request) {
     console.log(`[REIGN] Using Flux ControlNet (Depth) with originalUrl: ${originalUrl}, dims: ${width}x${height}`);
 
     // xlabs-ai/flux-dev-controlnet on Replicate (The Definitive Version)
-    // Uses 'image', 'prompt', 'control_type', 'width', 'height'
+    // Uses 'control_image', 'prompt', 'control_type', 'width', 'height'
     const output = await replicate.run(
         "xlabs-ai/flux-dev-controlnet:9a8db105db745f8b11ad3afe5c8bd892428b2a43ade0b67edc4e0ccd52ff2fda",
         {
           input: {
-            image: originalUrl,
+            control_image: originalUrl,
             prompt: `A jaw-dropping, award-winning ${stylePrompt} style ${roomType} interior design. Redesign this space while strictly preserving the existing architecture, walls, floor, and window positions. The room features: ${styleSpecificFeatures}. It is FULLY FURNISHED with a ${roomSpecificObjects}. ${densityPrompt} Add beautiful layered rugs, stunning indoor plants, and cinematic photorealistic lighting. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
             control_type: "depth",
             width: width,
