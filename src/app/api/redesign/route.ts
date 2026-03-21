@@ -164,8 +164,8 @@ export async function POST(req: Request) {
         "openai/gpt-image-1.5",
         {
           input: {
-            image: formattedImage,
-            prompt: `A jaw-dropping, award-winning ${stylePrompt} style ${roomType} interior design. CLEAN SLATE: Remove all existing furniture and clutter. Design from scratch while preserving only the room shell (walls, floor, windows). The room features: ${styleSpecificFeatures}. It is FULLY FURNISHED with a ${roomSpecificObjects}. ${densityPrompt} Add beautiful layered rugs, stunning indoor plants, and cinematic photorealistic lighting. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
+            input_images: [formattedImage],
+            prompt: `A jaw-dropping, award-winning ${stylePrompt} style ${roomType} interior design. Redesign this space while strictly preserving the existing architecture, walls, floor, and window positions. The room features: ${styleSpecificFeatures}. It is FULLY FURNISHED with a ${roomSpecificObjects}. ${densityPrompt} Add beautiful layered rugs, stunning indoor plants, and cinematic photorealistic lighting. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
             quality: "medium",
             size: targetSize,
             input_fidelity: "high" // Essential for structure locking

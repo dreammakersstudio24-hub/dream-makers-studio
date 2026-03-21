@@ -85,8 +85,8 @@ export async function POST(req: Request) {
         "openai/gpt-image-1.5",
         {
           input: {
-            image: formattedImage,
-            prompt: fullPrompt,
+            input_images: [formattedImage],
+            prompt: `Redesign this outdoor space while strictly preserving the existing architecture, building structure, and land contours. ${fullPrompt}`,
             quality: "medium",
             size: targetSize,
             input_fidelity: "high" // Essential for structure locking
