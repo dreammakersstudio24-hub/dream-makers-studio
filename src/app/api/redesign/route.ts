@@ -178,26 +178,28 @@ export async function POST(req: Request) {
         }
     );
 
-    // Replicate returns output in different formats depending on the model and stream options.
-    // For adirik/interior-design, it typically returns an array of string URLs or a single string URL.
     let resultUrl = "";
+    console.log(`[REIGN] Raw Output Type: ${typeof output}, IsArray: ${Array.isArray(output)}, Value:`, JSON.stringify(output));
 
     try {
         if (Array.isArray(output) && output.length > 0) {
-            const lastItem = output[output.length - 1];
-            if (typeof lastItem === 'string') {
-                resultUrl = lastItem;
-            } else if (lastItem && typeof lastItem.url === 'function') {
-                resultUrl = lastItem.url().toString();
-            } else if (lastItem && lastItem.url) {
-                resultUrl = String(lastItem.url);
+            const firstItem = output[0];
+            if (typeof firstItem === 'string') {
+                resultUrl = firstItem;
+            } else if (firstItem && (firstItem as any).url) {
+                resultUrl = String((firstItem as any).url);
             }
         } else if (typeof output === "string") {
             resultUrl = output;
-        } else if (output && typeof (output as any).url === 'function') {
-            resultUrl = (output as any).url().toString();
-        } else if (output && typeof output === "object" && 'url' in output) {
-            resultUrl = String((output as any).url);
+        } else if (output && typeof output === "object") {
+            const obj = output as any;
+            // Handle common object-wrapped outputs like { output: ["url"] } or { images: ["url"] }
+            const candidate = obj.output?.[0] || obj.images?.[0] || obj.url || (typeof obj.url === 'function' ? obj.url() : "");
+            if (typeof candidate === 'string') {
+                resultUrl = candidate;
+            } else if (Array.isArray(obj.output) && typeof obj.output[0] === 'string') {
+                resultUrl = obj.output[0];
+            }
         }
 
         if (resultUrl) {
@@ -210,9 +212,7 @@ export async function POST(req: Request) {
 
     if (!resultUrl || !resultUrl.startsWith('http')) {
        console.error("Invalid output format from Replicate. Raw output:", output);
-       let debugInfo = "";
-       try { debugInfo = Array.isArray(output) ? `Array[${output.length}] of ${typeof output[0]}` : typeof output; } catch(e) {}
-       throw new Error(`Failed to generate a valid image URL from Replicate. Raw type: ${debugInfo}`);
+       throw new Error(`Failed to generate a valid image URL. Please check server logs. Raw response: ${JSON.stringify(output)}`);
     }
 
     // --- Save to Supabase Storage ---

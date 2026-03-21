@@ -98,33 +98,36 @@ export async function POST(req: Request) {
         }
     );
 
+    console.log(`[GARDEN] Raw Output Type: ${typeof output}, IsArray: ${Array.isArray(output)}, Value:`, JSON.stringify(output));
+
     let resultUrl = "";
     try {
         if (Array.isArray(output) && output.length > 0) {
-            const lastItem = output[output.length - 1];
-            if (typeof lastItem === 'string') {
-                resultUrl = lastItem;
-            } else if (lastItem && typeof lastItem.url === 'function') {
-                resultUrl = lastItem.url().toString();
-            } else if (lastItem && lastItem.url) {
-                resultUrl = String(lastItem.url);
+            const firstItem = output[0];
+            if (typeof firstItem === 'string') {
+                resultUrl = firstItem;
+            } else if (firstItem && (firstItem as any).url) {
+                resultUrl = String((firstItem as any).url);
             }
         } else if (typeof output === "string") {
             resultUrl = output;
-        } else if (output && typeof (output as any).url === 'function') {
-            resultUrl = (output as any).url().toString();
-        } else if (output && typeof output === "object" && 'url' in output) {
-            resultUrl = String((output as any).url);
+        } else if (output && typeof output === "object") {
+            const obj = output as any;
+            resultUrl = obj.images?.[0] || obj.output?.[0] || obj.url || (typeof obj.url === 'function' ? obj.url() : "");
         }
 
         if (resultUrl) {
            resultUrl = resultUrl.toString().trim();
         }
+
     } catch (parseError) {
         console.error("Error parsing Replicate output:", parseError, "Raw output:", output);
     }
 
-    if (!resultUrl) throw new Error("Failed to generate image URL.");
+    if (!resultUrl || !resultUrl.startsWith('http')) {
+       console.error("Invalid output format from Replicate. Raw output:", output);
+       throw new Error(`Failed to generate a valid image URL. Please check server logs. Raw response: ${JSON.stringify(output)}`);
+    }
 
     // --- Save & Deduct ---
     const timestamp = Date.now();
