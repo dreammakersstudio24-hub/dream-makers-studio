@@ -84,25 +84,23 @@ export async function POST(req: Request) {
     await supabase.storage.from('images').upload(originalFileName, originalBuffer, { contentType: 'image/jpeg' });
     const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
 
-    // Map frontend aspect ratio to Ideogram v3 Turbo supported enums
+    // Map frontend aspect ratio to adirik/interior-design supported enums
     let mappedAspectRatio = "1:1";
-    if (aspectRatio === "9:16") mappedAspectRatio = "9:16";
-    else if (aspectRatio === "16:9") mappedAspectRatio = "16:9";
-    else if (aspectRatio === "2:3") mappedAspectRatio = "2:3";
-    else if (aspectRatio === "3:2") mappedAspectRatio = "3:2";
+    if (aspectRatio === "9:16" || aspectRatio === "2:3") mappedAspectRatio = "2:3";
+    else if (aspectRatio === "16:9" || aspectRatio === "3:2") mappedAspectRatio = "3:2";
 
-    console.log(`[GARDEN] Using Ideogram v3 Turbo with originalUrl: ${originalUrl}, aspectRatio: ${mappedAspectRatio}`);
+    console.log(`[GARDEN] Reverting to adirik/interior-design with originalUrl: ${originalUrl}, aspect_ratio: ${mappedAspectRatio}`);
 
-    // Call Replicate with URL instead of Base64
+    // Use adirik for garden too as it's the most reliable for architecture
     const output = await replicate.run(
-        "ideogram-ai/ideogram-v3-turbo",
+        "adirik/interior-design:76604a3c0245f7d2479e0a811d33ed41ec02a3a0e716f4fc47610f44bb5cd020",
         {
           input: {
             image: originalUrl,
             prompt: `Redesign this outdoor space while strictly preserving the existing architecture, building structure, and land contours. ${fullPrompt}`,
             aspect_ratio: mappedAspectRatio,
-            image_weight: 90, 
-            style_type: "Realistic" // Fixed casing
+            image_weight: 1, // Maximum preservation
+            style_type: "Realistic"
           }
         }
     );

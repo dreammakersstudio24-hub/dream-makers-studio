@@ -165,26 +165,24 @@ export async function POST(req: Request) {
     });
     const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
 
-    // Map frontend aspect ratio to Ideogram v3 Turbo supported enums
-    // Ideogram supports: "1:1", "16:9", "9:16", "4:3", "3:4", "3:2", "2:3"
+    // Map frontend aspect ratio to adirik/interior-design supported enums
+    // adirik supports: "1:1", "3:2", "2:3"
     let mappedAspectRatio = "1:1";
-    if (aspectRatio === "9:16") mappedAspectRatio = "9:16";
-    else if (aspectRatio === "16:9") mappedAspectRatio = "16:9";
-    else if (aspectRatio === "2:3") mappedAspectRatio = "2:3";
-    else if (aspectRatio === "3:2") mappedAspectRatio = "3:2";
+    if (aspectRatio === "9:16" || aspectRatio === "2:3") mappedAspectRatio = "2:3";
+    else if (aspectRatio === "16:9" || aspectRatio === "3:2") mappedAspectRatio = "3:2";
 
-    console.log(`[REIGN] Using Ideogram v3 Turbo with originalUrl: ${originalUrl}, aspectRatio: ${mappedAspectRatio}`);
+    console.log(`[REIGN] Reverting to adirik/interior-design with originalUrl: ${originalUrl}, aspect_ratio: ${mappedAspectRatio}`);
 
-    // Call Replicate with URL instead of Base64
+    // adirik/interior-design is the standard for interior preservation
     const output = await replicate.run(
-        "ideogram-ai/ideogram-v3-turbo",
+        "adirik/interior-design:76604a3c0245f7d2479e0a811d33ed41ec02a3a0e716f4fc47610f44bb5cd020",
         {
           input: {
             image: originalUrl,
             prompt: `A jaw-dropping, award-winning ${stylePrompt} style ${roomType} interior design. Redesign this space while strictly preserving the existing architecture, walls, floor, and window positions. The room features: ${styleSpecificFeatures}. It is FULLY FURNISHED with a ${roomSpecificObjects}. ${densityPrompt} Add beautiful layered rugs, stunning indoor plants, and cinematic photorealistic lighting. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
             aspect_ratio: mappedAspectRatio,
-            image_weight: 90, 
-            style_type: "Realistic" // Fixed casing
+            image_weight: 1, // Maximum preservation for adirik
+            style_type: "Realistic"
           }
         }
     );
