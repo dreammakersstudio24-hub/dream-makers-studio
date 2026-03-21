@@ -75,25 +75,25 @@ export async function POST(req: Request) {
     Lush exotic greenery, specimens, professional horticultural synthesis.
     8k resolution, masterpiece, 100mm architectural lens.`;
 
-    // Map frontend aspect ratio to GPT-Image-1.5 supported enums
+    // Map frontend aspect ratio to Ideogram v3 Turbo supported enums
     let mappedAspectRatio = "1:1";
-    if (aspectRatio === "9:16" || aspectRatio === "2:3") mappedAspectRatio = "2:3";
-    else if (aspectRatio === "16:9" || aspectRatio === "3:2") mappedAspectRatio = "3:2";
+    if (aspectRatio === "9:16") mappedAspectRatio = "9:16";
+    else if (aspectRatio === "16:9") mappedAspectRatio = "16:9";
+    else if (aspectRatio === "2:3") mappedAspectRatio = "2:3";
+    else if (aspectRatio === "3:2") mappedAspectRatio = "3:2";
 
-    console.log(`[GARDEN] Generating with aspectRatio: ${aspectRatio}, mapped: ${mappedAspectRatio}`);
+    console.log(`[GARDEN] Using Ideogram v3 Turbo with aspectRatio: ${aspectRatio}, mapped: ${mappedAspectRatio}`);
 
-    // Switch to OpenAI's GPT-Image-1.5 (Medium Variant - $0.05)
-    // We try both aspect_ratio and image_size to be safe
+    // Switch to Ideogram v3 Turbo
     const output = await replicate.run(
-        "openai/gpt-image-1.5",
+        "ideogram-ai/ideogram-v3-turbo",
         {
           input: {
-            input_images: [formattedImage],
+            image: formattedImage,
             prompt: `Redesign this outdoor space while strictly preserving the existing architecture, building structure, and land contours. ${fullPrompt}`,
-            quality: "medium",
             aspect_ratio: mappedAspectRatio,
-            image_size: mappedAspectRatio === "2:3" ? "1024x1536" : mappedAspectRatio === "3:2" ? "1536x1024" : "1024x1024",
-            input_fidelity: "high" // Essential for structure locking
+            image_weight: 90, // High weight to preserve structure
+            style_type: "REALISTIC"
           }
         }
     );

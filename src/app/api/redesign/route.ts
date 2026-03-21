@@ -154,25 +154,26 @@ export async function POST(req: Request) {
     // Dynamic negative prompt to help ControlNet shape the output better
     let dynamicNegativePrompt = "lowres, watermark, banner, logo, text, deformed, blurry, blur, out of focus, surreal, extra, ugly, bad architecture, weird proportions, crooked walls";
 
-    // Map frontend aspect ratio to GPT-Image-1.5 supported enums
+    // Map frontend aspect ratio to Ideogram v3 Turbo supported enums
+    // Ideogram supports: "1:1", "16:9", "9:16", "4:3", "3:4", "3:2", "2:3"
     let mappedAspectRatio = "1:1";
-    if (aspectRatio === "9:16" || aspectRatio === "2:3") mappedAspectRatio = "2:3";
-    else if (aspectRatio === "16:9" || aspectRatio === "3:2") mappedAspectRatio = "3:2";
+    if (aspectRatio === "9:16") mappedAspectRatio = "9:16";
+    else if (aspectRatio === "16:9") mappedAspectRatio = "16:9";
+    else if (aspectRatio === "2:3") mappedAspectRatio = "2:3";
+    else if (aspectRatio === "3:2") mappedAspectRatio = "3:2";
 
-    console.log(`[REIGN] Generating with aspectRatio: ${aspectRatio}, mapped: ${mappedAspectRatio}`);
+    console.log(`[REIGN] Using Ideogram v3 Turbo with aspectRatio: ${aspectRatio}, mapped: ${mappedAspectRatio}`);
 
-    // Switch to OpenAI's GPT-Image-1.5 (Medium Variant - $0.05)
-    // We try both aspect_ratio and size to be safe
+    // Switch to Ideogram v3 Turbo
     const output = await replicate.run(
-        "openai/gpt-image-1.5",
+        "ideogram-ai/ideogram-v3-turbo",
         {
           input: {
-            input_images: [formattedImage],
+            image: formattedImage,
             prompt: `A jaw-dropping, award-winning ${stylePrompt} style ${roomType} interior design. Redesign this space while strictly preserving the existing architecture, walls, floor, and window positions. The room features: ${styleSpecificFeatures}. It is FULLY FURNISHED with a ${roomSpecificObjects}. ${densityPrompt} Add beautiful layered rugs, stunning indoor plants, and cinematic photorealistic lighting. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
-            quality: "medium",
             aspect_ratio: mappedAspectRatio,
-            image_size: mappedAspectRatio === "2:3" ? "1024x1536" : mappedAspectRatio === "3:2" ? "1536x1024" : "1024x1024",
-            input_fidelity: "high" // Essential for structure locking
+            image_weight: 90, // High weight to preserve structure
+            style_type: "REALISTIC"
           }
         }
     );
