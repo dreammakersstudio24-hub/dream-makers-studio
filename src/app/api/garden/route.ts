@@ -84,30 +84,27 @@ export async function POST(req: Request) {
     await supabase.storage.from('images').upload(originalFileName, originalBuffer, { contentType: 'image/jpeg' });
     const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
 
-    // Map frontend aspect ratio to Google Imagen 3 supported enums
+    // Map frontend aspect ratio to Flux ControlNet Union supported enums
     let mappedAspectRatio = "1:1";
     if (aspectRatio === "9:16") mappedAspectRatio = "9:16";
     else if (aspectRatio === "16:9") mappedAspectRatio = "16:9";
-    else if (aspectRatio === "2:3") mappedAspectRatio = "9:16";
-    else if (aspectRatio === "3:2") mappedAspectRatio = "16:9";
 
-    // A 1x1 white pixel PNG mask to tell Imagen 3 to redesign everything while following the image structure
-    const whiteMask = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==";
+    console.log(`[GARDEN] Using Flux ControlNet Union (Depth) for Absolute Lock. Aspect: ${mappedAspectRatio}`);
 
-    console.log(`[GARDEN] Using Google Imagen 3 (Nano Banana Pro) with Masked Redesign technique. Aspect: ${mappedAspectRatio}`);
-
-    // Google Imagen 3 (Nano Banana Pro Technology)
+    // Flux ControlNet Union (Absolute Structure Lock)
     const output = await replicate.run(
-        "google/imagen-3",
+        "lucataco/controlnet-union-pro:bd0dacc60e6247a2a4c28502434a6d6dd5d63f93c39950e5f366775d7a9b114a",
         {
           input: {
-            image: originalUrl,
-            mask: whiteMask,
-            prompt: `STRUCTURE LOCK – ABSOLUTE RULE: The spatial layout, proportions, and camera position must remain IDENTICAL to the reference image. DO NOT change layout, structure, or spatial relationships. DO NOT move walls, building structure, or land contours. This image is a STRICT OVERLAY transformation. 
+            control_image: originalUrl,
+            control_type: "depth",
+            control_strength: 0.75, // Strong structure lock
+            prompt: `STRUCTURE LOCK – ABSOLUTE RULE: Keep EXACT same layout, camera, and object positions as the reference image. No changes to structure, no repositioning, no perspective shift. This is a STRICT OVERLAY transformation. Only materials, lighting, and atmosphere may change. Camera locked (40–50mm, eye-level).
             
             Redesign this outdoor space. ${fullPrompt}`,
             aspect_ratio: mappedAspectRatio,
-            safety_filter_level: "block_only_high"
+            steps: 28,
+            guidance_scale: 3.5
           }
         }
     );
