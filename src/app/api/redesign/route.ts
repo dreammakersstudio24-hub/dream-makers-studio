@@ -159,7 +159,10 @@ export async function POST(req: Request) {
     if (aspectRatio === "9:16" || aspectRatio === "2:3") mappedAspectRatio = "2:3";
     else if (aspectRatio === "16:9" || aspectRatio === "3:2") mappedAspectRatio = "3:2";
 
+    console.log(`[REIGN] Generating with aspectRatio: ${aspectRatio}, mapped: ${mappedAspectRatio}`);
+
     // Switch to OpenAI's GPT-Image-1.5 (Medium Variant - $0.05)
+    // We try both aspect_ratio and size to be safe
     const output = await replicate.run(
         "openai/gpt-image-1.5",
         {
@@ -168,6 +171,7 @@ export async function POST(req: Request) {
             prompt: `A jaw-dropping, award-winning ${stylePrompt} style ${roomType} interior design. Redesign this space while strictly preserving the existing architecture, walls, floor, and window positions. The room features: ${styleSpecificFeatures}. It is FULLY FURNISHED with a ${roomSpecificObjects}. ${densityPrompt} Add beautiful layered rugs, stunning indoor plants, and cinematic photorealistic lighting. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
             quality: "medium",
             aspect_ratio: mappedAspectRatio,
+            image_size: mappedAspectRatio === "2:3" ? "1024x1536" : mappedAspectRatio === "3:2" ? "1536x1024" : "1024x1024",
             input_fidelity: "high" // Essential for structure locking
           }
         }

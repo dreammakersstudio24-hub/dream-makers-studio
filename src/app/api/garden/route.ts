@@ -80,7 +80,10 @@ export async function POST(req: Request) {
     if (aspectRatio === "9:16" || aspectRatio === "2:3") mappedAspectRatio = "2:3";
     else if (aspectRatio === "16:9" || aspectRatio === "3:2") mappedAspectRatio = "3:2";
 
+    console.log(`[GARDEN] Generating with aspectRatio: ${aspectRatio}, mapped: ${mappedAspectRatio}`);
+
     // Switch to OpenAI's GPT-Image-1.5 (Medium Variant - $0.05)
+    // We try both aspect_ratio and image_size to be safe
     const output = await replicate.run(
         "openai/gpt-image-1.5",
         {
@@ -89,6 +92,7 @@ export async function POST(req: Request) {
             prompt: `Redesign this outdoor space while strictly preserving the existing architecture, building structure, and land contours. ${fullPrompt}`,
             quality: "medium",
             aspect_ratio: mappedAspectRatio,
+            image_size: mappedAspectRatio === "2:3" ? "1024x1536" : mappedAspectRatio === "3:2" ? "1536x1024" : "1024x1024",
             input_fidelity: "high" // Essential for structure locking
           }
         }
