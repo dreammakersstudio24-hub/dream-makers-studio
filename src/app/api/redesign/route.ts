@@ -165,26 +165,26 @@ export async function POST(req: Request) {
     });
     const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
 
-    // Map frontend aspect ratio to Google Imagen 3 supported enums
-    // Imagen 3 supports: "1:1", "16:9", "9:16", "4:3", "3:4"
+    // Map frontend aspect ratio to Imagen 1.5 supported enums
+    // Supports: "1:1", "16:9", "9:16", "4:3", "3:4"
     let mappedAspectRatio = "1:1";
     if (aspectRatio === "9:16") mappedAspectRatio = "9:16";
     else if (aspectRatio === "16:9") mappedAspectRatio = "16:9";
-    else if (aspectRatio === "2:3") mappedAspectRatio = "9:16"; // Map 2:3 to closest 9:16
-    else if (aspectRatio === "3:2") mappedAspectRatio = "16:9"; // Map 3:2 to closest 16:9
+    else if (aspectRatio === "2:3") mappedAspectRatio = "9:16";
+    else if (aspectRatio === "3:2") mappedAspectRatio = "16:9";
 
-    console.log(`[REIGN] Using Google Imagen 3 with originalUrl: ${originalUrl}, aspect_ratio: ${mappedAspectRatio}`);
+    console.log(`[REIGN] Using Imagen 1.5 (GPT-1.5) with originalUrl: ${originalUrl}, aspect_ratio: ${mappedAspectRatio}`);
 
-    // Google Imagen 3 (Nano Banana Pro technology)
-    // Supports 9:16 natively and provides high-end "Beautiful" results
+    // openai/gpt-image-1.5 (Imagen 1.5) - The one the user says is "Beautiful"
+    // We use input_fidelity: "high" to LOCK the architecture.
     const output = await replicate.run(
-        "google/imagen-3",
+        "openai/gpt-image-1.5",
         {
           input: {
             image: originalUrl,
             prompt: `A jaw-dropping, award-winning ${stylePrompt} style ${roomType} interior design. Redesign this space while strictly preserving the existing architecture, walls, floor, and window positions. The room features: ${styleSpecificFeatures}. It is FULLY FURNISHED with a ${roomSpecificObjects}. ${densityPrompt} Add beautiful layered rugs, stunning indoor plants, and cinematic photorealistic lighting. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
             aspect_ratio: mappedAspectRatio,
-            safety_filter_level: "block_only_high"
+            input_fidelity: "high" // Use high fidelity for architecture locking
           }
         }
     );

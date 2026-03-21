@@ -84,25 +84,24 @@ export async function POST(req: Request) {
     await supabase.storage.from('images').upload(originalFileName, originalBuffer, { contentType: 'image/jpeg' });
     const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
 
-    // Map frontend aspect ratio to Google Imagen 3 supported enums
-    // Imagen 3 supports: "1:1", "16:9", "9:16", "4:3", "3:4"
+    // Map frontend aspect ratio to Imagen 1.5 supported enums
     let mappedAspectRatio = "1:1";
     if (aspectRatio === "9:16") mappedAspectRatio = "9:16";
     else if (aspectRatio === "16:9") mappedAspectRatio = "16:9";
-    else if (aspectRatio === "2:3") mappedAspectRatio = "9:16"; // Map 2:3 to closest 9:16
-    else if (aspectRatio === "3:2") mappedAspectRatio = "16:9"; // Map 3:2 to closest 16:9
+    else if (aspectRatio === "2:3") mappedAspectRatio = "9:16";
+    else if (aspectRatio === "3:2") mappedAspectRatio = "16:9";
 
-    console.log(`[GARDEN] Using Google Imagen 3 with originalUrl: ${originalUrl}, aspect_ratio: ${mappedAspectRatio}`);
+    console.log(`[GARDEN] Using Imagen 1.5 (GPT-1.5) with originalUrl: ${originalUrl}, aspect_ratio: ${mappedAspectRatio}`);
 
-    // Google Imagen 3 (Nano Banana Pro technology)
+    // openai/gpt-image-1.5 (Imagen 1.5)
     const output = await replicate.run(
-        "google/imagen-3",
+        "openai/gpt-image-1.5",
         {
           input: {
             image: originalUrl,
             prompt: `Redesign this outdoor space while strictly preserving the existing architecture, building structure, and land contours. ${fullPrompt}`,
             aspect_ratio: mappedAspectRatio,
-            safety_filter_level: "block_only_high"
+            input_fidelity: "high" // Lock architecture
           }
         }
     );
