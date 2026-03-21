@@ -84,24 +84,26 @@ export async function POST(req: Request) {
     await supabase.storage.from('images').upload(originalFileName, originalBuffer, { contentType: 'image/jpeg' });
     const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
 
-    // Map frontend aspect ratio to Imagen 1.5 supported enums
+    // Map frontend aspect ratio to Flux ControlNet supported enums
     let mappedAspectRatio = "1:1";
     if (aspectRatio === "9:16") mappedAspectRatio = "9:16";
     else if (aspectRatio === "16:9") mappedAspectRatio = "16:9";
     else if (aspectRatio === "2:3") mappedAspectRatio = "9:16";
     else if (aspectRatio === "3:2") mappedAspectRatio = "16:9";
 
-    console.log(`[GARDEN] Using Imagen 1.5 (GPT-1.5) with originalUrl: ${originalUrl}, aspect_ratio: ${mappedAspectRatio}`);
+    console.log(`[GARDEN] Using Flux ControlNet (Depth) with originalUrl: ${originalUrl}, aspect_ratio: ${mappedAspectRatio}`);
 
-    // openai/gpt-image-1.5 (Imagen 1.5)
+    // Flux Dev with Any-ControlNet (Depth)
     const output = await replicate.run(
-        "openai/gpt-image-1.5",
+        "fofr/any-controlnet",
         {
           input: {
             image: originalUrl,
             prompt: `Redesign this outdoor space while strictly preserving the existing architecture, building structure, and land contours. ${fullPrompt}`,
+            control_name: "depth",
             aspect_ratio: mappedAspectRatio,
-            input_fidelity: "high" // Lock architecture
+            output_format: "webp",
+            output_quality: 90
           }
         }
     );
