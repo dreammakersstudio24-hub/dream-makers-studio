@@ -185,7 +185,9 @@ export async function POST(req: Request) {
           input: {
             image: originalUrl,
             mask: whiteMask,
-            prompt: `A jaw-dropping, award-winning ${stylePrompt} style ${roomType} interior design. Redesign this space while strictly preserving the existing architecture, walls, floor, and window positions. The room features: ${styleSpecificFeatures}. It is FULLY FURNISHED with a ${roomSpecificObjects}. ${densityPrompt} Add beautiful layered rugs, stunning indoor plants, and cinematic photorealistic lighting. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
+            prompt: `STRUCTURE LOCK – ABSOLUTE RULE: The spatial layout, proportions, and camera position must remain IDENTICAL to the reference image. DO NOT change layout, structure, or spatial relationships. DO NOT move walls, floor, or architectural elements. This image is a STRICT OVERLAY transformation. 
+            
+            Redesign this space in award-winning ${stylePrompt} style ${roomType}. The room features: ${styleSpecificFeatures}. It is FULLY FURNISHED with ${roomSpecificObjects}. ${densityPrompt} Add beautiful layered rugs, stunning indoor plants, and cinematic photorealistic lighting. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
             aspect_ratio: mappedAspectRatio,
             safety_filter_level: "block_only_high"
           }

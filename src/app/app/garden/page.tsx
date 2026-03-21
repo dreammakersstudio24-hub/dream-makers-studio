@@ -96,7 +96,8 @@ export default function GardenGeneratePage() {
           image: compressed.url,
           styleId: selectedStyleId,
           stylePrompt: finalStylePrompt,
-          features: featurePrompts
+          features: featurePrompts,
+          aspectRatio: compressed.ratio
         }),
       });
 

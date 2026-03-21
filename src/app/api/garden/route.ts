@@ -103,7 +103,9 @@ export async function POST(req: Request) {
           input: {
             image: originalUrl,
             mask: whiteMask,
-            prompt: `Redesign this outdoor space while strictly preserving the existing architecture, building structure, and land contours. ${fullPrompt}`,
+            prompt: `STRUCTURE LOCK – ABSOLUTE RULE: The spatial layout, proportions, and camera position must remain IDENTICAL to the reference image. DO NOT change layout, structure, or spatial relationships. DO NOT move walls, building structure, or land contours. This image is a STRICT OVERLAY transformation. 
+            
+            Redesign this outdoor space. ${fullPrompt}`,
             aspect_ratio: mappedAspectRatio,
             safety_filter_level: "block_only_high"
           }
