@@ -84,24 +84,25 @@ export async function POST(req: Request) {
     await supabase.storage.from('images').upload(originalFileName, originalBuffer, { contentType: 'image/jpeg' });
     const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
 
-    // Map frontend aspect ratio to adirik/interior-design supported enums
+    // Map frontend aspect ratio to Google Imagen 3 supported enums
+    // Imagen 3 supports: "1:1", "16:9", "9:16", "4:3", "3:4"
     let mappedAspectRatio = "1:1";
-    if (aspectRatio === "9:16" || aspectRatio === "2:3") mappedAspectRatio = "2:3";
-    else if (aspectRatio === "16:9" || aspectRatio === "3:2") mappedAspectRatio = "3:2";
+    if (aspectRatio === "9:16") mappedAspectRatio = "9:16";
+    else if (aspectRatio === "16:9") mappedAspectRatio = "16:9";
+    else if (aspectRatio === "2:3") mappedAspectRatio = "9:16"; // Map 2:3 to closest 9:16
+    else if (aspectRatio === "3:2") mappedAspectRatio = "16:9"; // Map 3:2 to closest 16:9
 
-    console.log(`[GARDEN] Reverting to adirik/interior-design with originalUrl: ${originalUrl}, aspect_ratio: ${mappedAspectRatio}`);
+    console.log(`[GARDEN] Using Google Imagen 3 with originalUrl: ${originalUrl}, aspect_ratio: ${mappedAspectRatio}`);
 
-    // Use adirik for garden too as it's the most reliable for architecture
-    // Latest hash: 76604baddc85b1b4616e1c6475eca080da339c8875bd4996705440484a6eac38
+    // Google Imagen 3 (Nano Banana Pro technology)
     const output = await replicate.run(
-        "adirik/interior-design:76604baddc85b1b4616e1c6475eca080da339c8875bd4996705440484a6eac38",
+        "google/imagen-3",
         {
           input: {
             image: originalUrl,
             prompt: `Redesign this outdoor space while strictly preserving the existing architecture, building structure, and land contours. ${fullPrompt}`,
             aspect_ratio: mappedAspectRatio,
-            image_weight: 1, // Maximum preservation
-            style_type: "Realistic"
+            safety_filter_level: "block_few"
           }
         }
     );
