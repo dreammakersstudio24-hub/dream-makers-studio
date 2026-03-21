@@ -84,32 +84,28 @@ export async function POST(req: Request) {
     await supabase.storage.from('images').upload(originalFileName, originalBuffer, { contentType: 'image/jpeg' });
     const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
 
-    // Map frontend aspect ratio to Flux ControlNet dimensions
-    let width = 1024;
-    let height = 1024;
-    if (aspectRatio === "9:16") {
-        width = 768;
-        height = 1360;
-    } else if (aspectRatio === "16:9") {
-        width = 1360;
-        height = 768;
-    }
+    // Map frontend aspect ratio to Google Imagen 3 supported enums
+    let mappedAspectRatio = "1:1";
+    if (aspectRatio === "9:16") mappedAspectRatio = "9:16";
+    else if (aspectRatio === "16:9") mappedAspectRatio = "16:9";
+    else if (aspectRatio === "2:3") mappedAspectRatio = "9:16";
+    else if (aspectRatio === "3:2") mappedAspectRatio = "16:9";
 
-    console.log(`[GARDEN] Using Flux ControlNet (Depth) with originalUrl: ${originalUrl}, dims: ${width}x${height}`);
+    // A 1x1 white pixel PNG mask to tell Imagen 3 to redesign everything while following the image structure
+    const whiteMask = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==";
 
-    // xlabs-ai/flux-dev-controlnet on Replicate
+    console.log(`[GARDEN] Using Google Imagen 3 (Nano Banana Pro) with Masked Redesign technique. Aspect: ${mappedAspectRatio}`);
+
+    // Google Imagen 3 (Nano Banana Pro Technology)
     const output = await replicate.run(
-        "xlabs-ai/flux-dev-controlnet:9a8db105db745f8b11ad3afe5c8bd892428b2a43ade0b67edc4e0ccd52ff2fda",
+        "google/imagen-3",
         {
           input: {
-            control_image: originalUrl,
+            image: originalUrl,
+            mask: whiteMask,
             prompt: `Redesign this outdoor space while strictly preserving the existing architecture, building structure, and land contours. ${fullPrompt}`,
-            control_type: "depth",
-            width: width,
-            height: height,
-            guidance_scale: 3.5,
-            num_inference_steps: 16, // Speed up from 28 to 16 for better response time
-            control_net_weight: 0.8
+            aspect_ratio: mappedAspectRatio,
+            safety_filter_level: "block_only_high"
           }
         }
     );

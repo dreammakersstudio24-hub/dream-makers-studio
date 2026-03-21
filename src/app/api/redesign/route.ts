@@ -165,34 +165,29 @@ export async function POST(req: Request) {
     });
     const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
 
-    // Map frontend aspect ratio to Flux ControlNet dimensions
-    // xlabs-ai/flux-dev-controlnet is optimized for 1024x1024 base
-    let width = 1024;
-    let height = 1024;
-    if (aspectRatio === "9:16") {
-        width = 768;
-        height = 1360;
-    } else if (aspectRatio === "16:9") {
-        width = 1360;
-        height = 768;
-    }
+    // Map frontend aspect ratio to Google Imagen 3 supported enums
+    let mappedAspectRatio = "1:1";
+    if (aspectRatio === "9:16") mappedAspectRatio = "9:16";
+    else if (aspectRatio === "16:9") mappedAspectRatio = "16:9";
+    else if (aspectRatio === "2:3") mappedAspectRatio = "9:16";
+    else if (aspectRatio === "3:2") mappedAspectRatio = "16:9";
 
-    console.log(`[REIGN] Using Flux ControlNet (Depth) with originalUrl: ${originalUrl}, dims: ${width}x${height}`);
+    // A 1x1 white pixel PNG mask to tell Imagen 3 to redesign everything while following the image structure
+    const whiteMask = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==";
 
-    // xlabs-ai/flux-dev-controlnet on Replicate (The Definitive Version)
-    // Uses 'control_image', 'prompt', 'control_type', 'width', 'height'
+    console.log(`[REIGN] Using Google Imagen 3 (Nano Banana Pro) with Masked Redesign technique. Aspect: ${mappedAspectRatio}`);
+
+    // Google Imagen 3 (Nano Banana Pro Technology)
+    // We use the inpainting engine with a full mask to achieve the best "Redesign" result
     const output = await replicate.run(
-        "xlabs-ai/flux-dev-controlnet:9a8db105db745f8b11ad3afe5c8bd892428b2a43ade0b67edc4e0ccd52ff2fda",
+        "google/imagen-3",
         {
           input: {
-            control_image: originalUrl,
+            image: originalUrl,
+            mask: whiteMask,
             prompt: `A jaw-dropping, award-winning ${stylePrompt} style ${roomType} interior design. Redesign this space while strictly preserving the existing architecture, walls, floor, and window positions. The room features: ${styleSpecificFeatures}. It is FULLY FURNISHED with a ${roomSpecificObjects}. ${densityPrompt} Add beautiful layered rugs, stunning indoor plants, and cinematic photorealistic lighting. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
-            control_type: "depth",
-            width: width,
-            height: height,
-            guidance_scale: 3.5,
-            num_inference_steps: 16, // Speed up from 28 to 16 for better response time
-            control_net_weight: 0.8
+            aspect_ratio: mappedAspectRatio,
+            safety_filter_level: "block_only_high"
           }
         }
     );
