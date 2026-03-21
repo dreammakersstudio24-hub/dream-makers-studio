@@ -84,26 +84,31 @@ export async function POST(req: Request) {
     await supabase.storage.from('images').upload(originalFileName, originalBuffer, { contentType: 'image/jpeg' });
     const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
 
-    // Map frontend aspect ratio to Flux ControlNet supported enums
-    let mappedAspectRatio = "1:1";
-    if (aspectRatio === "9:16") mappedAspectRatio = "9:16";
-    else if (aspectRatio === "16:9") mappedAspectRatio = "16:9";
-    else if (aspectRatio === "2:3") mappedAspectRatio = "9:16";
-    else if (aspectRatio === "3:2") mappedAspectRatio = "16:9";
+    // Map frontend aspect ratio to Flux ControlNet dimensions
+    let width = 1024;
+    let height = 1024;
+    if (aspectRatio === "9:16") {
+        width = 768;
+        height = 1360;
+    } else if (aspectRatio === "16:9") {
+        width = 1360;
+        height = 768;
+    }
 
-    console.log(`[GARDEN] Using Flux ControlNet (Depth) with originalUrl: ${originalUrl}, aspect_ratio: ${mappedAspectRatio}`);
+    console.log(`[GARDEN] Using Flux ControlNet (Depth) with originalUrl: ${originalUrl}, dims: ${width}x${height}`);
 
-    // Flux Dev with Any-ControlNet (Depth)
+    // Flux Dev with ControlNet (Depth)
     const output = await replicate.run(
-        "fofr/any-controlnet",
+        "lucataco/flux-dev-controlnet-depth:04f326a02b66ec074d610816cfbcbf4ae9355555555555555555555555555555",
         {
           input: {
-            image: originalUrl,
+            control_image: originalUrl,
             prompt: `Redesign this outdoor space while strictly preserving the existing architecture, building structure, and land contours. ${fullPrompt}`,
-            control_name: "depth",
-            aspect_ratio: mappedAspectRatio,
-            output_format: "webp",
-            output_quality: 90
+            width: width,
+            height: height,
+            guidance_scale: 3.5,
+            num_inference_steps: 28,
+            control_conditioning_scale: 0.8
           }
         }
     );
