@@ -75,12 +75,8 @@ export async function POST(req: Request) {
     Lush exotic greenery, specimens, professional horticultural synthesis.
     8k resolution, masterpiece, 100mm architectural lens.`;
 
-    // Set size based on aspect ratio
-    let targetSize = "1024x1024";
-    if (aspectRatio === "9:16" || aspectRatio === "2:3") targetSize = "1024x1792";
-    else if (aspectRatio === "16:9" || aspectRatio === "3:2") targetSize = "1792x1024";
-
     // Switch to OpenAI's GPT-Image-1.5 (Medium Variant - $0.05)
+    // Using aspect_ratio instead of size for broader compatibility with modern Replicate schemas
     const output = await replicate.run(
         "openai/gpt-image-1.5",
         {
@@ -88,7 +84,7 @@ export async function POST(req: Request) {
             input_images: [formattedImage],
             prompt: `Redesign this outdoor space while strictly preserving the existing architecture, building structure, and land contours. ${fullPrompt}`,
             quality: "medium",
-            size: targetSize,
+            aspect_ratio: aspectRatio,
             input_fidelity: "high" // Essential for structure locking
           }
         }
