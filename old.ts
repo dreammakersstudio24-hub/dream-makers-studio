@@ -165,48 +165,63 @@ export async function POST(req: Request) {
     });
     const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
 
-    // Google Imagen 3 natively supports 1:1, 16:9, 9:16, 4:3, 3:4
+    // Map frontend aspect ratio to Flux ControlNet Union supported enums
     let mappedAspectRatio = "1:1";
     if (aspectRatio === "9:16") mappedAspectRatio = "9:16";
     else if (aspectRatio === "16:9") mappedAspectRatio = "16:9";
 
+    console.log(`[REIGN] Using Flux ControlNet Union (Depth) for Absolute Lock. Aspect: ${mappedAspectRatio}`);
+
+    // Flux ControlNet Union (Absolute Structure Lock)
+    // Supports 'control_image', 'prompt', 'control_type', 'aspect_ratio', 'control_strength'
     const output = await replicate.run(
-        "google/imagen-3",
+        "lucataco/controlnet-union-pro:bd0dacc60e6247a2a4c28502434a6d6dd5d63f93c39950e5f366775d7a9b114a",
         {
           input: {
-            image: originalUrl,
-            prompt: `STRUCTURE LOCK – ABSOLUTE RULE: Keep EXACT same layout, camera, and object positions. No changes to structure, no repositioning, no perspective shift. This is a STRICT OVERLAY transformation. Only materials, lighting, and atmosphere may change. Camera locked (40–50mm, eye-level).
+            control_image: originalUrl,
+            control_type: "depth",
+            control_strength: 0.75, // Strong structure lock
+            prompt: `STRUCTURE LOCK – ABSOLUTE RULE: Keep EXACT same layout, camera, and object positions as the reference image. No changes to structure, no repositioning, no perspective shift. This is a STRICT OVERLAY transformation. Only materials, lighting, and atmosphere may change. Camera locked (40–50mm, eye-level).
             
             Redesign this interior in award-winning ${stylePrompt} style ${roomType}. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
             aspect_ratio: mappedAspectRatio,
-            safety_filter_level: "block_few"
+            steps: 28,
+            guidance_scale: 3.5
           }
         }
     );
 
     let resultUrl = "";
-    console.log(`[REIGN] GPT-1.5 Raw Output:`, JSON.stringify(output));
+    console.log(`[REIGN] Raw Output Type: ${typeof output}, IsArray: ${Array.isArray(output)}, Value:`, JSON.stringify(output));
 
-    if (Array.isArray(output) && output.length > 0) {
-        const first = output[0];
-        if (typeof first === 'string') resultUrl = first;
-        else if (first && typeof first === 'object') resultUrl = (first as any).url || (first as any).image || "";
-    } else if (typeof output === 'string') {
-        resultUrl = output;
-    } else if (output && typeof output === 'object') {
-        const obj = output as any;
-        resultUrl = obj.url || obj.image || obj.images?.[0] || obj.output?.[0] || (typeof obj.url === 'function' ? obj.url().toString() : "");
-    }
+    try {
+        if (output && typeof (output as any).url === 'function') {
+            resultUrl = (output as any).url().toString();
+        } else if (Array.isArray(output) && output.length > 0) {
+            const firstItem = output[0];
+            if (typeof firstItem === 'string') {
+                resultUrl = firstItem;
+            } else if (firstItem && (firstItem as any).url) {
+                resultUrl = String((firstItem as any).url);
+            }
+        } else if (typeof output === "string") {
+            resultUrl = output;
+        } else if (output && typeof output === "object") {
+            const obj = output as any;
+            resultUrl = obj.images?.[0] || obj.output?.[0] || obj.url || (typeof obj.url === 'function' ? obj.url() : "");
+        }
 
-    // FINAL SAFETY: Force string and validate
-    if (typeof resultUrl !== 'string') {
-        resultUrl = String(resultUrl || "");
+        if (resultUrl) {
+           resultUrl = resultUrl.toString().trim();
+        }
+
+    } catch (parseError) {
+        console.error("Error parsing Replicate output:", parseError, "Raw output:", output);
     }
-    resultUrl = resultUrl.trim();
 
     if (!resultUrl || !resultUrl.startsWith('http')) {
-        console.error("Invalid output format from Replicate. Raw output:", output);
-        throw new Error(`Failed to generate a valid image URL. Raw response: ${JSON.stringify(output)}`);
+       console.error("Invalid output format from Replicate. Raw output:", output);
+       throw new Error(`Failed to generate a valid image URL. Please check server logs. Raw response: ${JSON.stringify(output)}`);
     }
 
     // --- 2. Fetch and upload generated image ---

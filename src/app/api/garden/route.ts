@@ -84,24 +84,22 @@ export async function POST(req: Request) {
     await supabase.storage.from('images').upload(originalFileName, originalBuffer, { contentType: 'image/jpeg' });
     const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
 
-    // Map aspect ratio to specific size strings for GPT-1.5
-    let mappedSize = "1024x1024";
-    if (aspectRatio === "9:16") mappedSize = "1024x1792";
-    else if (aspectRatio === "16:9") mappedSize = "1792x1024";
-    else if (aspectRatio === "2:3") mappedSize = "1024x1536";
-    else if (aspectRatio === "3:2") mappedSize = "1536x1024";
+    // Google Imagen 3 natively supports 1:1, 16:9, 9:16, 4:3, 3:4
+    let mappedAspectRatio = "1:1";
+    if (aspectRatio === "9:16") mappedAspectRatio = "9:16";
+    else if (aspectRatio === "16:9") mappedAspectRatio = "16:9";
 
-    // GPT-1.5 (Google Imagen 1.5 Technology via OpenAI)
+    // Google Imagen 3 (Nano Banana Pro)
     const output = await replicate.run(
-        "openai/gpt-image-1.5",
+        "google/imagen-3",
         {
           input: {
             image: originalUrl,
             prompt: `STRUCTURE LOCK – ABSOLUTE RULE: Keep EXACT same layout, camera, and object positions. No changes to structure, no repositioning, no perspective shift. This is a STRICT OVERLAY transformation. Only materials, lighting, and atmosphere may change. Camera locked (40–50mm, eye-level).
             
             Redesign this outdoor space. ${fullPrompt}`,
-            size: mappedSize,
-            quality: "high"
+            aspect_ratio: mappedAspectRatio,
+            safety_filter_level: "block_few"
           }
         }
     );
