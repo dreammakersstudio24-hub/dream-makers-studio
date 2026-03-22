@@ -4,7 +4,6 @@ import { createServerSupabaseClient, createAdminClient } from "@/utils/supabase/
 
 export const maxDuration = 300;
 
-// useFileOutput: false makes Replicate return direct URL strings instead of FileOutput streams
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
   useFileOutput: false,
@@ -26,13 +25,13 @@ const ROOM_PROMPTS: Record<string, string[]> = {
   ],
   bathroom: [
     "Stunning freestanding luxury bathtub, elegant double vanity with large mirrors, premium walk-in glass shower, high-end tiling. Functional usable layout.",
-    "Massive walk-in wet room shower with rainfall head, floating wood vanity, ergonomic spacing, realistic plumbing layout, towel warmer. Functional usable layout.",
-    "Beautiful built-in soaking tub, large vanity with luxury marble top, highly functional usable layout, elegant wall sconces. Functional usable layout.",
+    "Massive walk-in wet room shower with rainfall head, floating wood vanity, ergonomic spacing, realistic plumbing layout, towel warmer.",
+    "Beautiful built-in soaking tub, large vanity with luxury marble top, highly functional usable layout, elegant wall sconces.",
   ],
   kitchen: [
     "Massive luxury kitchen island with barstools, sleek modern built-in cabinets, high-end stainless steel stove and oven, large refrigerator, beautiful countertops. MUST INCLUDE stove, oven, sink, and kitchen cabinets.",
-    "U-shaped kitchen layout, premium gas range stove, range hood, deep farmhouse sink, walls covered in high-end cabinets, elegant backsplash. MUST INCLUDE stove, oven, sink, and kitchen cabinets.",
-    "Chef's dream kitchen, double ovens, massive wall of cabinetry, built-in fridge, beautiful countertops with cooking prep area. MUST INCLUDE stove, oven, sink, and kitchen cabinets.",
+    "U-shaped kitchen layout, premium gas range stove, range hood, deep farmhouse sink, walls covered in high-end cabinets, elegant backsplash. MUST INCLUDE cooking appliances.",
+    "Chef's dream kitchen, double ovens, massive wall of cabinetry, built-in fridge, beautiful countertops with cooking prep area. MUST INCLUDE cooking appliances.",
   ],
   home_office: [
     "Large impressive executive desk in center, ergonomic premium office chair, beautiful bookshelves, stylish reading nook, elegant desk lamp.",
@@ -40,8 +39,8 @@ const ROOM_PROMPTS: Record<string, string[]> = {
     "Creative studio layout, massive drafting table, wall full of inspirational art, stylish storage cabinets, premium task lighting.",
   ],
   kids_room: [
-    "Fun and colorful custom bunk beds, built-in toy storage shelves, whimsical wall art, cozy reading corner with bean bags, large play rug. MUST BE kid-friendly, playful, safe.",
-    "Adorable premium twin bed, beautiful dollhouse or indoor slide, creative play area, floating bookshelves, soft pastel ambient lighting. MUST BE kid-friendly, playful, safe.",
+    "Fun and colorful custom bunk beds, built-in toy storage shelves, whimsical wall art, cozy reading corner with bean bags, large play rug. MUST BE kid-friendly and safe.",
+    "Adorable premium twin bed, beautiful dollhouse or indoor slide, creative play area, floating bookshelves, soft pastel ambient lighting. MUST BE kid-friendly and safe.",
   ],
   balcony: [
     "Luxurious outdoor patio seating, premium weather-resistant sofa set, stunning vertical garden, beautiful evening string lights, modern coffee table. MUST BE outdoor space.",
@@ -53,7 +52,7 @@ const ROOM_PROMPTS: Record<string, string[]> = {
 const STYLE_PROMPTS: Record<string, string> = {
   minimalist: "clean geometric lines, uncluttered surfaces, neutral color palette (white, beige, soft gray), minimal but impactful decor, sleek hidden storage",
   scandinavian: "light warm woods, cozy textiles, white walls, soft natural light, functional layout, hygge atmosphere, simple aesthetic",
-  industrial: "exposed brick walls, raw concrete floors, matte black metal accents, massive vintage leather Chesterfield sofas, heavy iron and reclaimed wood coffee tables, large factory-style windows, exposed piping overhead",
+  industrial: "exposed brick walls, raw concrete floors, matte black metal accents, vintage leather Chesterfield sofas, heavy iron and reclaimed wood coffee tables, large factory-style windows, exposed piping overhead",
   luxury: "glamorous marble surfaces, gold or brass accents, opulent velvet upholstery, expensive cascading crystal chandeliers, rich deep jewel-tone colors, highly reflective glossy surfaces, massive custom millwork",
   modern: "sleek and sophisticated, bold contrasting colors, massive abstract art pieces, glass and polished steel elements, dramatic spotlighting, sharp architectural angles, highly curated designer furniture",
 };
@@ -100,26 +99,23 @@ export async function POST(req: Request) {
     await supabase.storage.from('images').upload(originalFileName, originalBuffer, { contentType: 'image/jpeg' });
     const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
 
-    // --- 2. Map aspect ratio ---
-    const mappedAspectRatio = aspectRatio === "9:16" ? "9:16" : aspectRatio === "16:9" ? "16:9" : "1:1";
-
-    // --- 3. Run AI Model ---
+    // --- 2. Run AI Model (google/nano-banana-pro) ---
+    // aspect_ratio: "match_input_image" preserves the original image proportions automatically
     const output = await replicate.run(
-      "lucataco/controlnet-union-pro:bd0dacc60e6247a2a4c28502434a6d6dd5d63f93c39950e5f366775d7a9b114a",
+      "google/nano-banana-pro",
       {
         input: {
-          control_image: originalUrl,
-          control_type: "depth",
-          control_strength: 0.75,
-          prompt: `Award-winning ${stylePrompt} style ${roomType} interior redesign. ${styleFeatures}. ${roomObjects}. ${densityPrompt} Professional architectural photography, 8k resolution, masterpiece, highly detailed. Cinematic lighting.`,
-          aspect_ratio: mappedAspectRatio,
-          steps: 28,
-          guidance_scale: 3.5,
+          prompt: `Transform this interior space into an award-winning ${stylePrompt} style ${roomType} design. ${styleFeatures}. ${roomObjects}. ${densityPrompt} Professional architectural photography, 8k resolution, masterpiece, cinematic lighting, highly detailed.`,
+          image_input: [originalUrl],
+          aspect_ratio: "match_input_image",
+          output_format: "jpg",
+          resolution: "2K",
+          safety_filter_level: "block_only_high",
         }
       }
     );
 
-    // --- 4. Extract URL from output ---
+    // --- 3. Extract URL from output ---
     let resultUrl = "";
     if (Array.isArray(output) && output.length > 0) {
       resultUrl = String(output[0]);
@@ -134,18 +130,18 @@ export async function POST(req: Request) {
       throw new Error(`AI generation failed. Model returned no valid image URL.`);
     }
 
-    // --- 5. Upload generated image to Supabase ---
+    // --- 4. Upload generated image to Supabase ---
     const imageResponse = await fetch(resultUrl);
     const imageBlob = await imageResponse.blob();
     const generatedFileName = `${user.id}/${timestamp}_generated.jpg`;
     await supabase.storage.from('images').upload(generatedFileName, imageBlob, { contentType: 'image/jpeg' });
     const finalUrl = supabase.storage.from('images').getPublicUrl(generatedFileName).data.publicUrl;
 
-    // --- 6. Deduct credit ---
+    // --- 5. Deduct credit ---
     const supabaseAdmin = createAdminClient();
     await supabaseAdmin.from('users_metadata').update({ credits: currentCredits - 1 }).eq('id', user.id);
 
-    // --- 7. Save generation record ---
+    // --- 6. Save generation record ---
     await supabase.from('generations').insert({
       user_id: user.id,
       original_image_url: originalUrl,

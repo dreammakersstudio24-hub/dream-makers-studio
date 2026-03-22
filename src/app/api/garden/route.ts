@@ -4,7 +4,6 @@ import { createServerSupabaseClient, createAdminClient } from "@/utils/supabase/
 
 export const maxDuration = 300;
 
-// useFileOutput: false makes Replicate return direct URL strings instead of FileOutput streams
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
   useFileOutput: false,
@@ -56,7 +55,7 @@ export async function POST(req: Request) {
     ]);
 
     const featuresText = features.length > 0 ? `MUST INCLUDE: ${features.join(", ")}.` : "";
-    const fullPrompt = `${landscapeBase} Style: ${stylePrompt}. ${featuresText} Focus on ${materialFocus} and ${lightingStyle}. Lush exotic greenery, professional horticultural synthesis. ENTIRELY OUTDOOR DESIGN. 8k resolution, masterpiece, 100mm architectural lens.`;
+    const fullPrompt = `Transform this outdoor space. ${landscapeBase} Style: ${stylePrompt}. ${featuresText} Focus on ${materialFocus} and ${lightingStyle}. Lush exotic greenery, professional horticultural synthesis. ENTIRELY OUTDOOR DESIGN. 8k resolution, masterpiece, 100mm architectural lens.`;
 
     // --- 1. Upload original image to Supabase ---
     const timestamp = Date.now();
@@ -66,26 +65,23 @@ export async function POST(req: Request) {
     await supabase.storage.from('images').upload(originalFileName, originalBuffer, { contentType: 'image/jpeg' });
     const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
 
-    // --- 2. Map aspect ratio ---
-    const mappedAspectRatio = aspectRatio === "9:16" ? "9:16" : aspectRatio === "16:9" ? "16:9" : "1:1";
-
-    // --- 3. Run AI Model ---
+    // --- 2. Run AI Model (google/nano-banana-pro) ---
+    // aspect_ratio: "match_input_image" preserves the original image proportions automatically
     const output = await replicate.run(
-      "lucataco/controlnet-union-pro:bd0dacc60e6247a2a4c28502434a6d6dd5d63f93c39950e5f366775d7a9b114a",
+      "google/nano-banana-pro",
       {
         input: {
-          control_image: originalUrl,
-          control_type: "depth",
-          control_strength: 0.75,
           prompt: fullPrompt,
-          aspect_ratio: mappedAspectRatio,
-          steps: 28,
-          guidance_scale: 3.5,
+          image_input: [originalUrl],
+          aspect_ratio: "match_input_image",
+          output_format: "jpg",
+          resolution: "2K",
+          safety_filter_level: "block_only_high",
         }
       }
     );
 
-    // --- 4. Extract URL from output ---
+    // --- 3. Extract URL from output ---
     let resultUrl = "";
     if (Array.isArray(output) && output.length > 0) {
       resultUrl = String(output[0]);
@@ -100,18 +96,18 @@ export async function POST(req: Request) {
       throw new Error(`AI generation failed. Model returned no valid image URL.`);
     }
 
-    // --- 5. Upload generated image to Supabase ---
+    // --- 4. Upload generated image to Supabase ---
     const imageResponse = await fetch(resultUrl);
     const imageBlob = await imageResponse.blob();
     const generatedFileName = `${user.id}/${timestamp}_garden_result.jpg`;
     await supabase.storage.from('images').upload(generatedFileName, imageBlob, { contentType: 'image/jpeg' });
     const finalUrl = supabase.storage.from('images').getPublicUrl(generatedFileName).data.publicUrl;
 
-    // --- 6. Deduct credit ---
+    // --- 5. Deduct credit ---
     const supabaseAdmin = createAdminClient();
     await supabaseAdmin.from('users_metadata').update({ credits: currentCredits - 1 }).eq('id', user.id);
 
-    // --- 7. Save generation record ---
+    // --- 6. Save generation record ---
     await supabase.from('generations').insert({
       user_id: user.id,
       original_image_url: originalUrl,
