@@ -165,21 +165,24 @@ export async function POST(req: Request) {
     });
     const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
 
-    // Google Imagen 3 natively supports 1:1, 16:9, 9:16, 4:3, 3:4
+    // Flux ControlNet Union natively supports 1:1, 16:9, 9:16
     let mappedAspectRatio = "1:1";
     if (aspectRatio === "9:16") mappedAspectRatio = "9:16";
     else if (aspectRatio === "16:9") mappedAspectRatio = "16:9";
 
     const output = await replicate.run(
-        "google/imagen-3",
+        "lucataco/controlnet-union-pro:bd0dacc60e6247a2a4c28502434a6d6dd5d63f93c39950e5f366775d7a9b114a",
         {
           input: {
-            image: originalUrl,
+            control_image: originalUrl,
+            control_type: "depth",
+            control_strength: 0.75, // Strong structure lock
             prompt: `STRUCTURE LOCK – ABSOLUTE RULE: Keep EXACT same layout, camera, and object positions. No changes to structure, no repositioning, no perspective shift. This is a STRICT OVERLAY transformation. Only materials, lighting, and atmosphere may change. Camera locked (40–50mm, eye-level).
             
             Redesign this interior in award-winning ${stylePrompt} style ${roomType}. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
             aspect_ratio: mappedAspectRatio,
-            safety_filter_level: "block_only_high"
+            steps: 28,
+            guidance_scale: 3.5
           }
         }
     );
