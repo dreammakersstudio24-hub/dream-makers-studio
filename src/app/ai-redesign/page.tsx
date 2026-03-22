@@ -98,11 +98,9 @@ export default function AiRedesignPage() {
       
       const styleInfo = STYLES.find(s => s.id === selectedStyleId);
       
-      // Select a random prompt from the variations to ensure diversity
-      let finalStylePrompt = styleInfo?.nameKey || "modern";
-      if (styleInfo?.prompts && styleInfo.prompts.length > 0) {
-        finalStylePrompt = styleInfo.prompts[Math.floor(Math.random() * styleInfo.prompts.length)];
-      }
+      // Use the new style preset system (prompt_addon + negative_prompt)
+      const finalStylePrompt = styleInfo?.prompt_addon || styleInfo?.nameKey || "modern";
+      const negativePrompt = styleInfo?.negative_prompt || "";
       
       const roomInfo = ROOM_TYPES.find(r => r.id === selectedRoomId);
       const roomType = roomInfo?.nameKey || "room";
@@ -116,6 +114,7 @@ export default function AiRedesignPage() {
         body: JSON.stringify({
           image: compressed.url,
           stylePrompt: finalStylePrompt,
+          negativePrompt: negativePrompt,
           roomType: roomType,
           aspectRatio: compressed.ratio
         }),
