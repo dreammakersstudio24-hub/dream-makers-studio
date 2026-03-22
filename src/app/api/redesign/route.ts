@@ -64,7 +64,7 @@ export async function POST(req: Request) {
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const body = await req.json();
-    const { image, stylePrompt, roomType, aspectRatio = "1:1" } = body;
+    const { image, stylePrompt, negativePrompt = "", roomType, aspectRatio = "1:1" } = body;
 
     if (!image || !stylePrompt || !roomType) {
       return NextResponse.json({ error: "Image, style, and room type are required." }, { status: 400 });
@@ -108,11 +108,11 @@ export async function POST(req: Request) {
         input: {
           prompt: `STRUCTURE PRESERVATION RULE: The spatial layout, room dimensions, wall positions, window placements, door locations, floor plan, and camera perspective are IDENTICAL to the reference image. Do NOT alter the geometry of the space. Do NOT zoom, crop, widen, rotate, or shift the camera. This is a MATERIAL AND STYLE transformation only — change only surface finishes, colors, furniture style, and lighting mood.
 
-          Transform this ${roomType} interior into an award-winning ${stylePrompt} style design.
-          Style features: ${styleFeatures}.
-          Furniture: ${roomObjects}.
+          Transform this ${roomType} interior.
+          Style: ${stylePrompt}.
           ${densityPrompt}
-          Quality: professional architectural photography, 8K resolution, cinematic lighting, masterpiece.`,
+          Quality: professional architectural photography, 8K resolution, cinematic lighting, masterpiece.
+          ${negativePrompt ? `AVOID: ${negativePrompt}` : ""}`,
           image_input: [originalUrl],
           aspect_ratio: "match_input_image",
           output_format: "jpg",
