@@ -267,30 +267,30 @@ export default function MobileGeneratePage() {
                       <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-2 px-1">
                         {TIER_LABELS[tier]}
                       </p>
-                      <div className="grid grid-cols-2 gap-2.5">
+                      <div className="grid grid-cols-3 gap-2">
                         {tierStyles.map((style) => (
                           <button
                             key={style.id}
                             onClick={() => setSelectedStyleId(style.id)}
-                            className={`relative aspect-[3/4] rounded-2xl overflow-hidden border-[3px] transition-all active:scale-[1.02] ${selectedStyleId === style.id ? 'border-blue-600 shadow-lg' : 'border-transparent shadow-sm'}`}
+                            className={`relative aspect-[3/4] rounded-xl overflow-hidden border-2 transition-all active:scale-[1.02] ${selectedStyleId === style.id ? 'border-blue-600 shadow-lg' : 'border-transparent shadow-sm'}`}
                           >
                             <img src={style.image} alt={style.nameKey} className="absolute inset-0 w-full h-full object-cover" />
                             {/* Gradient overlay */}
-                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent p-3 text-left">
-                              <span className="text-white font-bold text-xs leading-tight block">{style.nameKey}</span>
-                              <span className="text-white/70 text-[10px] leading-tight block mt-0.5">{style.descKey}</span>
+                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent p-1.5 text-left">
+                              <span className="text-white font-bold text-[9px] leading-tight block">{style.nameKey}</span>
+                              <span className="text-white/70 text-[8px] leading-tight block">{style.descKey}</span>
                             </div>
                             {/* Recommended badge */}
                             {style.recommended && (
-                              <div className="absolute top-2 left-2 bg-amber-400 text-amber-900 text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
-                                <Star className="w-2.5 h-2.5" />
+                              <div className="absolute top-1 left-1 bg-amber-400 text-amber-900 text-[7px] font-bold px-1 py-0.5 rounded-full flex items-center gap-0.5">
+                                <Star className="w-2 h-2" />
                                 Best
                               </div>
                             )}
                             {/* Selected check */}
                             {selectedStyleId === style.id && (
-                              <div className="absolute top-2 right-2 w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-md">
-                                <Check className="w-3 h-3" />
+                              <div className="absolute top-1 right-1 w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-md">
+                                <Check className="w-2.5 h-2.5" />
                               </div>
                             )}
                           </button>
