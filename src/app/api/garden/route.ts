@@ -107,20 +107,41 @@ export async function POST(req: Request) {
         }
     );
 
-    console.log(`[GARDEN] Raw Output Type: ${typeof output}, IsArray: ${Array.isArray(output)}, Value:`, JSON.stringify(output));
-
     let resultUrl = "";
-    console.log(`[GARDEN] GPT-1.5 Raw Output:`, JSON.stringify(output));
+    console.log(`[GARDEN] Raw Output Type: ${typeof output}, IsArray: ${Array.isArray(output)}`);
 
-    if (Array.isArray(output) && output.length > 0) {
-        const first = output[0];
-        if (typeof first === 'string') resultUrl = first;
-        else if (first && typeof first === 'object') resultUrl = (first as any).url || (first as any).image || "";
-    } else if (typeof output === 'string') {
-        resultUrl = output;
-    } else if (output && typeof output === 'object') {
-        const obj = output as any;
-        resultUrl = obj.url || obj.image || obj.images?.[0] || obj.output?.[0] || (typeof obj.url === 'function' ? obj.url().toString() : "");
+    try {
+        // Handle array of streams/strings
+        if (Array.isArray(output) && output.length > 0) {
+            const firstItem = output[0];
+            if (typeof firstItem === 'string') {
+                resultUrl = firstItem;
+            } else if (firstItem && typeof firstItem === 'object' && (firstItem as any).url) {
+                resultUrl = typeof (firstItem as any).url === 'function' ? (firstItem as any).url().toString() : (firstItem as any).url.toString();
+            }
+        } 
+        // Handle single stream/string/object
+        else if (typeof output === 'string') {
+            resultUrl = output;
+        } 
+        else if (output && typeof output === 'object') {
+            if (typeof (output as any).url === 'function') {
+                resultUrl = (output as any).url().toString();
+            } else if ((output as any).url) {
+                resultUrl = (output as any).url.toString();
+            } else {
+                const obj = output as any;
+                resultUrl = obj.images?.[0] || obj.output?.[0] || "";
+            }
+        }
+        
+        if (resultUrl) {
+           resultUrl = resultUrl.toString().trim();
+        }
+
+    } catch (parseError) {
+        console.error("Error parsing Replicate output:", parseError);
+        // Fallback or re-throw if parsing is critical
     }
 
     // FINAL SAFETY: Force string and validate
