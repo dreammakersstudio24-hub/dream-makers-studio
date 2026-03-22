@@ -97,7 +97,7 @@ export async function POST(req: Request) {
         "openai/gpt-image-1.5",
         {
           input: {
-            input_images: [originalUrl],
+            image: originalUrl,
             prompt: `STRUCTURE LOCK – ABSOLUTE RULE: Keep EXACT same layout, camera, and object positions. No changes to structure, no repositioning, no perspective shift. This is a STRICT OVERLAY transformation. Only materials, lighting, and atmosphere may change. Camera locked (40–50mm, eye-level).
             
             Redesign this outdoor space. ${fullPrompt}`,
