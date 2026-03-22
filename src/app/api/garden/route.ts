@@ -76,7 +76,7 @@ export async function POST(req: Request) {
           prompt: fullPrompt,
           style_reference_images: [originalUrl],
           aspect_ratio: mappedAspectRatio,
-          style_type: "Realistic",
+          style_type: "Auto",
           magic_prompt_option: "Off",
           negative_prompt: "indoor, ceiling, domestic furniture, blurry, watermark, text, different layout, different camera angle",
         }

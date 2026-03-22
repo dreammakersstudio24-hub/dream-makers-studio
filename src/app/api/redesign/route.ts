@@ -110,7 +110,7 @@ export async function POST(req: Request) {
           prompt: `Award-winning ${stylePrompt} style interior design for a ${roomType}. ${styleFeatures}. ${roomObjects}. ${densityPrompt} Professional architectural photography, 8k resolution, masterpiece, cinematic lighting. Preserve the exact room layout, walls, windows, doors and camera angle from the reference image.`,
           style_reference_images: [originalUrl],
           aspect_ratio: mappedAspectRatio,
-          style_type: "Realistic",
+          style_type: "Auto",
           magic_prompt_option: "Off",
           negative_prompt: "lowres, watermark, text, blurry, deformed, cartoon, extra walls, different room layout, different camera angle",
         }
