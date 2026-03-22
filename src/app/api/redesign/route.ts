@@ -165,16 +165,13 @@ export async function POST(req: Request) {
     });
     const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
 
-    // Map frontend aspect ratio to GPT-1.5 (OpenAI) supported enums
-    // GPT-1.5 natively supports 1:1, 2:3 (Portrait), and 3:2 (Landscape)
-    let mappedAspectRatio = "1:1";
-    if (aspectRatio === "9:16") mappedAspectRatio = "2:3"; 
-    else if (aspectRatio === "16:9") mappedAspectRatio = "3:2";
+    // Map aspect ratio to specific size strings for GPT-1.5
+    let mappedSize = "1024x1024";
+    if (aspectRatio === "9:16") mappedSize = "1024x1792";
+    else if (aspectRatio === "16:9") mappedSize = "1792x1024";
+    else if (aspectRatio === "2:3") mappedSize = "1024x1536";
+    else if (aspectRatio === "3:2") mappedSize = "1536x1024";
 
-    console.log(`[REIGN] Using GPT-1.5 for Best Aesthetic & High Fidelity. Aspect: ${mappedAspectRatio}`);
-
-    // GPT-1.5 (Google Imagen 1.5 Technology via OpenAI)
-    // Most controllable and high-quality "Edit" model
     const output = await replicate.run(
         "openai/gpt-image-1.5",
         {
@@ -183,10 +180,7 @@ export async function POST(req: Request) {
             prompt: `STRUCTURE LOCK – ABSOLUTE RULE: Keep EXACT same layout, camera, and object positions. No changes to structure, no repositioning, no perspective shift. This is a STRICT OVERLAY transformation. Only materials, lighting, and atmosphere may change. Camera locked (40–50mm, eye-level).
             
             Redesign this interior in award-winning ${stylePrompt} style ${roomType}. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
-            input_fidelity: "high",
-            aspect_ratio: mappedAspectRatio,
-            action: "edit",
-            number_of_images: 1,
+            size: mappedSize,
             quality: "high"
           }
         }
