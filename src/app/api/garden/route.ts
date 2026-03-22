@@ -99,7 +99,7 @@ export async function POST(req: Request) {
             
             Redesign this outdoor space. ${fullPrompt}`,
             aspect_ratio: mappedAspectRatio,
-            safety_filter_level: "block_few"
+            safety_filter_level: "block_only_high"
           }
         }
     );

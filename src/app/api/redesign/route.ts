@@ -179,7 +179,7 @@ export async function POST(req: Request) {
             
             Redesign this interior in award-winning ${stylePrompt} style ${roomType}. Professional architectural photography, 8k resolution, masterpiece, highly detailed.`,
             aspect_ratio: mappedAspectRatio,
-            safety_filter_level: "block_few"
+            safety_filter_level: "block_only_high"
           }
         }
     );
