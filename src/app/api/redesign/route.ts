@@ -24,12 +24,12 @@ const ROOM_PROMPTS: Record<string, string[]> = {
     "Platform bed with massive floor-to-ceiling headboard, floating nightstands, extremely cozy layered blankets, expensive rug.",
   ],
   bathroom: [
-    "Stunning freestanding luxury bathtub, elegant double vanity with large mirrors, premium walk-in glass shower, high-end tiling. Functional usable layout.",
+    "Stunning freestanding luxury bathtub, elegant double vanity with large mirrors, premium walk-in glass shower, high-end tiling. Functional and usable layout.",
     "Massive walk-in wet room shower with rainfall head, floating wood vanity, ergonomic spacing, realistic plumbing layout, towel warmer.",
-    "Beautiful built-in soaking tub, large vanity with luxury marble top, highly functional usable layout, elegant wall sconces.",
+    "Beautiful built-in soaking tub, large vanity with luxury marble top, highly functional layout, elegant wall sconces.",
   ],
   kitchen: [
-    "Massive luxury kitchen island with barstools, sleek modern built-in cabinets, high-end stainless steel stove and oven, large refrigerator, beautiful countertops. MUST INCLUDE stove, oven, sink, and kitchen cabinets.",
+    "Massive luxury kitchen island with barstools, sleek modern built-in cabinets, high-end stainless steel stove and oven, large refrigerator, beautiful countertops. MUST INCLUDE cooking appliances.",
     "U-shaped kitchen layout, premium gas range stove, range hood, deep farmhouse sink, walls covered in high-end cabinets, elegant backsplash. MUST INCLUDE cooking appliances.",
     "Chef's dream kitchen, double ovens, massive wall of cabinetry, built-in fridge, beautiful countertops with cooking prep area. MUST INCLUDE cooking appliances.",
   ],
@@ -89,7 +89,7 @@ export async function POST(req: Request) {
     const isMinimalist = stylePrompt.toLowerCase().includes("minimalist") || stylePrompt.toLowerCase().includes("scandinavian");
     const densityPrompt = isMinimalist
       ? "SPACIOUS layout, breathing room between furniture, perfectly balanced negative space, clean, curated."
-      : "MAXIMALIST styling, DENSE furniture layout, room is completely FULL of heavy expensive furniture, absolutely NO empty floor spaces.";
+      : "MAXIMALIST styling, DENSE furniture layout, absolutely NO empty floor spaces, extravagant styling.";
 
     // --- 1. Upload original image to Supabase ---
     const timestamp = Date.now();
@@ -99,23 +99,25 @@ export async function POST(req: Request) {
     await supabase.storage.from('images').upload(originalFileName, originalBuffer, { contentType: 'image/jpeg' });
     const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
 
-    // --- 2. Run AI Model (google/nano-banana-pro) ---
-    // aspect_ratio: "match_input_image" preserves the original image proportions automatically
+    // --- 2. Map aspect ratio (Ideogram v3 supports 9:16 and 16:9 natively) ---
+    const mappedAspectRatio = aspectRatio === "9:16" ? "9:16" : aspectRatio === "16:9" ? "16:9" : "1:1";
+
+    // --- 3. Run AI Model (ideogram-v3-quality) ---
     const output = await replicate.run(
-      "google/nano-banana-pro",
+      "ideogram-ai/ideogram-v3-quality",
       {
         input: {
-          prompt: `Transform this interior space into an award-winning ${stylePrompt} style ${roomType} design. ${styleFeatures}. ${roomObjects}. ${densityPrompt} Professional architectural photography, 8k resolution, masterpiece, cinematic lighting, highly detailed.`,
-          image_input: [originalUrl],
-          aspect_ratio: "match_input_image",
-          output_format: "jpg",
-          resolution: "2K",
-          safety_filter_level: "block_only_high",
+          prompt: `Award-winning ${stylePrompt} style interior design for a ${roomType}. ${styleFeatures}. ${roomObjects}. ${densityPrompt} Professional architectural photography, 8k resolution, masterpiece, cinematic lighting. Preserve the exact room layout, walls, windows, doors and camera angle from the reference image.`,
+          style_reference_images: [originalUrl],
+          aspect_ratio: mappedAspectRatio,
+          style_type: "Realistic",
+          magic_prompt_option: "Off",
+          negative_prompt: "lowres, watermark, text, blurry, deformed, cartoon, extra walls, different room layout, different camera angle",
         }
       }
     );
 
-    // --- 3. Extract URL from output ---
+    // --- 4. Extract URL from output ---
     let resultUrl = "";
     if (Array.isArray(output) && output.length > 0) {
       resultUrl = String(output[0]);
@@ -130,18 +132,18 @@ export async function POST(req: Request) {
       throw new Error(`AI generation failed. Model returned no valid image URL.`);
     }
 
-    // --- 4. Upload generated image to Supabase ---
+    // --- 5. Upload generated image to Supabase ---
     const imageResponse = await fetch(resultUrl);
     const imageBlob = await imageResponse.blob();
     const generatedFileName = `${user.id}/${timestamp}_generated.jpg`;
     await supabase.storage.from('images').upload(generatedFileName, imageBlob, { contentType: 'image/jpeg' });
     const finalUrl = supabase.storage.from('images').getPublicUrl(generatedFileName).data.publicUrl;
 
-    // --- 5. Deduct credit ---
+    // --- 6. Deduct credit ---
     const supabaseAdmin = createAdminClient();
     await supabaseAdmin.from('users_metadata').update({ credits: currentCredits - 1 }).eq('id', user.id);
 
-    // --- 6. Save generation record ---
+    // --- 7. Save generation record ---
     await supabase.from('generations').insert({
       user_id: user.id,
       original_image_url: originalUrl,
