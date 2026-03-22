@@ -55,7 +55,6 @@ export async function POST(req: Request) {
     ]);
 
     const featuresText = features.length > 0 ? `MUST INCLUDE: ${features.join(", ")}.` : "";
-    const fullPrompt = `Transform this outdoor space. ${landscapeBase} Style: ${stylePrompt}. ${featuresText} Focus on ${materialFocus} and ${lightingStyle}. Lush exotic greenery, professional horticultural synthesis. ENTIRELY OUTDOOR DESIGN. 8k resolution, masterpiece, 100mm architectural lens. Preserve the exact garden layout, land contours, structures, and camera angle from the reference image.`;
 
     // --- 1. Upload original image to Supabase ---
     const timestamp = Date.now();
@@ -65,25 +64,32 @@ export async function POST(req: Request) {
     await supabase.storage.from('images').upload(originalFileName, originalBuffer, { contentType: 'image/jpeg' });
     const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
 
-    // --- 2. Map aspect ratio (Ideogram v3 supports 9:16 and 16:9 natively) ---
-    const mappedAspectRatio = aspectRatio === "9:16" ? "9:16" : aspectRatio === "16:9" ? "16:9" : "1:1";
-
-    // --- 3. Run AI Model (ideogram-v3-quality) ---
+    // --- 2. Run AI Model (google/nano-banana-pro) ---
+    // aspect_ratio: "match_input_image" — automatically preserves original proportions (9:16, 16:9, etc.)
+    // image_input passes the original as a strong structural reference
     const output = await replicate.run(
-      "ideogram-ai/ideogram-v3-quality",
+      "google/nano-banana-pro",
       {
         input: {
-          prompt: fullPrompt,
-          style_reference_images: [originalUrl],
-          aspect_ratio: mappedAspectRatio,
-          style_type: "Auto",
-          magic_prompt_option: "Off",
-          negative_prompt: "indoor, ceiling, domestic furniture, blurry, watermark, text, different layout, different camera angle",
+          prompt: `STRUCTURE PRESERVATION RULE: The spatial layout, land contour, boundary walls, structures, trees positions, paths, and camera perspective are IDENTICAL to the reference image. Do NOT alter the geography of the space. Do NOT zoom, crop, widen, rotate, or shift the camera. This is a MATERIAL AND STYLE transformation only.
+
+          Transform this outdoor space into an award-winning ${stylePrompt} style garden.
+          ${featuresText}
+          Focus on ${materialFocus} and ${lightingStyle}.
+          ${landscapeBase}
+          Lush exotic greenery, professional horticultural synthesis. ENTIRELY OUTDOOR DESIGN.
+          Quality: 8K resolution, masterpiece, 100mm architectural lens.`,
+          image_input: [originalUrl],
+          aspect_ratio: "match_input_image",
+          output_format: "jpg",
+          resolution: "2K",
+          safety_filter_level: "block_only_high",
+          allow_fallback_model: false,
         }
       }
     );
 
-    // --- 4. Extract URL from output ---
+    // --- 3. Extract URL from output ---
     let resultUrl = "";
     if (Array.isArray(output) && output.length > 0) {
       resultUrl = String(output[0]);
@@ -98,18 +104,18 @@ export async function POST(req: Request) {
       throw new Error(`AI generation failed. Model returned no valid image URL.`);
     }
 
-    // --- 5. Upload generated image to Supabase ---
+    // --- 4. Upload generated image to Supabase ---
     const imageResponse = await fetch(resultUrl);
     const imageBlob = await imageResponse.blob();
     const generatedFileName = `${user.id}/${timestamp}_garden_result.jpg`;
     await supabase.storage.from('images').upload(generatedFileName, imageBlob, { contentType: 'image/jpeg' });
     const finalUrl = supabase.storage.from('images').getPublicUrl(generatedFileName).data.publicUrl;
 
-    // --- 6. Deduct credit ---
+    // --- 5. Deduct credit ---
     const supabaseAdmin = createAdminClient();
     await supabaseAdmin.from('users_metadata').update({ credits: currentCredits - 1 }).eq('id', user.id);
 
-    // --- 7. Save generation record ---
+    // --- 6. Save generation record ---
     await supabase.from('generations').insert({
       user_id: user.id,
       original_image_url: originalUrl,

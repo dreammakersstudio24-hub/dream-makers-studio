@@ -24,7 +24,7 @@ const ROOM_PROMPTS: Record<string, string[]> = {
     "Platform bed with massive floor-to-ceiling headboard, floating nightstands, extremely cozy layered blankets, expensive rug.",
   ],
   bathroom: [
-    "Stunning freestanding luxury bathtub, elegant double vanity with large mirrors, premium walk-in glass shower, high-end tiling. Functional and usable layout.",
+    "Stunning freestanding luxury bathtub, elegant double vanity with large mirrors, premium walk-in glass shower, high-end tiling. Functional layout.",
     "Massive walk-in wet room shower with rainfall head, floating wood vanity, ergonomic spacing, realistic plumbing layout, towel warmer.",
     "Beautiful built-in soaking tub, large vanity with luxury marble top, highly functional layout, elegant wall sconces.",
   ],
@@ -99,25 +99,31 @@ export async function POST(req: Request) {
     await supabase.storage.from('images').upload(originalFileName, originalBuffer, { contentType: 'image/jpeg' });
     const originalUrl = supabase.storage.from('images').getPublicUrl(originalFileName).data.publicUrl;
 
-    // --- 2. Map aspect ratio (Ideogram v3 supports 9:16 and 16:9 natively) ---
-    const mappedAspectRatio = aspectRatio === "9:16" ? "9:16" : aspectRatio === "16:9" ? "16:9" : "1:1";
-
-    // --- 3. Run AI Model (ideogram-v3-quality) ---
+    // --- 2. Run AI Model (google/nano-banana-pro) ---
+    // aspect_ratio: "match_input_image" — automatically preserves original proportions (9:16, 16:9, etc.)
+    // image_input passes the original as a strong structural reference
     const output = await replicate.run(
-      "ideogram-ai/ideogram-v3-quality",
+      "google/nano-banana-pro",
       {
         input: {
-          prompt: `Award-winning ${stylePrompt} style interior design for a ${roomType}. ${styleFeatures}. ${roomObjects}. ${densityPrompt} Professional architectural photography, 8k resolution, masterpiece, cinematic lighting. Preserve the exact room layout, walls, windows, doors and camera angle from the reference image.`,
-          style_reference_images: [originalUrl],
-          aspect_ratio: mappedAspectRatio,
-          style_type: "Auto",
-          magic_prompt_option: "Off",
-          negative_prompt: "lowres, watermark, text, blurry, deformed, cartoon, extra walls, different room layout, different camera angle",
+          prompt: `STRUCTURE PRESERVATION RULE: The spatial layout, room dimensions, wall positions, window placements, door locations, floor plan, and camera perspective are IDENTICAL to the reference image. Do NOT alter the geometry of the space. Do NOT zoom, crop, widen, rotate, or shift the camera. This is a MATERIAL AND STYLE transformation only — change only surface finishes, colors, furniture style, and lighting mood.
+
+          Transform this ${roomType} interior into an award-winning ${stylePrompt} style design.
+          Style features: ${styleFeatures}.
+          Furniture: ${roomObjects}.
+          ${densityPrompt}
+          Quality: professional architectural photography, 8K resolution, cinematic lighting, masterpiece.`,
+          image_input: [originalUrl],
+          aspect_ratio: "match_input_image",
+          output_format: "jpg",
+          resolution: "2K",
+          safety_filter_level: "block_only_high",
+          allow_fallback_model: false,
         }
       }
     );
 
-    // --- 4. Extract URL from output ---
+    // --- 3. Extract URL from output ---
     let resultUrl = "";
     if (Array.isArray(output) && output.length > 0) {
       resultUrl = String(output[0]);
@@ -132,18 +138,18 @@ export async function POST(req: Request) {
       throw new Error(`AI generation failed. Model returned no valid image URL.`);
     }
 
-    // --- 5. Upload generated image to Supabase ---
+    // --- 4. Upload generated image to Supabase ---
     const imageResponse = await fetch(resultUrl);
     const imageBlob = await imageResponse.blob();
     const generatedFileName = `${user.id}/${timestamp}_generated.jpg`;
     await supabase.storage.from('images').upload(generatedFileName, imageBlob, { contentType: 'image/jpeg' });
     const finalUrl = supabase.storage.from('images').getPublicUrl(generatedFileName).data.publicUrl;
 
-    // --- 6. Deduct credit ---
+    // --- 5. Deduct credit ---
     const supabaseAdmin = createAdminClient();
     await supabaseAdmin.from('users_metadata').update({ credits: currentCredits - 1 }).eq('id', user.id);
 
-    // --- 7. Save generation record ---
+    // --- 6. Save generation record ---
     await supabase.from('generations').insert({
       user_id: user.id,
       original_image_url: originalUrl,
