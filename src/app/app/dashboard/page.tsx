@@ -1,7 +1,7 @@
 import { createServerSupabaseClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Sparkles, History, ShoppingBag, Crown, Armchair, Flame, Home, LogOut } from 'lucide-react'
+import { Sparkles, Crown, Armchair, Flame, Home, LogOut } from 'lucide-react'
 import { logout } from '@/actions/auth'
 import { PwaInstallBanner } from '@/components/PwaInstallBanner'
 
@@ -121,20 +121,7 @@ export default async function MobileDashboard() {
 
          </section>
 
-         {/* "Popular Tools" Minimalist List */}
-         <div className="space-y-6 pt-4">
-            <h2 className="text-[11px] font-black text-white/30 uppercase tracking-[0.4em] text-center">Popular tools</h2>
-            <div className="grid grid-cols-2 gap-4">
-                <Link href="/history" className="bg-[#1a1d23] border border-white/5 p-5 rounded-3xl flex items-center justify-center gap-3 shadow-lg hover:bg-[#22262e] transition-all active:scale-95 group">
-                    <History className="w-4 h-4 text-white/30 group-hover:text-white" />
-                    <span className="text-xs font-bold text-white/80 tracking-tight">History</span>
-                </Link>
-                <Link href="/shop" className="bg-[#1a1d23] border border-white/5 p-5 rounded-3xl flex items-center justify-center gap-3 shadow-lg hover:bg-[#22262e] transition-all active:scale-95 group">
-                    <ShoppingBag className="w-4 h-4 text-white/30 group-hover:text-white" />
-                    <span className="text-xs font-bold text-white/80 tracking-tight">Shop</span>
-                </Link>
-            </div>
-         </div>
+
 
          {/* Floating Bottom Nav */}
          <div className="fixed bottom-10 left-1/2 -translate-x-1/2 w-[90%] max-w-sm bg-[#1a1d23]/80 backdrop-blur-3xl border border-white/10 shadow-[0_25px_60px_rgba(0,0,0,0.5)] rounded-[2.5rem] px-8 py-5 flex items-center justify-between z-[100]">
