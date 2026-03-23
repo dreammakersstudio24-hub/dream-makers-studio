@@ -48,29 +48,29 @@
 }
 
 :root {
-  --background: oklch(0.1 0 0); /* Deep Midnight */
-  --foreground: oklch(0.98 0 0);
-  --card: oklch(0.15 0 0);
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.12 0 0);
-  --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.9 0.05 100); /* Premium Gold/Cream */
-  --primary-foreground: oklch(0.1 0 0);
-  --secondary: oklch(0.2 0 0);
-  --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.18 0 0);
-  --muted-foreground: oklch(0.6 0 0);
-  --accent: oklch(0.25 0 0);
-  --accent-foreground: oklch(0.98 0 0);
+  --background: oklch(0.98 0 0); /* Off-white / stone-50 */
+  --foreground: oklch(0.15 0 0); /* Near-black text */
+  --card: oklch(1 0 0);          /* White card */
+  --card-foreground: oklch(0.15 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.15 0 0);
+  --primary: oklch(0.2 0 0);     /* Dark button */
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.94 0 0);  /* Light gray */
+  --secondary-foreground: oklch(0.2 0 0);
+  --muted: oklch(0.94 0 0);
+  --muted-foreground: oklch(0.5 0 0);
+  --accent: oklch(0.94 0 0);
+  --accent-foreground: oklch(0.2 0 0);
   --destructive: oklch(0.58 0.22 27);
-  --border: oklch(1 0 0 / 8%);
-  --input: oklch(1 0 0 / 10%);
-  --ring: oklch(0.5 0 0);
+  --border: oklch(0.88 0 0);     /* Neutral-200 border */
+  --input: oklch(0.88 0 0);
+  --ring: oklch(0.6 0 0);
   --radius: 1.25rem;
 }
 
-/* Force Dark Mode defaults since user wants a dark-only premium feel */
-.dark, :root {
+/* Light theme override — same as :root */ 
+.dark {
   --background: oklch(0.08 0 0);
   --foreground: oklch(0.98 0 0);
   --card: oklch(0.12 0 0);
