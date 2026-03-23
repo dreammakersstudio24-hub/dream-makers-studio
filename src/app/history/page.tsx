@@ -1,8 +1,7 @@
 import { createServerSupabaseClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft, Sparkles, Image as ImageIcon, ArrowRight } from 'lucide-react'
-import { logout } from '@/actions/auth'
+import { ChevronLeft, Sparkles, Image as ImageIcon, Download } from 'lucide-react'
 
 export const metadata = {
   title: 'My Designs - Dream Makers Studio',
@@ -16,84 +15,83 @@ export default async function HistoryPage() {
     redirect('/login')
   }
 
-  // Filter for last 30 days
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  const thirtyDaysAgoIso = thirtyDaysAgo.toISOString();
+  const thirtyDaysAgo = new Date()
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-  const { data: generations, error } = await supabase
+  const { data: generations } = await supabase
     .from('generations')
     .select('*')
     .eq('user_id', user.id)
-    .gte('created_at', thirtyDaysAgoIso)
+    .gte('created_at', thirtyDaysAgo.toISOString())
     .order('created_at', { ascending: false })
 
   return (
-    <div className="min-h-screen bg-[#020203] text-white selection:bg-white/10">
-      <main className="max-w-7xl mx-auto pt-32 pb-32 px-4 sm:px-6 min-h-screen">
-        <div className="flex items-center gap-6 mb-16">
-            <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center border border-white/10 shadow-2xl backdrop-blur-3xl">
-                <ImageIcon className="w-8 h-8 text-white/20" />
-            </div>
-            <div>
-                <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter">Your Archive</h1>
-                <p className="text-white/30 font-black uppercase tracking-[0.3em] mt-2 text-[10px]">Elite Transformations History</p>
-            </div>
+    <div className="min-h-screen bg-stone-50 text-neutral-900 font-sans">
+      <main className="max-w-2xl mx-auto pt-8 pb-32 px-4">
+
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-8">
+          <Link href="/app/dashboard" className="w-10 h-10 flex items-center justify-center bg-white border border-neutral-200 rounded-2xl shadow-sm hover:bg-neutral-50 transition-all active:scale-95">
+            <ChevronLeft className="w-5 h-5 text-neutral-500" />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-black tracking-tight">My Designs</h1>
+            <p className="text-xs text-neutral-500 font-medium">Last 30 days</p>
+          </div>
         </div>
 
         {!generations || generations.length === 0 ? (
-            <div className="text-center py-32 bg-white/5 rounded-[3rem] border border-white/10 backdrop-blur-3xl">
-                <Sparkles className="w-16 h-16 text-white/10 mx-auto mb-6" />
-                <h3 className="text-2xl font-black uppercase tracking-tighter mb-4">The Archive is Empty</h3>
-                <p className="text-white/30 mb-10 font-medium tracking-tight uppercase text-xs">Initiate your first architectural vision in the studio.</p>
-                <Link 
-                    href="/app/dashboard"
-                    className="bg-white text-black px-10 py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] hover:bg-white/90 transition-all shadow-xl"
-                >
-                    Enter Studio
-                </Link>
+          <div className="text-center py-24 bg-white rounded-3xl border border-neutral-100 shadow-sm">
+            <div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <ImageIcon className="w-8 h-8 text-neutral-400" />
             </div>
+            <h3 className="text-xl font-bold mb-2 text-neutral-800">No designs yet</h3>
+            <p className="text-neutral-500 mb-8 text-sm">Start your first AI transformation</p>
+            <Link
+              href="/app/dashboard"
+              className="bg-black text-white px-8 py-3 rounded-2xl text-sm font-bold hover:bg-neutral-800 transition-all shadow-md active:scale-95 inline-block"
+            >
+              Go to Studio
+            </Link>
+          </div>
         ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                {generations.map((gen: any) => (
-                    <div key={gen.id} className="bg-white/5 rounded-[2.5rem] overflow-hidden border border-white/10 flex flex-col group transition-all duration-500 hover:border-white/20 hover:shadow-[0_40px_100px_rgba(0,0,0,0.8)]">
-                        <div className="relative aspect-[4/5] overflow-hidden bg-black">
-                            <img 
-                                src={gen.generated_image_url} 
-                                alt={`Generated ${gen.room_type} in ${gen.style}`}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
-                            />
-                            <div className="absolute top-6 left-6 flex flex-col gap-2">
-                                <span className="px-4 py-2 bg-black/60 backdrop-blur-xl rounded-full text-[9px] font-black uppercase tracking-[0.2em] border border-white/10 text-white shadow-2xl w-fit">
-                                    {gen.room_type}
-                                </span>
-                                <span className="px-4 py-2 bg-white/10 backdrop-blur-xl rounded-full text-[9px] font-black uppercase tracking-[0.2em] border border-white/10 text-white shadow-2xl w-fit">
-                                    {gen.style}
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <div className="p-8 flex justify-between items-center bg-[#0a0a0b] border-t border-white/5">
-                            <div className="text-[10px] text-white/20 font-black uppercase tracking-[0.2em]">
-                                {new Date(gen.created_at).toLocaleDateString(undefined, {
-                                    year: 'numeric',
-                                    month: 'short',
-                                    day: 'numeric'
-                                })}
-                            </div>
-                            <a 
-                                href={gen.generated_image_url} 
-                                download={`design-${gen.id}.jpg`}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-[10px] font-black text-white hover:text-white/70 transition-all uppercase tracking-[0.3em] flex items-center gap-2"
-                            >
-                                Acquire <ArrowRight className="w-3 h-3" />
-                            </a>
-                        </div>
-                    </div>
-                ))}
-            </div>
+          <div className="grid grid-cols-2 gap-3">
+            {generations.map((gen: any) => (
+              <div key={gen.id} className="bg-white rounded-2xl overflow-hidden border border-neutral-100 shadow-sm flex flex-col">
+                <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100">
+                  <img
+                    src={gen.generated_image_url}
+                    alt={`${gen.room_type} — ${gen.style}`}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute top-2 left-2 flex flex-col gap-1">
+                    <span className="px-2 py-1 bg-black/60 backdrop-blur rounded-full text-[8px] font-bold text-white w-fit">
+                      {gen.room_type}
+                    </span>
+                    <span className="px-2 py-1 bg-white/80 backdrop-blur rounded-full text-[8px] font-bold text-neutral-700 w-fit">
+                      {gen.style}
+                    </span>
+                  </div>
+                </div>
+                <div className="p-3 flex justify-between items-center">
+                  <span className="text-[10px] text-neutral-400 font-medium">
+                    {new Date(gen.created_at).toLocaleDateString('th-TH', {
+                      month: 'short', day: 'numeric'
+                    })}
+                  </span>
+                  <a
+                    href={gen.generated_image_url}
+                    download={`design-${gen.id}.jpg`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 transition-colors"
+                  >
+                    <Download className="w-3 h-3" /> Save
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </main>
     </div>

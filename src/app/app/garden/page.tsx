@@ -113,15 +113,15 @@ export default function GardenGeneratePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f1115] text-white font-sans pb-32 selection:bg-white/10 overflow-x-hidden">
-      <header className="sticky top-0 z-50 bg-[#0f1115]/80 backdrop-blur-xl border-b border-white/5 px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-             <Link href="/app/dashboard" className="w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all text-white/40 hover:text-white">
-                <ChevronLeft className="w-6 h-6" />
+    <div className="min-h-screen bg-stone-50 text-neutral-900 font-sans pb-32 overflow-x-hidden">
+      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-neutral-200 px-4 h-14 flex items-center justify-between shadow-sm">
+          <div className="flex items-center gap-3">
+             <Link href="/app/dashboard" className="w-9 h-9 flex items-center justify-center bg-white border border-neutral-200 rounded-2xl hover:bg-neutral-50 transition-all text-neutral-500 shadow-sm">
+                <ChevronLeft className="w-5 h-5" />
              </Link>
              <div>
-                <h1 className="font-black uppercase tracking-tighter text-xl leading-none">Garden AI</h1>
-                <p className="text-[9px] text-white/30 uppercase tracking-[0.3em] font-black">{step}</p>
+                <h1 className="font-bold text-base tracking-tight text-neutral-900">Garden AI</h1>
+                <p className="text-[9px] text-neutral-400 uppercase tracking-[0.2em] font-bold">{step}</p>
              </div>
           </div>
       </header>
@@ -129,40 +129,38 @@ export default function GardenGeneratePage() {
       <main className="max-w-md mx-auto px-6 pt-10">
           <AnimatePresence mode="wait">
             {authStatus === "authorized" && step === "upload" && (
-                <motion.div key="upload" className="space-y-12">
-                    <div className="bg-white/5 border border-white/10 p-12 rounded-[3.5rem] text-center shadow-2xl relative overflow-hidden group">
-                        <div className="absolute inset-0 bg-blue-500/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-                        <div className="w-24 h-24 bg-white/5 border border-white/10 text-white rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-xl group-hover:scale-110 transition-all duration-500">
-                            <Camera className="w-10 h-10" />
+                <motion.div key="upload" className="space-y-6">
+                    <div className="bg-white border border-neutral-100 p-8 rounded-3xl text-center shadow-sm">
+                        <div className="w-16 h-16 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Camera className="w-8 h-8" />
                         </div>
-                        <h2 className="text-3xl font-black uppercase tracking-tighter mb-4">Garden Vision</h2>
-                        <p className="text-white/30 text-xs font-medium uppercase tracking-tight leading-relaxed">Let our AI synthesize a luxury landscape from your existing outdoor space.</p>
+                        <h2 className="text-xl font-bold mb-2 text-neutral-900">Garden Vision</h2>
+                        <p className="text-neutral-500 text-sm leading-relaxed">Upload a photo of your outdoor space and let AI transform it.</p>
                     </div>
                     <input type="file" accept="image/*" className="hidden" id="garden-upload" onChange={handleFileChange} />
-                    <label htmlFor="garden-upload" className="w-full bg-white text-black py-6 rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-4 cursor-pointer shadow-[0_20px_50px_rgba(255,255,255,0.1)] hover:scale-[1.02] active:scale-95 transition-all">
-                        <Sparkles className="w-5 h-5" /> Take or Upload Space
+                    <label htmlFor="garden-upload" className="w-full bg-black text-white py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-3 cursor-pointer hover:bg-neutral-800 active:scale-95 transition-all shadow-lg">
+                        <Camera className="w-5 h-5" /> Take or Upload Photo
                     </label>
                 </motion.div>
             )}
 
             {authStatus === "authorized" && step === "style" && (
-                <motion.div key="style" className="space-y-10">
-                    <div className="space-y-2">
-                        <h2 className="font-black uppercase tracking-tighter text-3xl text-white">Select Style</h2>
-                        <p className="text-white/30 text-[10px] uppercase tracking-[0.4em] font-black italic">Architectural Direction</p>
+                <motion.div key="style" className="space-y-5">
+                    <div className="space-y-1">
+                        <h2 className="font-bold text-xl text-neutral-900">Select Style</h2>
+                        <p className="text-neutral-500 text-xs">Choose your garden direction</p>
                     </div>
-                    <div className="grid grid-cols-2 gap-5">
+                    <div className="grid grid-cols-2 gap-3">
                         {GARDEN_STYLES.map(style => (
-                            <button 
-                                key={style.id} 
-                                onClick={() => { setSelectedStyleId(style.id); setStep("features"); }} 
-                                className="group relative aspect-[4/5] rounded-[2rem] overflow-hidden border border-white/5 shadow-2xl hover:scale-[1.03] transition-all duration-500"
+                            <button
+                                key={style.id}
+                                onClick={() => { setSelectedStyleId(style.id); setStep("features"); }}
+                                className="group relative aspect-[4/5] rounded-2xl overflow-hidden border border-neutral-100 shadow-sm hover:scale-[1.02] transition-all duration-300"
                             >
-                                <img src={style.image} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[4000ms]" />
-                                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/40 to-transparent p-6 pt-12">
-                                    <span className="text-white text-[11px] font-black uppercase tracking-[0.2em] leading-tight block truncate group-hover:text-blue-400 transition-colors">{style.nameKey}</span>
+                                <img src={style.image} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[3000ms]" />
+                                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-3 pt-8">
+                                    <span className="text-white text-[10px] font-bold leading-tight block">{style.nameKey}</span>
                                 </div>
-                                <div className="absolute inset-0 border-2 border-white/0 group-hover:border-white/10 rounded-[2rem] transition-all pointer-events-none" />
                             </button>
                         ))}
                     </div>
@@ -170,69 +168,69 @@ export default function GardenGeneratePage() {
             )}
 
             {authStatus === "authorized" && step === "features" && (
-                <motion.div key="features" className="space-y-10">
-                    <div className="space-y-2">
-                        <h2 className="font-black uppercase tracking-tighter text-3xl text-white">Enhancements</h2>
-                        <p className="text-white/30 text-[10px] uppercase tracking-[0.4em] font-black italic">Synthesize Assets</p>
+                <motion.div key="features" className="space-y-5 pb-28">
+                    <div className="space-y-1">
+                        <h2 className="font-bold text-xl text-neutral-900">Enhancements</h2>
+                        <p className="text-neutral-500 text-xs">Select optional features to add</p>
                     </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-3">
                         {GARDEN_FEATURES.map(f => {
                             if (!f) return null;
                             const Icon = f.icon;
                             const isSelected = selectedFeatures.includes(f.id);
                             return (
-                                <button 
-                                    key={f.id} 
-                                    onClick={() => toggleFeature(f.id)} 
-                                    className={`relative p-6 rounded-[2.5rem] border transition-all duration-700 flex flex-col items-center gap-4 group ${isSelected ? 'border-blue-500/50 bg-blue-500/10 shadow-[0_0_40px_rgba(59,130,246,0.15)] ring-1 ring-blue-500/20' : 'border-white/5 bg-white/5 hover:bg-white/10'}`}
+                                <button
+                                    key={f.id}
+                                    onClick={() => toggleFeature(f.id)}
+                                    className={`relative p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-3 active:scale-[1.02] ${isSelected ? 'border-blue-500 bg-blue-50 shadow-md' : 'border-neutral-100 bg-white hover:border-neutral-200'}`}
                                 >
-                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 ${isSelected ? 'bg-blue-500 text-white shadow-[0_10px_30px_rgba(59,130,246,0.5)] scale-110' : 'bg-white/5 text-white/30 group-hover:text-white/60'}`}>
-                                        <Icon className="w-7 h-7" />
+                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${isSelected ? 'bg-blue-500 text-white' : 'bg-neutral-100 text-neutral-500'}`}>
+                                        <Icon className="w-6 h-6" />
                                     </div>
-                                    <span className={`text-[9px] font-black uppercase tracking-widest text-center leading-tight transition-colors ${isSelected ? 'text-white' : 'text-white/40 group-hover:text-white/60'}`}>{f.label}</span>
+                                    <span className={`text-[9px] font-bold uppercase tracking-wide text-center ${isSelected ? 'text-blue-700' : 'text-neutral-500'}`}>{f.label}</span>
                                     {isSelected && (
-                                        <motion.div layoutId="active-dot" className="absolute top-5 right-5 w-2.5 h-2.5 rounded-full bg-blue-400 shadow-[0_0_15px_rgba(96,165,250,1)] ring-2 ring-blue-500/20" />
+                                        <motion.div layoutId="active-dot" className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-blue-500" />
                                     )}
                                 </button>
                             );
                         })}
                     </div>
-                    
-                    <div className="pt-4">
-                        <button 
-                            onClick={handleGenerate} 
-                            className="w-full bg-white text-black py-6 rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-3 shadow-[0_20px_60px_rgba(255,255,255,0.15)] hover:scale-[1.02] active:scale-95 transition-all group overflow-hidden relative"
+                    <div className="fixed bottom-0 left-0 w-full bg-white border-t border-neutral-200 p-3 z-50">
+                        {error && <div className="text-red-500 text-xs text-center mb-2 bg-red-50 py-1.5 rounded-xl">{error}</div>}
+                        <button
+                            onClick={handleGenerate}
+                            className="w-full bg-black text-white py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 active:scale-95 shadow-xl transition-all"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer" />
-                            <Sparkles className="w-5 h-5 text-blue-500" /> 
-                            <span>Synthesize Masterpiece</span>
+                            <Sparkles className="w-5 h-5 text-yellow-400" /> Generate (1 Credit)
                         </button>
                     </div>
                 </motion.div>
             )}
 
             {authStatus === "authorized" && step === "processing" && (
-                <div className="text-center py-40 space-y-8">
-                    <div className="relative w-24 h-24 mx-auto">
-                        <Loader2 className="w-full h-full animate-spin text-white/10" />
-                        <Sparkles className="absolute inset-0 w-8 h-8 m-auto text-white animate-pulse" />
+                <div className="text-center py-24 space-y-6">
+                    <div className="w-20 h-20 mb-2 relative mx-auto">
+                        <div className="absolute inset-0 rounded-[1.5rem] border-4 border-neutral-200" />
+                        <div className="absolute inset-0 rounded-[1.5rem] border-4 border-black border-t-transparent animate-spin" />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <Sparkles className="w-6 h-6 text-black animate-pulse" />
+                        </div>
                     </div>
                     <div>
-                        <h2 className="text-2xl font-black uppercase tracking-tighter">Synthesizing...</h2>
-                        <p className="text-[10px] text-white/30 uppercase tracking-[0.4em] font-black mt-2">Crafting your luxury oasis</p>
+                        <h2 className="text-xl font-bold text-neutral-900">Transforming Garden...</h2>
+                        <p className="text-sm text-neutral-500 mt-1">AI is crafting your outdoor space. 15–30 seconds.</p>
                     </div>
                 </div>
             )}
 
             {authStatus === "authorized" && step === "result" && resultImage && (
-                <div className="space-y-12">
-                    <div className="rounded-[3rem] overflow-hidden border border-white/10 shadow-2xl">
+                <div className="space-y-5 pb-10">
+                    <div className="rounded-2xl overflow-hidden border border-neutral-100 shadow-sm">
                         <CompareSlider originalImage={selectedImage!} resultImage={resultImage} />
                     </div>
-                    <div className="grid grid-cols-2 gap-5">
-                        <a href={resultImage} download className="bg-white text-black py-6 rounded-2xl font-black text-xs uppercase tracking-[0.2em] text-center shadow-xl hover:scale-105 transition-all active:scale-95">Download</a>
-                        <button onClick={() => setStep('upload')} className="bg-white/5 border border-white/10 text-white py-6 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-white/10 transition-all active:scale-95">New Project</button>
+                    <div className="grid grid-cols-2 gap-3">
+                        <a href={resultImage} download className="bg-black text-white py-3.5 rounded-2xl font-bold text-sm text-center shadow-md hover:bg-neutral-800 active:scale-95 transition-all">Download</a>
+                        <button onClick={() => setStep('upload')} className="bg-white border border-neutral-200 text-neutral-800 py-3.5 rounded-2xl font-bold text-sm hover:bg-neutral-50 transition-all active:scale-95">New Photo</button>
                     </div>
                 </div>
             )}
