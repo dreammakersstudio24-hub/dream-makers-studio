@@ -1,33 +1,32 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Share } from 'lucide-react';
+import { Share, MonitorSmartphone } from 'lucide-react';
 
 export function PwaInstallBanner() {
-  const [platform, setPlatform] = useState<'ios' | 'android' | null>(null);
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [isIos, setIsIos] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   useEffect(() => {
-    // Already installed as PWA — hide
+    // Already installed as PWA — hide banner
     if (window.matchMedia('(display-mode: standalone)').matches) {
       setIsInstalled(true);
       return;
     }
 
     const userAgent = window.navigator.userAgent.toLowerCase();
-
     if (/iphone|ipad|ipod/.test(userAgent)) {
-      setPlatform('ios');
-    } else if (/android/.test(userAgent)) {
-      setPlatform('android');
-      const handler = (e: any) => {
-        e.preventDefault();
-        setDeferredPrompt(e);
-      };
-      window.addEventListener('beforeinstallprompt', handler);
-      return () => window.removeEventListener('beforeinstallprompt', handler);
+      setIsIos(true);
     }
+
+    // Works on Desktop Chrome, Edge, and Android Chrome
+    const handler = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
   const handleInstall = async () => {
@@ -38,8 +37,8 @@ export function PwaInstallBanner() {
     setDeferredPrompt(null);
   };
 
-  // Hide if installed or on unsupported platform
-  if (isInstalled || !platform) return null;
+  // Hide if already installed as PWA
+  if (isInstalled) return null;
 
   return (
     <div className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 flex items-center justify-between gap-3">
@@ -49,20 +48,22 @@ export function PwaInstallBanner() {
         </div>
         <div className="min-w-0">
           <p className="text-[10px] font-black text-white uppercase tracking-wider">Add to Home Screen</p>
-          {platform === 'ios' ? (
+          {isIos ? (
             <p className="text-[9px] text-white/40 leading-tight">
               Tap <Share className="w-2.5 h-2.5 inline text-blue-400" /> → "Add to Home Screen"
             </p>
           ) : (
-            <p className="text-[9px] text-white/40">Install for the best experience</p>
+            <p className="text-[9px] text-white/40">Install app for the best experience</p>
           )}
         </div>
       </div>
 
-      {platform === 'android' && (
+      {/* Show Install button on Chrome/Edge (desktop & Android) */}
+      {!isIos && (
         <button
           onClick={handleInstall}
-          className="px-3 py-1.5 bg-white text-black rounded-xl font-black text-[9px] uppercase tracking-wider active:scale-95 transition-all shrink-0"
+          disabled={!deferredPrompt}
+          className="px-3 py-1.5 bg-white text-black rounded-xl font-black text-[9px] uppercase tracking-wider active:scale-95 transition-all shrink-0 disabled:opacity-40"
         >
           Install
         </button>
