@@ -1,7 +1,7 @@
 import { createServerSupabaseClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Sparkles, Crown, Armchair, Flame, Home, LogOut } from 'lucide-react'
+import { Sparkles, Crown, Armchair, Flame, Home, LogOut, History } from 'lucide-react'
 import { logout } from '@/actions/auth'
 import { PwaInstallBanner } from '@/components/PwaInstallBanner'
 
