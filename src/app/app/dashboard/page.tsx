@@ -1,7 +1,7 @@
 import { createServerSupabaseClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Sparkles, History, Download, Settings, Crown, Armchair, Flame, Home } from 'lucide-react'
+import { Sparkles, History, Download, Crown, Armchair, Flame, Home, LogOut } from 'lucide-react'
 import { logout } from '@/actions/auth'
 import { PwaInstallBanner } from '@/components/PwaInstallBanner'
 
@@ -35,13 +35,15 @@ export default async function MobileDashboard() {
          
           {/* Title Section & Logout */}
           <header className="relative text-center space-y-2">
+             {/* Logout button — top right, clearly labeled */}
              <div className="absolute right-0 top-0">
                 <form action={logout}>
-                   <button 
+                   <button
                      type="submit"
-                     className="p-2.5 rounded-2xl bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 transition-all active:scale-95 shadow-xl"
+                     className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 transition-all active:scale-95"
                    >
-                     <Settings className="w-4 h-4" />
+                     <LogOut className="w-3.5 h-3.5" />
+                     <span className="text-[10px] font-bold uppercase tracking-wide">Logout</span>
                    </button>
                 </form>
              </div>
