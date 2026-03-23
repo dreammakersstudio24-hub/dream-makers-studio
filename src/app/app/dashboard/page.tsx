@@ -1,8 +1,9 @@
 import { createServerSupabaseClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Sparkles, History, ImageIcon, Download, Settings, Crown, ChevronLeft, Armchair, Flame, Home } from 'lucide-react'
+import { Sparkles, History, Download, Settings, Crown, Armchair, Flame, Home } from 'lucide-react'
 import { logout } from '@/actions/auth'
+import { PwaInstallBanner } from '@/components/PwaInstallBanner'
 
 export const metadata = {
   title: 'Dashboard - Transformation App',
@@ -30,32 +31,34 @@ export default async function MobileDashboard() {
     <div className="min-h-screen bg-[#0f1115] text-white pb-32 font-sans selection:bg-white/10 overflow-x-hidden">
       
       {/* Premium Launcher Body */}
-      <main className="px-6 pt-16 space-y-12 max-w-lg mx-auto">
+      <main className="px-4 pt-24 space-y-6 max-w-lg mx-auto">
          
           {/* Title Section & Logout */}
-          <header className="relative text-center space-y-4">
+          <header className="relative text-center space-y-2">
              <div className="absolute right-0 top-0">
                 <form action={logout}>
                    <button 
                      type="submit"
-                     className="p-3 rounded-2xl bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 transition-all active:scale-95 shadow-xl"
+                     className="p-2.5 rounded-2xl bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 transition-all active:scale-95 shadow-xl"
                    >
-                     <Settings className="w-5 h-5" />
+                     <Settings className="w-4 h-4" />
                    </button>
                 </form>
              </div>
 
-             <div className="flex items-center justify-center gap-2 mb-2">
-                <div className="w-8 h-8 rounded-full bg-yellow-400/20 flex items-center justify-center border border-yellow-400/50 shadow-[0_0_15px_rgba(250,204,21,0.3)]">
-                    <Sparkles className="w-4 h-4 text-yellow-500" />
+             <div className="flex items-center justify-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-yellow-400/20 flex items-center justify-center border border-yellow-400/50 shadow-[0_0_12px_rgba(250,204,21,0.3)]">
+                    <Sparkles className="w-3 h-3 text-yellow-500" />
                 </div>
-                <span className="text-[11px] font-black uppercase tracking-[0.4em] text-white/80">Dream Makers Studio AI</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.35em] text-white/70">Dream Makers Studio AI</span>
             </div>
-            <h1 className="text-4xl font-black tracking-tight text-white leading-none">
-               Transform <br/> 
-               <span className="text-white/40 font-medium">Your Space</span>
+            <h1 className="text-2xl font-black tracking-tight text-white leading-none">
+               Transform <span className="text-white/40 font-medium">Your Space</span>
             </h1>
           </header>
+
+          {/* PWA Install Banner — inline, no popup */}
+          <PwaInstallBanner />
 
          {/* 2-Column Grid Transformation Choices */}
          <section className="grid grid-cols-2 gap-5 pt-4">
