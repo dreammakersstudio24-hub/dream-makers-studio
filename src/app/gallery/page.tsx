@@ -67,19 +67,19 @@ export default function Gallery() {
   }, [selectedImage, items]);
 
   return (
-    <div className="min-h-screen bg-[#020203] text-white selection:bg-white/10 relative">
+    <div className="min-h-screen bg-stone-50 text-neutral-900 relative">
       <main className="max-w-7xl mx-auto p-4 sm:p-6 pt-32 pb-24 sm:pt-40">
         {/* Search Bar */}
-        <div className="max-w-2xl mx-auto mb-8 sm:mb-16 relative group">
-           <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
-              <Search className="w-5 h-5 text-white/20 group-focus-within:text-white transition-colors" />
+        <div className="max-w-2xl mx-auto mb-8 sm:mb-12 relative">
+           <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+              <Search className="w-5 h-5 text-neutral-400" />
            </div>
-           <input 
+           <input
              type="text"
-             placeholder="Search by keyword, style, or room (e.g. Modern, Living Room)"
+             placeholder="Search by style, room... (e.g. Modern, Living Room)"
              value={searchQuery}
              onChange={(e) => setSearchQuery(e.target.value)}
-             className="w-full bg-white/5 border border-white/10 backdrop-blur-3xl rounded-full py-4 sm:py-5 pl-14 pr-8 text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:shadow-[0_0_30px_rgba(255,255,255,0.05)] transition-all font-medium text-sm sm:text-base tracking-tight"
+             className="w-full bg-white border border-neutral-200 shadow-sm rounded-2xl py-3.5 pl-12 pr-6 text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-100 transition-all text-sm"
            />
         </div>
 
@@ -87,18 +87,16 @@ export default function Gallery() {
         {loading ? (
           <div className="columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-               <div key={n} className="break-inside-avoid aspect-[3/4] bg-white/5 rounded-3xl border border-white/5 animate-pulse flex items-center justify-center">
-                 <Loader2 className="w-8 h-8 text-white/10 animate-spin" />
-               </div>
+               <div key={n} className="break-inside-avoid aspect-[3/4] bg-neutral-100 rounded-2xl border border-neutral-100 animate-pulse" />
             ))}
           </div>
         ) : filteredItems.length === 0 ? (
-          <div className="text-center py-24 text-white/30 font-medium flex flex-col items-center justify-center bg-white/5 border border-white/10 rounded-[2.5rem] backdrop-blur-3xl">
-             <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 text-white/20 border border-white/10">
-                 <Search className="w-8 h-8" />
+          <div className="text-center py-20 text-neutral-400 flex flex-col items-center justify-center bg-white border border-neutral-100 shadow-sm rounded-3xl">
+             <div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                 <Search className="w-8 h-8 text-neutral-300" />
              </div>
-             <p className="text-2xl font-black tracking-tighter mb-2 text-white">No matches found.</p>
-             <p className="text-sm mt-2 max-w-sm mx-auto text-white/40">Try a broader keyword or browse different styles.</p>
+             <p className="text-xl font-bold mb-2 text-neutral-700">No results found.</p>
+             <p className="text-sm text-neutral-400">Try a different keyword or style.</p>
           </div>
         ) : (
           <div className="columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4">
@@ -111,7 +109,7 @@ export default function Gallery() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5, delay: (Math.min(i, 10)) * 0.05 }}
                     onClick={() => { setSelectedImage(item); setIsFullscreen(false); }}
-                    className="group cursor-zoom-in relative bg-white/5 rounded-3xl overflow-hidden shadow-2xl border border-white/10 transition-all block w-full"
+                    className="group cursor-zoom-in relative bg-neutral-100 rounded-2xl overflow-hidden shadow-sm border border-neutral-100 hover:shadow-md transition-all block w-full"
                     style={{ aspectRatio: i % 3 === 0 ? '3/4' : i % 2 === 0 ? '4/5' : '1/1' }}
                   >
                     {item.after_image_url ? (
@@ -135,11 +133,11 @@ export default function Gallery() {
 
                   {showAd && (
                     <motion.div 
-                      className="mt-4 w-full bg-white/5 rounded-3xl overflow-hidden border border-white/10 backdrop-blur-3xl"
+                      className="mt-3 w-full bg-white rounded-2xl overflow-hidden border border-neutral-100"
                       initial={{ opacity: 0 }} 
                       animate={{ opacity: 1 }}
                     >
-                      <AdUnit className="aspect-square sm:aspect-auto sm:h-64 flex items-center justify-center text-[10px] font-black tracking-[0.4em] text-white/20 uppercase" />
+                      <AdUnit className="aspect-square sm:aspect-auto sm:h-64 flex items-center justify-center text-[10px] font-bold tracking-widest text-neutral-300 uppercase" />
                     </motion.div>
                   )}
                 </div>
@@ -190,69 +188,63 @@ export default function Gallery() {
                      />
                   </div>
                 ) : (
-                  <div className="bg-[#0a0a0b] rounded-[2.5rem] overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.8)] border border-white/10 flex flex-col lg:flex-row min-h-[70vh]">
-                     <div className="w-full lg:w-[60%] bg-[#020203] relative min-h-[40vh] sm:min-h-[50vh] lg:min-h-full group cursor-zoom-in" onClick={() => setIsFullscreen(true)}>
+                   <div className="bg-white rounded-2xl overflow-hidden shadow-lg border border-neutral-100 flex flex-col lg:flex-row min-h-[60vh]">
+                     <div className="w-full lg:w-[60%] bg-neutral-100 relative min-h-[40vh] sm:min-h-[50vh] lg:min-h-full group cursor-zoom-in" onClick={() => setIsFullscreen(true)}>
                         {selectedImage.after_image_url ? (
                            <img src={selectedImage.after_image_url} alt={selectedImage.title} className="absolute inset-0 w-full h-full object-cover sm:object-contain transition-transform duration-700 group-hover:scale-105" />
                         ) : (
-                           <div className="w-full h-full flex items-center justify-center text-white/5 font-black uppercase tracking-[0.5em]">No Vision</div>
+                           <div className="w-full h-full flex items-center justify-center text-neutral-300 font-bold uppercase tracking-widest text-sm">No Image</div>
                         )}
-                        <div className="absolute top-6 right-6 bg-black/60 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md border border-white/10">
-                          <Maximize2 className="w-5 h-5" />
+                        <div className="absolute top-4 right-4 bg-white/80 text-neutral-700 p-2.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur border border-neutral-200">
+                          <Maximize2 className="w-4 h-4" />
                         </div>
                      </div>
 
-                     <div className="w-full lg:w-[40%] p-8 sm:p-12 flex flex-col bg-[#0a0a0b]">
-                        <div className="flex items-center justify-between mb-8">
-                           <span className="text-white/60 uppercase tracking-[0.3em] text-[10px] font-black bg-white/5 px-4 py-2 rounded-full border border-white/10">
+                     <div className="w-full lg:w-[40%] p-6 sm:p-10 flex flex-col bg-white">
+                        <div className="flex items-center justify-between mb-6">
+                           <span className="text-neutral-500 uppercase tracking-wider text-[10px] font-bold bg-neutral-100 px-3 py-1.5 rounded-full">
                              {selectedImage.style_category}
                            </span>
                            {selectedImage.is_ai_generated && (
-                             <span className="text-blue-400 text-[10px] tracking-[0.2em] font-black uppercase flex items-center gap-2">
+                             <span className="text-blue-600 text-[10px] tracking-wider font-bold uppercase flex items-center gap-1.5">
                                 <Sparkles className="w-3 h-3" />
-                                AI Concept
+                                AI Design
                              </span>
                            )}
                         </div>
-                        
-                        <h2 className="text-3xl sm:text-5xl font-black text-white mb-6 tracking-tighter leading-tight">{selectedImage.title}</h2>
-                        {selectedImage.description && <p className="text-white/40 font-medium text-sm sm:text-base leading-relaxed mb-8 tracking-tight">{selectedImage.description}</p>}
+                        <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-4 tracking-tight leading-tight">{selectedImage.title}</h2>
+                        {selectedImage.description && <p className="text-neutral-500 text-sm leading-relaxed mb-6">{selectedImage.description}</p>}
 
                         {selectedImage.keywords && selectedImage.keywords.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mb-10">
+                          <div className="flex flex-wrap gap-2 mb-8">
                             {selectedImage.keywords.map(kw => (
-                              <button key={kw} onClick={() => { setSearchQuery(kw); setSelectedImage(null); }} className="px-4 py-2 bg-white/5 hover:bg-white/10 transition-all text-[10px] font-black tracking-widest text-white/60 rounded-full border border-white/10 uppercase">{kw}</button>
+                              <button key={kw} onClick={() => { setSearchQuery(kw); setSelectedImage(null); }} className="px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 transition-all text-[10px] font-bold tracking-wider text-neutral-600 rounded-full uppercase">{kw}</button>
                             ))}
                           </div>
                         )}
 
-                        <div className="mt-auto pt-10 border-t border-white/5">
-                          <h4 className="text-[10px] uppercase tracking-[0.4em] text-white/20 font-black mb-6">Acquire Experience</h4>
-                          <Link href={`/shop/${selectedImage.style_category.toLowerCase().replace(/ /g, '-')}`} className="w-full bg-white text-black py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] hover:bg-white/90 transition-all flex items-center justify-center gap-3 group mb-4">
-                            Explore {selectedImage.style_category} Pieces
+                        <div className="mt-auto pt-6 border-t border-neutral-100">
+                          <h4 className="text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-4">Explore More</h4>
+                          <Link href={`/shop/${selectedImage.style_category.toLowerCase().replace(/ /g, '-')}`} className="w-full bg-black text-white py-3.5 rounded-2xl text-sm font-bold hover:bg-neutral-800 transition-all flex items-center justify-center gap-2 group mb-3 active:scale-95">
+                            {selectedImage.style_category} Collection
                             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-all" />
                           </Link>
-                          {!selectedImage.affiliate_url && (
-                             <div className="w-full p-5 bg-white/5 rounded-2xl border border-white/10 text-center">
-                                <p className="text-[10px] text-white/30 uppercase font-black tracking-[0.2em] leading-loose"> studio alternatives curated for this vision. </p>
-                             </div>
-                          )}
                         </div>
                      </div>
-                  </div>
+                   </div>
                 )}
 
                 {relatedImages.length > 0 && !isFullscreen && (
-                  <div className="pb-16">
-                     <h3 className="text-xl font-black tracking-tight mb-8 text-white">More like this</h3>
-                     <div className="columns-2 sm:columns-3 xl:columns-4 gap-4 space-y-4">
+                  <div className="pb-12">
+                     <h3 className="text-lg font-bold tracking-tight mb-5 text-neutral-800">More like this</h3>
+                     <div className="columns-2 sm:columns-3 xl:columns-4 gap-3 space-y-3">
                         {relatedImages.map(item => (
-                           <div key={item.id} className="break-inside-avoid w-full relative rounded-2xl overflow-hidden cursor-pointer group border border-white/10 aspect-[4/5] bg-white/5" onClick={() => setSelectedImage(item)}>
+                           <div key={item.id} className="break-inside-avoid w-full relative rounded-xl overflow-hidden cursor-pointer group border border-neutral-100 aspect-[4/5] bg-neutral-100" onClick={() => setSelectedImage(item)}>
                              <img src={item.after_image_url} alt={item.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                            </div>
                         ))}
                      </div>
-                  </div>
+                   </div>
                 )}
               </motion.div>
             </div>

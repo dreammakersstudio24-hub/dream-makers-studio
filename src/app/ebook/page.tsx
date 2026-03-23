@@ -133,7 +133,7 @@ export default function EBookPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#020203] text-white selection:bg-white/10">
+    <div className="min-h-screen bg-stone-50 text-neutral-900 selection:bg-blue-100">
       <main className="max-w-6xl mx-auto px-6 pt-32 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
           
@@ -145,7 +145,7 @@ export default function EBookPage() {
             className="flex flex-col gap-8"
           >
             {/* Real Book Cover */}
-            <div className="rounded-[2.5rem] shadow-[0_40px_100px_rgba(0,0,0,1)] overflow-hidden group border border-white/10">
+            <div className="rounded-2xl shadow-xl overflow-hidden border border-neutral-100 group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
                 src="/api/ebook-cover"
@@ -154,18 +154,18 @@ export default function EBookPage() {
               />
             </div>
             
-            <div className="flex items-center justify-between p-8 bg-white/5 rounded-[2rem] border border-white/10 shadow-2xl backdrop-blur-3xl">
-              <div className="flex gap-6">
-                <div className="text-5xl font-black text-white tracking-tighter">4.9</div>
+            <div className="flex items-center justify-between p-6 bg-white rounded-2xl border border-neutral-100 shadow-sm">
+              <div className="flex gap-4">
+                <div className="text-4xl font-bold text-neutral-900 tracking-tight">4.9</div>
                 <div>
-                  <div className="flex text-white mb-2">
+                  <div className="flex text-amber-400 mb-1">
                     {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
                   </div>
-                  <div className="text-[10px] text-white/30 tracking-[0.3em] uppercase font-black">2,000+ Readers</div>
+                  <div className="text-[10px] text-neutral-500 tracking-widest uppercase font-bold">2,000+ Readers</div>
                 </div>
               </div>
-              <div className="h-10 w-px bg-white/10" />
-              <div className="text-blue-400 font-black tracking-[0.3em] text-[10px] uppercase">Elite Release</div>
+              <div className="h-10 w-px bg-neutral-200" />
+              <div className="text-blue-600 font-bold tracking-wider text-[10px] uppercase">Bestseller</div>
             </div>
           </motion.div>
 
@@ -175,25 +175,25 @@ export default function EBookPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <div className="inline-block px-5 py-2 rounded-full border border-white/10 text-[10px] font-black text-white/40 bg-white/5 tracking-[0.3em] uppercase mb-8">
-              Digital Manuscript
+            <div className="inline-block px-4 py-2 rounded-full border border-neutral-200 bg-white text-[10px] font-bold text-neutral-500 tracking-wider uppercase mb-6">
+              Digital E-Book
             </div>
             
-            <h1 className="text-5xl lg:text-7xl font-black leading-tight mb-8 text-white tracking-tighter uppercase">
+            <h1 className="text-4xl lg:text-6xl font-bold leading-tight mb-6 text-neutral-900 tracking-tight">
               The AI Design Bible
             </h1>
             
-            <p className="text-white/40 text-lg font-medium tracking-tight leading-relaxed mb-10">
-              Master the art of architectural synthesis. Dream Makers Studio Pro Prompts is a curated collection of 50 elite-tier AI prompts designed to generate hyper-realistic, high-fidelity exterior visions. Direct from our lead designers to your studio.
+            <p className="text-neutral-500 text-base font-medium leading-relaxed mb-8">
+              50 expert AI prompts for garden and outdoor design — from our lead designers to your home.
             </p>
 
-            <div className="space-y-6 mb-12">
+            <div className="space-y-3 mb-10">
               {FEATURES.map((feature, i) => (
-                <div key={i} className="flex items-center gap-4 text-white font-medium">
-                  <div className="w-6 h-6 rounded-full bg-white/10 border border-white/20 flex items-center justify-center shrink-0">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                <div key={i} className="flex items-center gap-3 text-neutral-700">
+                  <div className="w-5 h-5 rounded-full bg-green-100 border border-green-200 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="w-3 h-3 text-green-600" />
                   </div>
-                  <span className="text-lg tracking-tight">{feature}</span>
+                  <span className="text-sm font-medium">{feature}</span>
                 </div>
               ))}
             </div>
@@ -208,12 +208,12 @@ export default function EBookPage() {
           </Suspense>
 
             <div>
-              <h3 className="text-[10px] font-black tracking-[0.4em] text-white uppercase mb-8">Manuscript Contents</h3>
-              <div className="space-y-2">
+              <h3 className="text-xs font-bold tracking-widest text-neutral-500 uppercase mb-4">Contents</h3>
+              <div className="space-y-1">
                 {CATEGORIES.map((category, i) => (
-                  <div key={i} className="flex gap-6 py-4 border-b border-white/5 last:border-0 hover:bg-white/5 px-4 rounded-2xl transition-all cursor-default group">
-                    <span className="text-blue-400 font-black tracking-[0.2em]">{String(i + 1).padStart(2, '0')}</span>
-                    <span className="text-white/60 font-black uppercase tracking-tighter group-hover:text-white transition-colors">{category}</span>
+                  <div key={i} className="flex gap-4 py-3 border-b border-neutral-100 last:border-0 px-2 rounded-xl hover:bg-neutral-50 transition-all cursor-default group">
+                    <span className="text-blue-600 font-bold text-sm">{String(i + 1).padStart(2, '0')}</span>
+                    <span className="text-neutral-700 font-medium text-sm group-hover:text-neutral-900 transition-colors">{category}</span>
                   </div>
                 ))}
               </div>
@@ -231,24 +231,24 @@ export default function EBookPage() {
            transition={{ duration: 0.8 }}
            className="mt-40 pt-20 border-t border-white/5"
         >
-           <h2 className="text-4xl md:text-6xl font-black mb-4 text-center text-white tracking-tighter uppercase">Cinematic Synthesis</h2>
-           <p className="text-white/30 text-center mb-16 max-w-2xl mx-auto font-medium tracking-tight uppercase text-xs">
-             A glimpse into the hyper-realistic architectural renders achievable through our proprietary prompting framework.
+           <h2 className="text-3xl font-bold mb-3 text-center text-neutral-900 tracking-tight">Sample Gallery</h2>
+           <p className="text-neutral-500 text-center mb-10 max-w-2xl mx-auto text-sm">
+             A preview of the stunning AI garden renders you can create with our prompts.
            </p>
 
            <div className="max-w-5xl mx-auto columns-1 md:columns-2 gap-8">
              {/* eslint-disable @next/next/no-img-element */}
-             <div className="rounded-[2rem] overflow-hidden shadow-2xl border border-white/5 group mb-8 hover:border-white/20 transition-all break-inside-avoid bg-black">
-               <img src="/Ebook/Backyard_garden_with_fire_pit_a060186c13.jpeg" alt="Fire Pit Lounge" className="w-full h-auto transform group-hover:scale-110 transition-transform duration-[2s]" />
+             <div className="rounded-2xl overflow-hidden shadow-md border border-neutral-100 group mb-4 hover:shadow-lg transition-all break-inside-avoid bg-neutral-100">
+               <img src="/Ebook/Backyard_garden_with_fire_pit_a060186c13.jpeg" alt="Fire Pit Lounge" className="w-full h-auto transform group-hover:scale-105 transition-transform duration-[2s]" />
              </div>
-             <div className="rounded-[2rem] overflow-hidden shadow-2xl border border-white/5 group mb-8 hover:border-white/20 transition-all break-inside-avoid bg-black">
-               <img src="/Ebook/Backyard_with_pergola_lounge_area_1c36a9fc5b.jpeg" alt="Pergola Lounge Area" className="w-full h-auto transform group-hover:scale-110 transition-transform duration-[2s]" />
+             <div className="rounded-2xl overflow-hidden shadow-md border border-neutral-100 group mb-4 hover:shadow-lg transition-all break-inside-avoid bg-neutral-100">
+               <img src="/Ebook/Backyard_with_pergola_lounge_area_1c36a9fc5b.jpeg" alt="Pergola Lounge Area" className="w-full h-auto transform group-hover:scale-105 transition-transform duration-[2s]" />
              </div>
-             <div className="rounded-[2rem] overflow-hidden shadow-2xl border border-white/5 group mb-8 hover:border-white/20 transition-all break-inside-avoid bg-black">
-               <img src="/Ebook/Modern_house_courtyard_backyard_with_stone_patio_f_c2b067f9dc.jpeg" alt="Modern Stone Patio" className="w-full h-auto transform group-hover:scale-110 transition-transform duration-[2s]" />
+             <div className="rounded-2xl overflow-hidden shadow-md border border-neutral-100 group mb-4 hover:shadow-lg transition-all break-inside-avoid bg-neutral-100">
+               <img src="/Ebook/Modern_house_courtyard_backyard_with_stone_patio_f_c2b067f9dc.jpeg" alt="Modern Stone Patio" className="w-full h-auto transform group-hover:scale-105 transition-transform duration-[2s]" />
              </div>
-             <div className="rounded-[2rem] overflow-hidden shadow-2xl border border-white/5 group mb-8 hover:border-white/20 transition-all break-inside-avoid bg-black">
-               <img src="/Ebook/Backyard_garden_with_koi_pond_36d3c2a2ae.jpeg" alt="Koi Pond Oasis" className="w-full h-auto transform group-hover:scale-110 transition-transform duration-[2s]" />
+             <div className="rounded-2xl overflow-hidden shadow-md border border-neutral-100 group mb-4 hover:shadow-lg transition-all break-inside-avoid bg-neutral-100">
+               <img src="/Ebook/Backyard_garden_with_koi_pond_36d3c2a2ae.jpeg" alt="Koi Pond Oasis" className="w-full h-auto transform group-hover:scale-105 transition-transform duration-[2s]" />
              </div>
              {/* eslint-enable @next/next/no-img-element */}
            </div>
@@ -262,24 +262,24 @@ export default function EBookPage() {
            transition={{ duration: 0.8 }}
            className="mt-40 pt-20 border-t border-white/5"
         >
-           <h2 className="text-4xl md:text-6xl font-black mb-4 text-center text-white tracking-tighter uppercase">Professional Arsenal</h2>
-           <p className="text-white/30 text-center mb-16 max-w-2xl mx-auto font-medium tracking-tight uppercase text-xs">
-             The elite software and platforms utilized by the Studio to architect high-fidelity experiences across the globe.
+           <h2 className="text-3xl font-bold mb-3 text-center text-neutral-900 tracking-tight">Recommended Tools</h2>
+           <p className="text-neutral-500 text-center mb-10 max-w-2xl mx-auto text-sm">
+             Professional software used by our studio designers.
            </p>
 
            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
-                { name: "SketchUp Pro", role: "3D Synthesis", desc: "Our core framework for high-precision architectural synthesis.", link: "#" },
-                { name: "Midjourney", role: "AI Concept Art", desc: "For rapid architectural ideation and atmospheric mood boarding.", link: "#" },
-                { name: "Canva Pro", role: "Curated Portfolios", desc: "How we deliver world-class mood boards to our private clientele.", link: "#" },
+                { name: "SketchUp Pro", role: "3D Design", desc: "Core tool for precision architectural modeling.", link: "#" },
+                { name: "Midjourney", role: "AI Concept Art", desc: "Rapid ideation and atmospheric mood boarding.", link: "#" },
+                { name: "Canva Pro", role: "Mood Boards", desc: "Create beautiful design portfolios and presentations.", link: "#" },
               ].map((tool, i) => (
-                <a key={i} href={tool.link} target="_blank" rel="noopener noreferrer" className="bg-white/5 border border-white/10 shadow-2xl hover:border-white/30 rounded-[2.5rem] p-10 block transition-all hover:-translate-y-2 group backdrop-blur-3xl">
-                   <div className="flex items-center justify-between mb-6">
-                     <h3 className="text-2xl font-black text-white tracking-tighter uppercase group-hover:text-blue-400 transition-colors leading-tight">{tool.name}</h3>
-                     <ExternalLink className="w-4 h-4 text-white/20 group-hover:text-white transition-colors" />
+                <a key={i} href={tool.link} target="_blank" rel="noopener noreferrer" className="bg-white border border-neutral-100 shadow-sm hover:shadow-md rounded-2xl p-6 block transition-all hover:-translate-y-1 group">
+                   <div className="flex items-center justify-between mb-2">
+                     <h3 className="text-lg font-bold text-neutral-900 group-hover:text-blue-600 transition-colors">{tool.name}</h3>
+                     <ExternalLink className="w-4 h-4 text-neutral-300 group-hover:text-blue-500 transition-colors" />
                    </div>
-                   <div className="text-[10px] text-blue-400 font-black tracking-[0.3em] uppercase mb-6">{tool.role}</div>
-                   <p className="text-sm text-white/40 leading-relaxed font-medium tracking-tight">"{tool.desc}"</p>
+                   <div className="text-[10px] text-blue-600 font-bold tracking-widest uppercase mb-3">{tool.role}</div>
+                   <p className="text-sm text-neutral-500 leading-relaxed">{tool.desc}</p>
                 </a>
               ))}
            </div>
