@@ -1,7 +1,7 @@
 import { createServerSupabaseClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Sparkles, History, Download, Crown, Armchair, Flame, Home, LogOut } from 'lucide-react'
+import { Sparkles, History, ShoppingBag, Crown, Armchair, Flame, Home, LogOut } from 'lucide-react'
 import { logout } from '@/actions/auth'
 import { PwaInstallBanner } from '@/components/PwaInstallBanner'
 
@@ -127,11 +127,11 @@ export default async function MobileDashboard() {
             <div className="grid grid-cols-2 gap-4">
                 <Link href="/history" className="bg-[#1a1d23] border border-white/5 p-5 rounded-3xl flex items-center justify-center gap-3 shadow-lg hover:bg-[#22262e] transition-all active:scale-95 group">
                     <History className="w-4 h-4 text-white/30 group-hover:text-white" />
-                    <span className="text-xs font-bold text-white/80 tracking-tight">Style Inspiration</span>
+                    <span className="text-xs font-bold text-white/80 tracking-tight">History</span>
                 </Link>
                 <Link href="/shop" className="bg-[#1a1d23] border border-white/5 p-5 rounded-3xl flex items-center justify-center gap-3 shadow-lg hover:bg-[#22262e] transition-all active:scale-95 group">
-                    <Download className="w-4 h-4 text-white/30 group-hover:text-white" />
-                    <span className="text-xs font-bold text-white/80 tracking-tight">Project History</span>
+                    <ShoppingBag className="w-4 h-4 text-white/30 group-hover:text-white" />
+                    <span className="text-xs font-bold text-white/80 tracking-tight">Shop</span>
                 </Link>
             </div>
          </div>
