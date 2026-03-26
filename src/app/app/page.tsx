@@ -55,9 +55,9 @@ export default async function AppSalesPage() {
         </div>
 
         {/* Price + Trust hint */}
-        <div className="flex items-center gap-2 text-[10px] text-neutral-400 mb-8">
+        <div className="flex items-center justify-center gap-2 text-xs font-semibold text-neutral-600 mb-8">
           <span>🔒</span>
-          <span>40 designs for $20 · One-time · Secure payment via <span className="font-bold text-neutral-500">Stripe</span></span>
+          <span>40 designs for $20 · One-time · Secure via <span className="font-black text-neutral-800">Stripe</span></span>
         </div>
         {/* Before/After Preview Image */}
         <div className="w-full max-w-sm rounded-3xl overflow-hidden shadow-xl border border-neutral-100">
