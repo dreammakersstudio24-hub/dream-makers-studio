@@ -42,7 +42,6 @@ export const viewport = {
 };
 
 import { Navbar } from "@/components/Navbar";
-import { PwaInstall } from "@/components/PwaInstall";
 
 export default function RootLayout({
   children,
@@ -56,7 +55,6 @@ export default function RootLayout({
       >
         <Navbar />
         {children}
-        <PwaInstall />
         <ServiceWorkerRegister />
       </body>
     </html>
