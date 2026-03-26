@@ -1,52 +1,82 @@
 export const GARDEN_STYLES = [
   {
-    id: 'modern_minimalist',
-    nameKey: 'Modern Minimalist',
-    image: 'https://images.unsplash.com/photo-1558904541-efa8c1ae65f4?q=80&w=600&auto=format&fit=crop',
+    id: 'calm_retreat',
+    nameKey: 'Calm Retreat',
+    image: '/garden-styles/calm-retreat.png',
     prompts: [
-      'modern residential backyard with cozy wooden deck, patio, small landscaped garden beds with decorative plants, outdoor lounge chairs, wooden fence, modern suburban house in background, warm golden hour lighting, cinematic architectural photography, ultra realistic, highly detailed',
-      'small modern residential backyard patio with concrete flooring, cozy outdoor seating, small decorative plants in garden beds, wooden fence, contemporary suburban house background, soft sunset lighting, architectural photography, ultra realistic',
-      'modern residential backyard with clean linear concrete garden pathway, minimalist landscaping, small decorative grasses and plants in neat garden beds, wooden fence, contemporary house exterior visible, cinematic sunset lighting, architectural photography, ultra realistic'
+      'serene residential backyard with wooden swing chair hanging from mature tree, soft morning light, lush green lawn, hydrangea flower beds, stepping stone path, white garden fence, peaceful tranquil atmosphere, cinematic architectural photography, ultra realistic',
+      'quiet residential backyard garden with comfortable hammock between trees, soft dappled morning light, lush lawn, gentle flowering borders, stone path, calm serene atmosphere, architectural photography, ultra realistic',
+      'peaceful suburban backyard with cozy wooden bench under a shady tree, soft morning golden light, lush green lawn, white flowering shrubs, tranquil garden beds, stepping stone path, ultra realistic architectural photography'
     ]
   },
   {
-    id: 'zen_japanese',
-    nameKey: 'Zen Japanese',
-    image: 'https://images.unsplash.com/photo-1580179484681-37053e6b1274?q=80&w=600&auto=format&fit=crop',
+    id: 'social_backyard',
+    nameKey: 'Social Backyard',
+    image: '/garden-styles/social-backyard.png',
     prompts: [
-      'residential backyard garden with small koi pond, natural stones, minimal decorative plants, wooden fence, suburban house exterior in background, calm zen atmosphere, soft morning lighting, architectural photography, ultra realistic',
-      'minimalist residential backyard garden with gravel landscaping, stepping stone pathway, small decorative plants, wooden fence, modern suburban house exterior, soft natural lighting, architectural photography, ultra realistic, modern zen backyard',
-      'modern residential backyard garden with minimalist stone pathway, neatly arranged stepping stones, small landscaped garden beds with decorative plants, wooden fence, modern suburban house exterior visible, calm contemplative atmosphere, architectural photography, ultra realistic'
+      'modern residential backyard with circular fire pit seating area, wooden Adirondack chairs around fire, warm string lights overhead, wooden deck, lush lawn, outdoor BBQ, warm golden evening light, cinematic architectural photography, ultra realistic',
+      'suburban backyard outdoor entertaining space with large wooden deck, outdoor dining table for six, pendant string lights, cozy lounge seating area, fire pit, barbecue station, warm evening atmosphere, architectural photography, ultra realistic',
+      'modern residential backyard with outdoor kitchen and bar area, large wooden deck, sectional outdoor sofa, warm string lights, fire pit, lush lawn borders, social gathering atmosphere, warm sunset lighting, cinematic photography, ultra realistic'
     ]
   },
   {
-    id: 'mediterranean',
-    nameKey: 'Mediterranean',
-    image: 'https://images.unsplash.com/photo-1524061614234-84496375567e?q=80&w=600&auto=format&fit=crop',
+    id: 'resort_escape',
+    nameKey: 'Resort Escape',
+    image: '/garden-styles/resort-escape.png',
     prompts: [
-      'mediterranean garden, terracotta tiles, olive trees, lavender, warm sunlight, coastal vibes, rustic stone walls, architectural photography',
-      'modern residential backyard with natural stone patio dining area, outdoor dining table and chairs, small landscaped garden beds, decorative plants, warm sunset lighting, cinematic mediterranean atmosphere, ultra realistic',
-      'modern suburban backyard with circular fire pit seating area, natural stone patio, terracotta accents, neatly landscaped garden beds, warm evening lighting, cinematic architectural photography, ultra realistic'
+      'luxury residential backyard with infinity edge swimming pool, white sun loungers, tropical palm trees and lush plants, stone tile patio, outdoor cabana with curtains, blue sky reflection on water, resort-style luxury, cinematic sunset lighting, ultra realistic',
+      'modern luxury residential pool garden with raised spa, cascading water feature, tropical landscaping, outdoor bar, premium stone patio, soft ambient evening lighting, five-star resort atmosphere, architectural photography, ultra realistic',
+      'upscale residential backyard resort style with rectangular swimming pool, stone tile surround, white day bed loungers, tropical plant landscaping, outdoor shower, golden sunset lighting, luxury hotel vibes, cinematic architectural photography, ultra realistic'
     ]
   },
   {
-    id: 'tropical_paradise',
-    nameKey: 'Tropical Paradise',
-    image: 'https://images.unsplash.com/photo-1534349762230-e0cadf78f5ea?q=80&w=600&auto=format&fit=crop',
+    id: 'zen_balance',
+    nameKey: 'Zen Balance',
+    image: '/garden-styles/zen-balance.png',
     prompts: [
-      'modern residential backyard garden with tropical style landscaping, palm plants arranged in neat garden beds, natural stone patio, wooden fence, warm sunset lighting, architectural photography, ultra realistic',
-      'modern residential backyard with swimming pool surrounded by tropical plants in neat garden beds, stone patio flooring, sunset lighting reflecting on water, architectural photography, ultra realistic, resort vibes',
-      'modern residential backyard patio inspired by Bali style design, natural stone flooring, tropical plants in neat garden beds, warm sunset lighting, architectural photography, ultra realistic, exotic paradise'
+      'Japanese zen garden with raked white gravel, large natural stepping stones, bamboo grove, small koi pond with wooden bridge, stone lantern, bonsai tree, wooden fence, serene calm atmosphere, soft diffused morning light, architectural photography, ultra realistic',
+      'minimalist residential backyard with zen Japanese garden design, raked gravel patterns, moss-covered stepping stones, bamboo screen fence, stone water basin, small maple tree, peaceful contemplative atmosphere, ultra realistic architectural photography',
+      'residential zen garden with tranquil water feature, perfectly smooth raked gravel, artfully placed natural rocks, low-growing moss, bamboo shooting through gravel, stone pathway, calm minimalist landscape, soft overcast light, cinematic photography, ultra realistic'
     ]
   },
   {
-    id: 'english_cottage',
-    nameKey: 'English Cottage',
-    image: 'https://images.unsplash.com/photo-1584483766604-246c05a5b24e?q=80&w=600&auto=format&fit=crop',
+    id: 'romantic_garden',
+    nameKey: 'Romantic Garden',
+    image: '/garden-styles/romantic-garden.png',
     prompts: [
-      'english cottage garden, overflowing flowers, winding paths, romantic, traditional, stone walls, cinematic lighting, ultra realistic',
-      'residential backyard garden pathway with stepping stones, small landscaped garden beds, decorative plants along the path, wooden fence, cozy suburban house background, warm golden hour lighting, cinematic architectural photography',
-      'peaceful residential backyard garden with small patio seating area, landscaped garden beds with lush blooming flowers, wooden fence, modern suburban house exterior, warm sunset lighting, cinematic architectural photography'
+      'enchanting residential garden with rose-covered wooden arbor archway, climbing pink and white roses, winding stone pebble path, soft flowering borders with roses and lavender, vintage white garden bench, warm golden hour light, dreamy romantic atmosphere, ultra realistic',
+      'romantic cottage garden with overflowing colorful flower borders, heritage roses climbing on white-painted wooden arch, soft evening light, stone pathway, old-world charm, warm and welcoming atmosphere, architectural photography, ultra realistic',
+      'beautiful residential garden with wisteria-covered pergola, trailing blooms, white climbing roses along garden fence, circular stone patio with ornate bistro table and chairs, lush romantic planting, soft pink and golden hour lighting, cinematic photography, ultra realistic'
+    ]
+  },
+  {
+    id: 'cozy_corner',
+    nameKey: 'Cozy Corner',
+    image: '/garden-styles/cozy-corner.png',
+    prompts: [
+      'small intimate outdoor patio nook with plush outdoor loveseat and colorful cushions, hanging string fairy lights, potted herbs and flowers on wooden shelves, rustic wooden planters, warm lantern glow, surrounded by lush green plants, cozy evening atmosphere, architectural photography, ultra realistic',
+      'charming small backyard corner with built-in wooden bench and cushions, potted plants of all sizes, warm fairy lights, terracotta pots with herbs, cozy reading nook vibe, warm evening light, inviting intimate atmosphere, ultra realistic',
+      'cozy outdoor patio corner with comfortable wicker loveseat, cushions, throw blanket, overhead twinkling lights, potted lavender and herbs, rustic wooden table with candles, surrounded by climbing greenery, warm atmospheric evening, cinematic photography, ultra realistic'
+    ]
+  },
+  {
+    id: 'luxury_courtyard',
+    nameKey: 'Luxury Courtyard',
+    image: '/garden-styles/luxury-courtyard.png',
+    prompts: [
+      'upscale formal courtyard with symmetrical layout, grand stone fountain centerpiece, premium travertine tile flooring, clipped topiary hedges, matching stone planters, elegant outdoor furniture set, soft evening landscape uplighting, luxury estate atmosphere, architectural photography, ultra realistic',
+      'luxury Mediterranean courtyard garden with grand central fountain, formal symmetrical layout, high-end natural stone paving, tall sculpted hedges, premium outdoor furniture, classical statuary, warm evening accent lighting, cinematic architectural photography, ultra realistic',
+      'formal luxury residential courtyard with herringbone stone paving, ornamental water fountain, clipped ball topiary in planters, white garden pavilion, premium outdoor seating, rose-lined borders, soft warm evening lighting, ultra realistic architectural photography'
+    ]
+  },
+  {
+    id: 'natural_wild',
+    nameKey: 'Natural Wild Garden',
+    image: '/garden-styles/natural-wild.png',
+    prompts: [
+      'organic cottage garden with wildflowers in full bloom, meadow-style planting with lavender, foxgloves, daisies, poppies, ornamental grasses, winding rustic stone path, wooden picket fence with climbing roses, natural untamed beauty, soft golden hour light, cinematic photography, ultra realistic',
+      'natural wildflower garden with informal mixed planting of native flowers, bees and butterflies visiting blooms, irregular stone stepping path, rustic wooden raised beds, cottage-style wooden fence, lush meadow feel, warm afternoon light, architectural photography, ultra realistic',
+      'residential wild garden with naturalistic planting style, meadow grasses and wildflowers, sweeping lavender, echinacea and salvia borders, winding gravel path, dry stone garden wall, abundant organic natural beauty, soft morning golden light, ultra realistic cinematic photography'
     ]
   }
 ];

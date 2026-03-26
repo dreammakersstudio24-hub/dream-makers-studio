@@ -53,6 +53,9 @@ export default function GardenGeneratePage() {
       });
   }, []);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -129,18 +132,22 @@ export default function GardenGeneratePage() {
       <main className="max-w-md mx-auto px-6 pt-10">
           <AnimatePresence mode="wait">
             {authStatus === "authorized" && step === "upload" && (
-                <motion.div key="upload" className="space-y-6">
+                <motion.div key="upload" className="space-y-4">
                     <div className="bg-white border border-neutral-100 p-8 rounded-3xl text-center shadow-sm">
                         <div className="w-16 h-16 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Camera className="w-8 h-8" />
                         </div>
-                        <h2 className="text-xl font-bold mb-2 text-neutral-900">Garden Vision</h2>
-                        <p className="text-neutral-500 text-sm leading-relaxed">Upload a photo of your outdoor space and let AI transform it.</p>
+                        <h2 className="text-xl font-bold mb-2 text-neutral-900">Capture your space</h2>
+                        <p className="text-neutral-500 text-sm leading-relaxed">Take or upload a photo of your outdoor space to transform.</p>
                     </div>
-                    <input type="file" accept="image/*" className="hidden" id="garden-upload" onChange={handleFileChange} />
-                    <label htmlFor="garden-upload" className="w-full bg-black text-white py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-3 cursor-pointer hover:bg-neutral-800 active:scale-95 transition-all shadow-lg">
-                        <Camera className="w-5 h-5" /> Take or Upload Photo
-                    </label>
+                    <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileChange} />
+                    <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+                    <button onClick={() => cameraInputRef.current?.click()} className="w-full bg-black text-white py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-3 hover:bg-neutral-800 active:scale-95 transition-all shadow-lg">
+                        <Camera className="w-5 h-5" /> Take New Photo
+                    </button>
+                    <button onClick={() => fileInputRef.current?.click()} className="w-full bg-white border border-neutral-200 text-neutral-700 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-3 hover:bg-neutral-50 active:scale-95 transition-all">
+                        <ImageIcon className="w-5 h-5" /> Upload from Gallery
+                    </button>
                 </motion.div>
             )}
 
