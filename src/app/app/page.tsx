@@ -66,19 +66,19 @@ export default async function AppSalesPage() {
       </section>
 
       {/* ── HOW IT WORKS ──────────────────────── */}
-      <section className="px-5 py-10 max-w-sm mx-auto">
-        <h2 className="text-center text-xs font-black uppercase tracking-widest text-neutral-400 mb-6">How it works</h2>
-        <div className="grid grid-cols-3 gap-4">
+      <section className="px-5 py-5 max-w-sm mx-auto">
+        <h2 className="text-center text-xs font-black uppercase tracking-widest text-neutral-400 mb-4">How it works</h2>
+        <div className="grid grid-cols-3 gap-3">
           {[
             { icon: Camera, label: 'Upload a photo', color: 'bg-blue-50 text-blue-600', step: '1' },
             { icon: Palette, label: 'Choose your style', color: 'bg-purple-50 text-purple-600', step: '2' },
             { icon: Zap, label: 'See results in 30 sec', color: 'bg-amber-50 text-amber-600', step: '3' },
           ].map(({ icon: Icon, label, color, step }) => (
             <div key={step} className="flex flex-col items-center gap-2 text-center">
-              <div className={`w-12 h-12 rounded-2xl ${color} flex items-center justify-center`}>
-                <Icon className="w-5 h-5" />
+              <div className={`w-14 h-14 rounded-2xl ${color} flex items-center justify-center`}>
+                <Icon className="w-6 h-6" />
               </div>
-              <p className="text-[10px] font-bold text-neutral-500 leading-tight">{label}</p>
+              <p className="text-xs font-black text-neutral-700 leading-tight">{label}</p>
             </div>
           ))}
         </div>
