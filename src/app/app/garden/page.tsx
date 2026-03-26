@@ -2,10 +2,10 @@
 
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Camera, ImageIcon, Loader2, Sparkles, ChevronLeft, Check, Lock, Share, Flame, UtensilsCrossed, Droplets, Waves, Tent, TreePine } from "lucide-react";
+import { Camera, ImageIcon, Loader2, Sparkles, ChevronLeft, Check, Lock } from "lucide-react";
 import Link from "next/link";
 import { GARDEN_STYLES } from "@/constants/gardenStyles";
-import { GARDEN_FEATURES } from "@/constants/gardenFeatures";
+import { GARDEN_FEATURES, GARDEN_CATEGORIES, STYLE_RECOMMENDATIONS } from "@/constants/gardenFeatures";
 import { CompareSlider } from "@/components/CompareSlider";
 
 // Utility to compress image
@@ -175,42 +175,114 @@ export default function GardenGeneratePage() {
             )}
 
             {authStatus === "authorized" && step === "features" && (
-                <motion.div key="features" className="space-y-5 pb-28">
-                    <div className="space-y-1">
-                        <h2 className="font-bold text-xl text-neutral-900">Enhancements</h2>
-                        <p className="text-neutral-500 text-xs">Select optional features to add</p>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                        {GARDEN_FEATURES.map(f => {
-                            if (!f) return null;
-                            const Icon = f.icon;
-                            const isSelected = selectedFeatures.includes(f.id);
+                <motion.div key="features" className="space-y-6 pb-36">
+
+                  {/* Header */}
+                  <div>
+                    <h2 className="font-black text-2xl text-neutral-900 leading-tight">Add Life to<br/>Your Garden</h2>
+                    <p className="text-neutral-400 text-xs mt-1">Design your lifestyle — tap to add</p>
+                  </div>
+
+                  {/* Smart Recommendation */}
+                  {selectedStyleId && STYLE_RECOMMENDATIONS[selectedStyleId] && (
+                    <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex gap-3 items-start">
+                      <Sparkles className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                      <div className="flex-1">
+                        <p className="text-[10px] font-black text-amber-800 uppercase tracking-wider mb-2">Recommended for your style</p>
+                        <div className="flex flex-wrap gap-2">
+                          {STYLE_RECOMMENDATIONS[selectedStyleId].map((fid: string) => {
+                            const feat = GARDEN_FEATURES.find(f => f.id === fid);
+                            if (!feat) return null;
+                            const isSel = selectedFeatures.includes(fid);
                             return (
-                                <button
-                                    key={f.id}
-                                    onClick={() => toggleFeature(f.id)}
-                                    className={`relative p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-3 active:scale-[1.02] ${isSelected ? 'border-blue-500 bg-blue-50 shadow-md' : 'border-neutral-100 bg-white hover:border-neutral-200'}`}
-                                >
-                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${isSelected ? 'bg-blue-500 text-white' : 'bg-neutral-100 text-neutral-500'}`}>
-                                        <Icon className="w-6 h-6" />
-                                    </div>
-                                    <span className={`text-[9px] font-bold uppercase tracking-wide text-center ${isSelected ? 'text-blue-700' : 'text-neutral-500'}`}>{f.label}</span>
-                                    {isSelected && (
-                                        <motion.div layoutId="active-dot" className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-blue-500" />
-                                    )}
-                                </button>
+                              <button
+                                key={fid}
+                                onClick={() => toggleFeature(fid)}
+                                className={`px-3 py-1.5 rounded-full text-[10px] font-bold transition-all ${
+                                  isSel ? 'bg-amber-500 text-white' : 'bg-white border border-amber-300 text-amber-700 hover:bg-amber-100'
+                                }`}
+                              >
+                                {isSel ? '✓ ' : '+ '}{feat.label}
+                              </button>
                             );
-                        })}
+                          })}
+                        </div>
+                      </div>
                     </div>
-                    <div className="fixed bottom-0 left-0 w-full bg-white border-t border-neutral-200 p-3 z-50">
-                        {error && <div className="text-red-500 text-xs text-center mb-2 bg-red-50 py-1.5 rounded-xl">{error}</div>}
-                        <button
-                            onClick={handleGenerate}
-                            className="w-full bg-black text-white py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 active:scale-95 shadow-xl transition-all"
-                        >
-                            <Sparkles className="w-5 h-5 text-yellow-400" /> Generate (1 Credit)
-                        </button>
-                    </div>
+                  )}
+
+                  {/* Grouped Cinematic Cards */}
+                  {GARDEN_CATEGORIES.map(cat => {
+                    const catFeatures = GARDEN_FEATURES.filter(f => f.category === cat.id);
+                    return (
+                      <div key={cat.id} className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm">{cat.emoji}</span>
+                          <h3 className="font-black text-xs text-neutral-500 uppercase tracking-widest">{cat.label}</h3>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          {catFeatures.map(f => {
+                            const isSelected = selectedFeatures.includes(f.id);
+                            const tagColor = f.tag === 'Social'
+                              ? 'bg-orange-500/90'
+                              : f.tag === 'Relax'
+                              ? 'bg-blue-500/90'
+                              : 'bg-purple-600/90';
+                            return (
+                              <button
+                                key={f.id}
+                                onClick={() => toggleFeature(f.id)}
+                                className={`group relative aspect-[4/5] rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${
+                                  isSelected ? 'ring-2 ring-offset-2 ring-emerald-500 shadow-xl' : 'shadow-md'
+                                }`}
+                              >
+                                {/* BG Image */}
+                                <img
+                                  src={f.image}
+                                  alt={f.label}
+                                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[3000ms]"
+                                />
+                                {/* Gradient */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent" />
+
+                                {/* Selected check */}
+                                {isSelected && (
+                                  <div className="absolute top-2 right-2 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center z-10 shadow-lg">
+                                    <Check className="w-3.5 h-3.5 text-white" />
+                                  </div>
+                                )}
+
+                                {/* Tag */}
+                                <span className={`absolute top-2 left-2 px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider text-white ${tagColor}`}>
+                                  {f.tag}
+                                </span>
+
+                                {/* Text */}
+                                <div className="absolute inset-x-0 bottom-0 p-3">
+                                  <p className="text-white font-bold text-sm leading-tight">{f.label}</p>
+                                  <p className="text-white/60 text-[9px] mt-0.5 leading-snug">{f.description}</p>
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {/* Fixed Generate CTA */}
+                  <div className="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur border-t border-neutral-200 p-3 z-50">
+                    {error && <div className="text-red-500 text-xs text-center mb-2 bg-red-50 py-1.5 rounded-xl">{error}</div>}
+                    <button
+                      onClick={handleGenerate}
+                      className="w-full bg-black text-white py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 active:scale-95 shadow-xl transition-all"
+                    >
+                      <Sparkles className="w-5 h-5 text-yellow-400" />
+                      {selectedFeatures.length > 0
+                        ? `Generate with ${selectedFeatures.length} Add-on${selectedFeatures.length > 1 ? 's' : ''} · 1 Credit`
+                        : 'Generate · 1 Credit'}
+                    </button>
+                  </div>
                 </motion.div>
             )}
 
