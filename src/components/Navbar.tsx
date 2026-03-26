@@ -21,16 +21,8 @@ export function Navbar() {
     <nav className="fixed top-5 left-1/2 -translate-x-1/2 z-[100] w-fit max-w-[95vw]">
       <div className="flex items-center bg-white/85 backdrop-blur-xl border border-neutral-200 shadow-[0_4px_24px_rgba(0,0,0,0.08)] rounded-full px-4 sm:px-5 py-2 gap-3 sm:gap-6">
 
-        {/* Logo */}
-        <Link href="/" className="flex items-center group shrink-0">
-          <img
-            src="/icon.png?v=3"
-            alt="Dream Makers Studio"
-            className="h-7 w-auto object-contain transition-transform duration-300 group-hover:scale-110"
-          />
-        </Link>
 
-        {/* Links */}
+
         <div className="flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.15em]">
           {links.map((link) => {
             const isActive = pathname === link.href || (link.href !== '/' && pathname?.startsWith(link.href));
