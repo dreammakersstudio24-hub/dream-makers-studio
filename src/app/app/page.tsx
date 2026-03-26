@@ -1,11 +1,11 @@
 import { createServerSupabaseClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Sparkles, Home, TreePine, Zap, ArrowRight, ShieldCheck, CreditCard } from 'lucide-react'
+import { ArrowRight, Sparkles, Camera, Palette, Zap, Home, TreePine } from 'lucide-react'
 
 export const metadata = {
-  title: 'Studio AI - Dream Makers Studio',
-  description: 'Transform your space with AI interior and garden design.',
+  title: 'AI Studio — Dream Makers Studio',
+  description: 'Transform your home and garden with AI. Upload a photo, choose a style, see results in 30 seconds.',
 }
 
 export default async function AppSalesPage() {
@@ -19,105 +19,145 @@ export default async function AppSalesPage() {
   return (
     <div className="min-h-screen bg-stone-50 text-neutral-900 font-sans overflow-x-hidden">
 
-      {/* Hero Section */}
-      <section className="flex flex-col items-center justify-center px-6 pt-32 pb-20 text-center">
-        <div className="max-w-2xl mx-auto space-y-8">
+      {/* ── HERO ──────────────────────────────── */}
+      <section className="flex flex-col items-center justify-center px-5 pt-28 pb-10 text-center">
 
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-neutral-200 shadow-sm text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-500">
-            <Sparkles className="w-3 h-3 text-amber-500" /> Dream Makers Studio AI
+        {/* Badge */}
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-neutral-200 shadow-sm text-[10px] font-black uppercase tracking-[0.25em] text-neutral-500 mb-6">
+          <Sparkles className="w-3 h-3 text-amber-500" />
+          Dream Makers Studio AI
+        </div>
+
+        {/* Headline */}
+        <h1 className="text-4xl font-black tracking-tight leading-tight text-neutral-900 max-w-xs mx-auto mb-3">
+          Transform Your<br />
+          <span className="text-neutral-400 font-medium">Home & Garden</span>
+        </h1>
+
+        <p className="text-neutral-500 text-sm max-w-xs mx-auto leading-relaxed mb-8">
+          Upload a photo, pick a style — your AI-redesigned space appears in under 30 seconds.
+        </p>
+
+        {/* CTA Buttons */}
+        <div className="flex flex-col w-full max-w-xs gap-3 mb-10">
+          <Link
+            href="/login?mode=signup&next=/app/dashboard"
+            className="flex items-center justify-center gap-2 bg-black text-white py-4 rounded-2xl text-sm font-bold hover:bg-neutral-800 active:scale-95 transition-all shadow-lg"
+          >
+            Get Started <ArrowRight className="w-4 h-4" />
+          </Link>
+          <Link
+            href="/login?next=/app/dashboard"
+            className="flex items-center justify-center bg-white border border-neutral-200 text-neutral-700 py-4 rounded-2xl text-sm font-bold hover:bg-neutral-50 active:scale-95 transition-all"
+          >
+            Log In
+          </Link>
+        </div>
+
+        {/* Before/After Preview Image */}
+        <div className="w-full max-w-sm rounded-3xl overflow-hidden shadow-xl border border-neutral-100">
+          <img
+            src="/dashboard-interior.png"
+            alt="AI interior design transformation"
+            className="w-full h-auto object-cover"
+          />
+        </div>
+
+      </section>
+
+      {/* ── HOW IT WORKS ──────────────────────── */}
+      <section className="px-5 py-10 max-w-sm mx-auto">
+        <h2 className="text-center text-xs font-black uppercase tracking-widest text-neutral-400 mb-6">How it works</h2>
+        <div className="grid grid-cols-3 gap-4">
+          {[
+            { icon: Camera, label: 'Upload a photo', color: 'bg-blue-50 text-blue-600', step: '1' },
+            { icon: Palette, label: 'Choose your style', color: 'bg-purple-50 text-purple-600', step: '2' },
+            { icon: Zap, label: 'See results in 30 sec', color: 'bg-amber-50 text-amber-600', step: '3' },
+          ].map(({ icon: Icon, label, color, step }) => (
+            <div key={step} className="flex flex-col items-center gap-2 text-center">
+              <div className={`w-12 h-12 rounded-2xl ${color} flex items-center justify-center`}>
+                <Icon className="w-5 h-5" />
+              </div>
+              <p className="text-[10px] font-bold text-neutral-500 leading-tight">{label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── WORKS FOR ─────────────────────────── */}
+      <section className="px-5 pb-10 max-w-sm mx-auto space-y-4">
+        <h2 className="text-center text-xs font-black uppercase tracking-widest text-neutral-400 mb-4">What you can redesign</h2>
+
+        {/* Interior Card */}
+        <div className="relative rounded-3xl overflow-hidden shadow-md aspect-[16/9] bg-neutral-200">
+          <img src="/dashboard-interior.png" alt="Interior redesign" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+          <div className="absolute bottom-0 left-0 p-4 flex items-center gap-2">
+            <div className="w-8 h-8 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
+              <Home className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <p className="text-white font-black text-sm leading-tight">Interior Redesign</p>
+              <p className="text-white/60 text-[10px]">Living room, bedroom, kitchen & more</p>
+            </div>
           </div>
+        </div>
 
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-[1.05] text-neutral-900">
-            Transform<br />
-            <span className="text-neutral-400 font-medium">Your Space</span>
-          </h1>
-
-          <p className="text-neutral-500 text-base md:text-lg max-w-md mx-auto leading-relaxed">
-            AI-powered interior and garden design. Upload a photo, choose a style, and see your dream space in seconds.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <Link
-              href="/login?mode=signup&next=/app/dashboard"
-              className="w-full sm:w-auto px-8 py-4 bg-black text-white rounded-2xl text-sm font-bold hover:bg-neutral-800 transition-all shadow-lg flex items-center justify-center gap-2 active:scale-95"
-            >
-              Get Started <ArrowRight className="w-4 h-4" />
-            </Link>
-            <Link
-              href="/login?next=/app/dashboard"
-              className="w-full sm:w-auto px-8 py-4 bg-white border border-neutral-200 text-neutral-700 rounded-2xl text-sm font-bold hover:bg-neutral-50 transition-all flex items-center justify-center active:scale-95 shadow-sm"
-            >
-              Log In
-            </Link>
+        {/* Garden Card */}
+        <div className="relative rounded-3xl overflow-hidden shadow-md aspect-[16/9] bg-neutral-200">
+          <img src="/dashboard-garden.png" alt="Garden redesign" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+          <div className="absolute bottom-0 left-0 p-4 flex items-center gap-2">
+            <div className="w-8 h-8 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
+              <TreePine className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <p className="text-white font-black text-sm leading-tight">Garden & Outdoor</p>
+              <p className="text-white/60 text-[10px]">Patios, gardens, backyards & more</p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="max-w-3xl mx-auto px-6 pb-24">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-6 rounded-3xl bg-white border border-neutral-100 shadow-sm hover:shadow-md transition-all">
-            <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4">
-              <Home className="w-6 h-6" />
-            </div>
-            <h3 className="text-lg font-bold mb-2 text-neutral-900">Interior Design</h3>
-            <p className="text-neutral-500 text-sm leading-relaxed">
-              Redesign any room — living room, bedroom, kitchen — in seconds.
-            </p>
+      {/* ── PRICING ───────────────────────────── */}
+      <section className="px-5 pb-16 max-w-sm mx-auto">
+        <div className="bg-white border border-neutral-200 rounded-3xl p-6 shadow-sm text-center space-y-4">
+          <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Simple Pricing</p>
+          <div>
+            <p className="text-5xl font-black text-neutral-900">$20</p>
+            <p className="text-neutral-500 text-sm mt-1">40 Design Credits</p>
+            <p className="text-neutral-400 text-xs mt-0.5">That's just $0.50 per transformation</p>
           </div>
 
-          <div className="p-6 rounded-3xl bg-white border border-neutral-100 shadow-sm hover:shadow-md transition-all">
-            <div className="w-12 h-12 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center mb-4">
-              <TreePine className="w-6 h-6" />
-            </div>
-            <h3 className="text-lg font-bold mb-2 text-neutral-900">Garden Design</h3>
-            <p className="text-neutral-500 text-sm leading-relaxed">
-              Turn your outdoor space into a beautiful garden or patio.
-            </p>
+          <div className="text-left space-y-2 pt-2">
+            {[
+              '✓ Interior room redesign (10+ styles)',
+              '✓ Garden & outdoor transformation (8 styles)',
+              '✓ Instant AI results — 15–30 seconds',
+              '✓ Download & share your designs',
+            ].map((item) => (
+              <p key={item} className="text-xs text-neutral-600">{item}</p>
+            ))}
           </div>
-
-          <div className="p-6 rounded-3xl bg-white border border-neutral-100 shadow-sm hover:shadow-md transition-all">
-            <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-4">
-              <Zap className="w-6 h-6" />
-            </div>
-            <h3 className="text-lg font-bold mb-2 text-neutral-900">Fast Results</h3>
-            <p className="text-neutral-500 text-sm leading-relaxed">
-              High-quality AI transformation in under 30 seconds.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="bg-white border-t border-neutral-100 py-20">
-        <div className="max-w-xl mx-auto px-6 text-center space-y-8">
-          <div className="flex justify-center gap-10 text-neutral-400 mb-4">
-            <div className="flex flex-col items-center gap-2">
-              <ShieldCheck className="w-7 h-7" />
-              <span className="text-[10px] font-bold uppercase tracking-wider">Secure</span>
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <CreditCard className="w-7 h-7" />
-              <span className="text-[10px] font-bold uppercase tracking-wider">Pay per use</span>
-            </div>
-          </div>
-
-          <h2 className="text-2xl md:text-3xl font-bold text-neutral-900">
-            Ready to transform your home?
-          </h2>
 
           <Link
             href="/login?mode=signup&next=/app/dashboard"
-            className="inline-flex items-center gap-3 bg-black text-white px-10 py-4 rounded-2xl text-sm font-bold hover:bg-neutral-800 transition-all shadow-xl active:scale-95"
+            className="flex items-center justify-center gap-2 w-full bg-black text-white py-4 rounded-2xl text-sm font-bold hover:bg-neutral-800 active:scale-95 transition-all shadow-lg"
           >
-            Start for Free <ArrowRight className="w-4 h-4" />
+            Get Started · $20 <ArrowRight className="w-4 h-4" />
           </Link>
 
-          <p className="text-xs text-neutral-400 mt-4">
-            Dream Makers Studio © 2026
-          </p>
+          <p className="text-[10px] text-neutral-400">Secure payment via Stripe. One-time purchase.</p>
         </div>
       </section>
+
+      {/* ── FOOTER ────────────────────────────── */}
+      <footer className="border-t border-neutral-100 py-6 text-center">
+        <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">
+          © 2026 Dream Makers Studio
+        </p>
+      </footer>
+
     </div>
   )
 }

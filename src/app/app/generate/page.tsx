@@ -204,7 +204,7 @@ export default function MobileGeneratePage() {
                 }}
                 className="w-full bg-red-600 text-white py-4 rounded-2xl font-bold text-lg active:scale-95 transition-all"
               >
-                Recharge ($10 for 40 Credits)
+                Recharge ($20 for 40 Credits)
               </button>
             </div>
           )}

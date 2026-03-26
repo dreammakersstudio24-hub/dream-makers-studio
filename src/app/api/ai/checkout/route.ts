@@ -34,7 +34,7 @@ export async function POST(req: Request) {
               name: "AI Transformation App Access (40 Credits)",
               description: "Instantly unlock 40 high-quality room transformations.",
             },
-            unit_amount: 1000, // $10.00
+            unit_amount: 2000, // $20.00
           },
           quantity: 1,
         },
