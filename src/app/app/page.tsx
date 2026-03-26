@@ -29,26 +29,26 @@ export default async function AppSalesPage() {
         </div>
 
         {/* Headline */}
-        <h1 className="text-4xl font-black tracking-tight leading-tight text-neutral-900 max-w-xs mx-auto mb-3">
-          Transform Your<br />
+        <h1 className="text-3xl font-black tracking-tight leading-tight text-neutral-900 max-w-xs mx-auto mb-2">
+          Transform Your{" "}
           <span className="text-neutral-400 font-medium">Home & Garden</span>
         </h1>
 
-        <p className="text-neutral-500 text-sm max-w-xs mx-auto leading-relaxed mb-8">
+        <p className="text-neutral-500 text-xs max-w-xs mx-auto leading-relaxed mb-6">
           Upload a photo, pick a style — your AI-redesigned space appears in under 30 seconds.
         </p>
 
-        {/* CTA Buttons */}
-        <div className="flex flex-col w-full max-w-xs gap-3 mb-10">
+        {/* CTA Buttons — side by side */}
+        <div className="flex w-full max-w-xs gap-3 mb-8">
           <Link
             href="/login?mode=signup&next=/app/dashboard"
-            className="flex items-center justify-center gap-2 bg-black text-white py-4 rounded-2xl text-sm font-bold hover:bg-neutral-800 active:scale-95 transition-all shadow-lg"
+            className="flex-1 flex items-center justify-center gap-1 bg-black text-white py-3 rounded-2xl text-xs font-bold hover:bg-neutral-800 active:scale-95 transition-all shadow-md"
           >
-            Get Started <ArrowRight className="w-4 h-4" />
+            Get Started <ArrowRight className="w-3.5 h-3.5" />
           </Link>
           <Link
             href="/login?next=/app/dashboard"
-            className="flex items-center justify-center bg-white border border-neutral-200 text-neutral-700 py-4 rounded-2xl text-sm font-bold hover:bg-neutral-50 active:scale-95 transition-all"
+            className="flex-1 flex items-center justify-center bg-white border border-neutral-200 text-neutral-700 py-3 rounded-2xl text-xs font-bold hover:bg-neutral-50 active:scale-95 transition-all"
           >
             Log In
           </Link>
@@ -148,6 +148,22 @@ export default async function AppSalesPage() {
           </Link>
 
           <p className="text-[10px] text-neutral-400">Secure payment via Stripe. One-time purchase.</p>
+
+          {/* Bottom CTA — side by side */}
+          <div className="flex gap-3 pt-1">
+            <Link
+              href="/login?mode=signup&next=/app/dashboard"
+              className="flex-1 flex items-center justify-center gap-1 bg-black text-white py-3 rounded-2xl text-xs font-bold hover:bg-neutral-800 active:scale-95 transition-all shadow-md"
+            >
+              Get Started <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+            <Link
+              href="/login?next=/app/dashboard"
+              className="flex-1 flex items-center justify-center bg-white border border-neutral-200 text-neutral-700 py-3 rounded-2xl text-xs font-bold hover:bg-neutral-50 active:scale-95 transition-all"
+            >
+              Log In
+            </Link>
+          </div>
         </div>
       </section>
 
