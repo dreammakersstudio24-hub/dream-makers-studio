@@ -44,7 +44,7 @@ export default async function AppSalesPage() {
             href="/login?mode=signup&next=/app/dashboard"
             className="flex-1 flex items-center justify-center gap-1 bg-black text-white py-3 rounded-2xl text-xs font-bold hover:bg-neutral-800 active:scale-95 transition-all shadow-md"
           >
-            Get Started <ArrowRight className="w-3.5 h-3.5" />
+            Get Started · $20 <ArrowRight className="w-3.5 h-3.5" />
           </Link>
           <Link
             href="/login?next=/app/dashboard"
@@ -54,6 +54,11 @@ export default async function AppSalesPage() {
           </Link>
         </div>
 
+        {/* Price + Trust hint */}
+        <div className="flex items-center gap-2 text-[10px] text-neutral-400 mb-8">
+          <span>🔒</span>
+          <span>40 designs for $20 · One-time · Secure payment via <span className="font-bold text-neutral-500">Stripe</span></span>
+        </div>
         {/* Before/After Preview Image */}
         <div className="w-full max-w-sm rounded-3xl overflow-hidden shadow-xl border border-neutral-100">
           <img
