@@ -64,14 +64,6 @@ export default async function HistoryPage() {
                     alt={`${gen.room_type} — ${gen.style}`}
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                   />
-                  <div className="absolute top-2 left-2 flex flex-col gap-1">
-                    <span className="px-2 py-1 bg-black/60 backdrop-blur rounded-full text-[8px] font-bold text-white w-fit">
-                      {gen.room_type}
-                    </span>
-                    <span className="px-2 py-1 bg-white/80 backdrop-blur rounded-full text-[8px] font-bold text-neutral-700 w-fit">
-                      {gen.style}
-                    </span>
-                  </div>
                 </div>
                 <div className="p-3 flex justify-between items-center">
                   <span className="text-[10px] text-neutral-400 font-medium">
