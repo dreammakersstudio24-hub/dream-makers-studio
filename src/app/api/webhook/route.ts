@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/utils/supabase/server";
 import Stripe from "stripe";
+import { Resend } from "resend";
 
 export async function POST(req: Request) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -61,19 +62,83 @@ export async function POST(req: Request) {
 
       // Check if this is an e-book purchase or a contractor subscription
       if (session.metadata?.type !== 'contractor_subscription') {
+        const customerEmail = session.customer_details?.email || "Unknown";
+        const origin = process.env.NEXT_PUBLIC_SITE_URL || "https://dreammakersstudio.xyz";
+        const downloadUrl = `${origin}/api/download?session_id=${session.id}`;
+
         try {
+          // 1. Save customer record
           const { error } = await supabaseAdmin
             .from('customers')
             .insert({
               stripe_customer_id: session.customer as string || session.id,
-              email: session.customer_details?.email || "Unknown",
-              purchased_item: "the-ultimate-design-guide.pdf", // Updated to match exact filename
+              email: customerEmail,
+              purchased_item: "the-ultimate-design-guide.pdf",
             });
 
           if (error) console.error("Failed to insert customer record:", error);
           else console.log(`E-Book Payment successful for session: ${session.id}`);
         } catch (dbError) {
           console.error("Database connection error in webhook:", dbError);
+        }
+
+        // 2. Send download email via Resend
+        if (process.env.RESEND_API_KEY && customerEmail !== "Unknown") {
+          try {
+            const resend = new Resend(process.env.RESEND_API_KEY);
+            await resend.emails.send({
+              from: "Dream Makers Studio <noreply@dreammakersstudio.xyz>",
+              to: customerEmail,
+              subject: "Your E-Book Download is Ready 🌿",
+              html: `
+                <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 520px; margin: 0 auto; background: #fafaf9; padding: 40px 24px;">
+                  
+                  <!-- Header -->
+                  <div style="text-align: center; margin-bottom: 32px;">
+                    <p style="font-size: 11px; font-weight: 800; letter-spacing: 0.25em; text-transform: uppercase; color: #737373; margin: 0 0 12px 0;">Dream Makers Studio</p>
+                    <h1 style="font-size: 28px; font-weight: 900; color: #171717; margin: 0; line-height: 1.2;">Your E-Book is Ready! 🌿</h1>
+                  </div>
+
+                  <!-- Card -->
+                  <div style="background: #ffffff; border: 1px solid #e5e5e5; border-radius: 20px; padding: 32px; margin-bottom: 24px;">
+                    <p style="color: #525252; font-size: 15px; line-height: 1.6; margin: 0 0 16px 0;">
+                      Thank you for your purchase! Your copy of <strong style="color: #171717;">50 Cinematic AI Prompts for Stunning Backyard & Garden Designs</strong> is ready to download.
+                    </p>
+                    <p style="color: #525252; font-size: 14px; line-height: 1.6; margin: 0 0 28px 0;">
+                      Click the button below to download your e-book. The link is unique to your purchase.
+                    </p>
+
+                    <!-- Download Button -->
+                    <div style="text-align: center;">
+                      <a href="${downloadUrl}" 
+                         style="display: inline-block; background: #171717; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 700; padding: 16px 40px; border-radius: 14px; letter-spacing: -0.01em;">
+                        ⬇ Download Your E-Book
+                      </a>
+                    </div>
+                  </div>
+
+                  <!-- Note -->
+                  <div style="background: #f5f5f4; border-radius: 14px; padding: 16px 20px; margin-bottom: 24px;">
+                    <p style="color: #737373; font-size: 12px; margin: 0; line-height: 1.6;">
+                      💡 <strong style="color: #525252;">Tip:</strong> Save this email so you can re-download anytime. The link is tied to your Stripe payment and remains valid.
+                    </p>
+                  </div>
+
+                  <!-- Footer -->
+                  <p style="text-align: center; color: #a3a3a3; font-size: 11px; margin: 0;">
+                    © 2026 Dream Makers Studio · <a href="https://dreammakersstudio.xyz" style="color: #737373; text-decoration: none;">dreammakersstudio.xyz</a>
+                  </p>
+
+                </div>
+              `,
+            });
+            console.log(`Download email sent to: ${customerEmail}`);
+          } catch (emailError) {
+            console.error("Failed to send download email:", emailError);
+            // Non-fatal: payment was still successful
+          }
+        } else {
+          console.warn("Resend not configured or email unknown — skipping email send.");
         }
       } else {
         console.log(`Contractor checkout completed for session: ${session.id}`);
