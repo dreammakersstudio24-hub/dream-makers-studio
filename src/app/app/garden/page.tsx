@@ -7,6 +7,7 @@ import Link from "next/link";
 import { GARDEN_STYLES } from "@/constants/gardenStyles";
 import { GARDEN_FEATURES, GARDEN_CATEGORIES, STYLE_RECOMMENDATIONS } from "@/constants/gardenFeatures";
 import { CompareSlider } from "@/components/CompareSlider";
+import { BuyCreditsButton } from "@/components/BuyCreditsButton";
 
 // Utility to compress image
 const compressImage = (dataUrl: string, maxWidth = 1024): Promise<{url: string, ratio: string}> => {
@@ -131,6 +132,20 @@ export default function GardenGeneratePage() {
 
       <main className="max-w-md mx-auto px-6 pt-10">
           <AnimatePresence mode="wait">
+            {/* NO CREDITS */}
+            {authStatus === "no_credits" && (
+              <div className="py-12 space-y-5">
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-amber-50 text-amber-500 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+                    <Sparkles className="w-8 h-8" />
+                  </div>
+                  <h2 className="text-2xl font-black mb-2 tracking-tight">Out of Credits</h2>
+                  <p className="text-neutral-500 text-sm">Top up to continue generating AI garden designs.</p>
+                </div>
+                <BuyCreditsButton variant="banner" />
+              </div>
+            )}
+
             {authStatus === "authorized" && step === "upload" && (
                 <motion.div key="upload" className="space-y-4">
                     <div className="bg-white border border-neutral-100 p-8 rounded-3xl text-center shadow-sm">

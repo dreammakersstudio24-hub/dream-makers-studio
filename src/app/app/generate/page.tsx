@@ -8,6 +8,7 @@ import { STYLES } from "@/constants/styles";
 import { ROOM_TYPES } from "@/constants/roomTypes";
 import { CompareSlider } from "@/components/CompareSlider";
 import { ShopSimilarFurniture } from "@/components/ShopSimilarFurniture";
+import { BuyCreditsButton } from "@/components/BuyCreditsButton";
 
 // Utility to compress image
 const compressImage = (dataUrl: string, maxWidth = 1024): Promise<{url: string, ratio: string}> => {
@@ -190,22 +191,15 @@ export default function MobileGeneratePage() {
 
           {/* NO CREDITS */}
           {authStatus === "no_credits" && (
-            <div key="credits" className="text-center py-20">
-              <div className="w-20 h-20 bg-red-50 text-red-500 rounded-3xl flex items-center justify-center mx-auto mb-6 transform rotate-12 shadow-sm">
-                <Sparkles className="w-10 h-10" />
+            <div key="credits" className="py-12 space-y-5">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-amber-50 text-amber-500 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+                  <Sparkles className="w-8 h-8" />
+                </div>
+                <h2 className="text-2xl font-black mb-2 tracking-tight">Out of Credits</h2>
+                <p className="text-neutral-500 text-sm">Top up to continue generating AI designs.</p>
               </div>
-              <h2 className="text-3xl font-bold mb-3 tracking-tight">Out of Credits</h2>
-              <p className="text-neutral-500 mb-8 px-6 text-sm">Purchase a new pack to continue generating AI designs.</p>
-              <button
-                onClick={async () => {
-                  const res = await fetch("/api/ai/checkout", { method: "POST" });
-                  const data = await res.json();
-                  if (data.url) window.location.href = data.url;
-                }}
-                className="w-full bg-red-600 text-white py-4 rounded-2xl font-bold text-lg active:scale-95 transition-all"
-              >
-                Recharge ($20 for 40 Credits)
-              </button>
+              <BuyCreditsButton variant="banner" />
             </div>
           )}
 
