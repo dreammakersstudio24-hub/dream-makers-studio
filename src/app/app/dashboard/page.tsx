@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Sparkles, Crown, Armchair, Flame, Home, LogOut, History } from 'lucide-react'
 import { logout } from '@/actions/auth'
 import { PwaInstallBanner } from '@/components/PwaInstallBanner'
+import { BuyCreditsButton } from '@/components/BuyCreditsButton'
 
 export const metadata = {
   title: 'Dashboard - Dream Makers Studio AI',
@@ -58,6 +59,14 @@ export default async function MobileDashboard() {
 
         {/* PWA Install Banner */}
         <PwaInstallBanner />
+
+        {/* Buy Credits Banner — shown only when credits = 0 */}
+        {credits === 0 && (
+          <div className="space-y-1">
+            <BuyCreditsButton variant="banner" />
+            <p className="text-center text-[10px] text-neutral-400">🔒 40 designs · $20 one-time · Secure via Stripe</p>
+          </div>
+        )}
 
         {/* 2-Column Grid */}
         <section className="grid grid-cols-2 gap-4">
@@ -128,6 +137,7 @@ export default async function MobileDashboard() {
             </div>
             <span className="text-[10px] font-bold text-amber-600">{credits} Credits</span>
           </div>
+          <BuyCreditsButton variant="nav" />
         </div>
 
       </main>
