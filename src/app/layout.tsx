@@ -42,6 +42,7 @@ export const viewport = {
 };
 
 import { Navbar } from "@/components/Navbar";
+import { Analytics } from "@vercel/analytics/next";
 
 export default function RootLayout({
   children,
@@ -55,6 +56,7 @@ export default function RootLayout({
       >
         <Navbar />
         {children}
+        <Analytics />
         <ServiceWorkerRegister />
       </body>
     </html>
