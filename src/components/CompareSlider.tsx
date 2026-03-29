@@ -17,6 +17,7 @@ export function CompareSlider({
   objectFit = "contain",
 }: CompareSliderProps) {
   const [position, setPosition] = useState(50);
+  const [containerWidth, setContainerWidth] = useState<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
 
@@ -37,6 +38,17 @@ export function CompareSlider({
     isDragging.current = true;
     handleMove(e.touches[0].clientX);
   };
+
+  useEffect(() => {
+    const measure = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.offsetWidth);
+      }
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, []);
 
   useEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
@@ -89,7 +101,7 @@ export function CompareSlider({
           src={originalImage}
           alt="Original"
           className={`absolute inset-0 h-full max-w-none ${fitClass} pointer-events-none`}
-          style={{ width: containerRef.current?.offsetWidth || '100vw' }}
+          style={{ width: containerWidth ? `${containerWidth}px` : '100%' }}
         />
       </div>
 
