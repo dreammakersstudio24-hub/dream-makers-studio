@@ -125,52 +125,68 @@ export default async function AppSalesPage() {
       </section>
 
       {/* ── PRICING ───────────────────────────── */}
-      <section className="px-5 pb-16 max-w-sm mx-auto">
-        <div className="bg-white border border-neutral-200 rounded-3xl p-6 shadow-sm text-center space-y-4">
-          <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Simple Pricing</p>
-          <div>
-            <p className="text-5xl font-black text-neutral-900">$20</p>
-            <p className="text-neutral-500 text-sm mt-1">40 Design Credits</p>
-            <p className="text-neutral-400 text-xs mt-0.5">That's just $0.50 per transformation</p>
-          </div>
+      <section className="px-5 pb-16 max-w-sm mx-auto space-y-4">
+        <p className="text-center text-[10px] font-black uppercase tracking-widest text-neutral-400">Choose Your Plan</p>
 
-          <div className="text-left space-y-2 pt-2">
-            {[
-              '✓ Interior room redesign (10+ styles)',
-              '✓ Garden & outdoor transformation (8 styles)',
-              '✓ Instant AI results — 15–30 seconds',
-              '✓ Download & share your designs',
-            ].map((item) => (
-              <p key={item} className="text-xs text-neutral-600">{item}</p>
-            ))}
-          </div>
-
+        {/* 2 Tier Cards */}
+        <div className="grid grid-cols-2 gap-3">
+          {/* Starter */}
           <Link
             href="/login?mode=signup&next=/app/dashboard"
-            className="flex items-center justify-center gap-2 w-full bg-black text-white py-4 rounded-2xl text-sm font-bold hover:bg-neutral-800 active:scale-95 transition-all shadow-lg"
+            className="relative bg-white border border-neutral-200 rounded-2xl p-4 text-left hover:bg-neutral-50 active:scale-95 transition-all shadow-sm"
           >
-            Get Started · $20 <ArrowRight className="w-4 h-4" />
+            <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Starter</p>
+            <p className="text-2xl font-black text-neutral-900 leading-tight mt-0.5">$10</p>
+            <p className="text-xs font-bold text-neutral-600 mt-1">15 Credits</p>
+            <p className="text-[9px] text-neutral-400 mt-0.5">$0.67/design</p>
           </Link>
 
-          <p className="text-[10px] text-neutral-400">Secure payment via Stripe. One-time purchase.</p>
+          {/* Best Value */}
+          <Link
+            href="/login?mode=signup&next=/app/dashboard"
+            className="relative bg-amber-50 border border-amber-300 rounded-2xl p-4 text-left hover:bg-amber-100 active:scale-95 transition-all shadow-sm"
+          >
+            <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-amber-400 text-white text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full">
+              Best Value ⭐
+            </span>
+            <p className="text-[9px] font-bold text-amber-600 uppercase tracking-wider mt-1">Value</p>
+            <p className="text-2xl font-black text-neutral-900 leading-tight mt-0.5">$20</p>
+            <p className="text-xs font-bold text-neutral-600 mt-1">40 Credits</p>
+            <p className="text-[9px] text-neutral-400 mt-0.5">$0.50/design</p>
+          </Link>
+        </div>
 
-          {/* Bottom CTA — side by side */}
-          <div className="flex gap-3 pt-1">
-            <Link
-              href="/login?mode=signup&next=/app/dashboard"
-              className="flex-1 flex items-center justify-center gap-1 bg-black text-white py-3 rounded-2xl text-xs font-bold hover:bg-neutral-800 active:scale-95 transition-all shadow-md"
-            >
-              Get Started <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-            <Link
-              href="/login?next=/app/dashboard"
-              className="flex-1 flex items-center justify-center bg-white border border-neutral-200 text-neutral-700 py-3 rounded-2xl text-xs font-bold hover:bg-neutral-50 active:scale-95 transition-all"
-            >
-              Log In
-            </Link>
-          </div>
+        {/* Features */}
+        <div className="bg-white border border-neutral-200 rounded-2xl p-4 space-y-2">
+          {[
+            '✓ Interior room redesign (10+ styles)',
+            '✓ Garden & outdoor transformation (8 styles)',
+            '✓ Instant AI results — 15–30 seconds',
+            '✓ Download & share your designs',
+          ].map((item) => (
+            <p key={item} className="text-xs text-neutral-600">{item}</p>
+          ))}
+        </div>
+
+        <p className="text-center text-[10px] text-neutral-400">🔒 Secure one-time payment via Stripe</p>
+
+        {/* Bottom CTA */}
+        <div className="flex gap-3">
+          <Link
+            href="/login?mode=signup&next=/app/dashboard"
+            className="flex-1 flex items-center justify-center gap-1 bg-black text-white py-3 rounded-2xl text-xs font-bold hover:bg-neutral-800 active:scale-95 transition-all shadow-md"
+          >
+            Get Started <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+          <Link
+            href="/login?next=/app/dashboard"
+            className="flex-1 flex items-center justify-center bg-white border border-neutral-200 text-neutral-700 py-3 rounded-2xl text-xs font-bold hover:bg-neutral-50 active:scale-95 transition-all"
+          >
+            Log In
+          </Link>
         </div>
       </section>
+
 
       {/* ── FOOTER ────────────────────────────── */}
       <footer className="border-t border-neutral-100 py-6 text-center">
