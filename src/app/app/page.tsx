@@ -58,7 +58,7 @@ export default async function AppSalesPage() {
         {/* Price + Trust hint */}
         <div className="flex items-center justify-center gap-2 text-xs font-semibold text-neutral-600 mb-8">
           <span>🔒</span>
-          <span>from $10 · 15–40 AI designs · One-time · Secure via <span className="font-black text-neutral-800">Stripe</span></span>
+          <span>One-time payment · Secure via <span className="font-black text-neutral-800">Stripe</span></span>
         </div>
         {/* Interactive Before/After Garden Slider */}
         <div className="w-full max-w-xs">
