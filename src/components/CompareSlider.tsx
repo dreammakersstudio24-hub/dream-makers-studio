@@ -88,7 +88,7 @@ export function CompareSlider({
         <img
           src={originalImage}
           alt="Original"
-          className={`absolute inset-0 h-full ${fitClass} pointer-events-none`}
+          className={`absolute inset-0 h-full max-w-none ${fitClass} pointer-events-none`}
           style={{ width: containerRef.current?.offsetWidth || '100vw' }}
         />
       </div>
