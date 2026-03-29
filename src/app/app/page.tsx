@@ -2,6 +2,7 @@ import { createServerSupabaseClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowRight, Sparkles, Camera, Palette, Zap, Home, TreePine } from 'lucide-react'
+import { CompareSlider } from '@/components/CompareSlider'
 
 export const metadata = {
   title: 'AI Studio — Dream Makers Studio',
@@ -59,13 +60,15 @@ export default async function AppSalesPage() {
           <span>🔒</span>
           <span>40 designs for $20 · One-time · Secure via <span className="font-black text-neutral-800">Stripe</span></span>
         </div>
-        {/* Before/After Preview Image */}
-        <div className="w-full max-w-sm rounded-3xl overflow-hidden shadow-xl border border-neutral-100">
-          <img
-            src="/dashboard-interior.png"
-            alt="AI interior design transformation"
-            className="w-full h-auto object-cover"
+        {/* Interactive Before/After Garden Slider */}
+        <div className="w-full max-w-sm">
+          <CompareSlider
+            originalImage="/garden-before.jpg"
+            resultImage="/garden-after.jpg"
           />
+          <p className="text-center text-[10px] text-neutral-400 -mt-4 mb-2">
+            👆 Drag to compare before &amp; after
+          </p>
         </div>
 
       </section>
