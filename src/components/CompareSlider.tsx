@@ -6,9 +6,16 @@ import { MoveHorizontal } from "lucide-react";
 interface CompareSliderProps {
   originalImage: string;
   resultImage: string;
+  aspectRatio?: string; // e.g. 'aspect-[9/16]', 'aspect-[4/3]', 'aspect-square'
+  objectFit?: 'cover' | 'contain';
 }
 
-export function CompareSlider({ originalImage, resultImage }: CompareSliderProps) {
+export function CompareSlider({
+  originalImage,
+  resultImage,
+  aspectRatio = "aspect-[4/3]",
+  objectFit = "contain",
+}: CompareSliderProps) {
   const [position, setPosition] = useState(50);
   const containerRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
@@ -57,45 +64,46 @@ export function CompareSlider({ originalImage, resultImage }: CompareSliderProps
     };
   }, []);
 
+  const fitClass = objectFit === 'cover' ? 'object-cover' : 'object-contain';
+
   return (
-    <div 
+    <div
       ref={containerRef}
-      className="relative w-full aspect-square md:aspect-[4/3] max-h-[70vh] bg-neutral-900 rounded-3xl overflow-hidden mb-8 border border-white/10 shadow-2xl cursor-ew-resize select-none touch-none"
+      className={`relative w-full ${aspectRatio} max-h-[80vh] bg-neutral-900 rounded-3xl overflow-hidden mb-8 border border-white/10 shadow-2xl cursor-ew-resize select-none touch-none`}
       onMouseDown={onMouseDown}
       onTouchStart={onTouchStart}
     >
-      {/* Result Image (Bottom Layer - Revealed as slider moves right) */}
-      <img 
-        src={resultImage} 
-        alt="After Redesign" 
-        className="absolute inset-0 w-full h-full object-contain pointer-events-none" 
+      {/* Result Image (bottom layer — full width) */}
+      <img
+        src={resultImage}
+        alt="After Redesign"
+        className={`absolute inset-0 w-full h-full ${fitClass} pointer-events-none`}
       />
 
-      {/* Label for Result */}
-      <div className="absolute bottom-4 right-4 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-medium uppercase tracking-widest text-white border border-white/10 pointer-events-none">
-        Redesign
-      </div>
-
-      {/* Original Image (Top Layer - Clipped) */}
-      <div 
+      {/* Original Image (top layer — clipped by slider position) */}
+      <div
         className="absolute inset-0 overflow-hidden pointer-events-none"
         style={{ width: `${position}%` }}
       >
-        <img 
-          src={originalImage} 
-          alt="Original" 
-          className="absolute inset-0 w-full h-full object-contain max-w-none" 
+        <img
+          src={originalImage}
+          alt="Original"
+          className={`absolute inset-0 h-full ${fitClass} pointer-events-none`}
           style={{ width: containerRef.current?.offsetWidth || '100vw' }}
         />
-        {/* Label for Original (Moves with clip) */}
-        <div className="absolute bottom-4 left-4 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-medium uppercase tracking-widest text-white border border-white/10">
-            Original
-        </div>
+      </div>
+
+      {/* Fixed Labels — always visible at bottom corners */}
+      <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest text-white border border-white/10 pointer-events-none z-10">
+        Before
+      </div>
+      <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest text-white border border-white/10 pointer-events-none z-10">
+        After ✨
       </div>
 
       {/* Slider Line and Handle */}
-      <div 
-        className="absolute top-0 bottom-0 w-0.5 bg-white shadow-[0_0_10px_rgba(0,0,0,0.5)] pointer-events-none"
+      <div
+        className="absolute top-0 bottom-0 w-0.5 bg-white shadow-[0_0_10px_rgba(0,0,0,0.5)] pointer-events-none z-20"
         style={{ left: `${position}%` }}
       >
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg text-black border border-neutral-200">

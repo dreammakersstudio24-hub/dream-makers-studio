@@ -61,10 +61,12 @@ export default async function AppSalesPage() {
           <span>40 designs for $20 · One-time · Secure via <span className="font-black text-neutral-800">Stripe</span></span>
         </div>
         {/* Interactive Before/After Garden Slider */}
-        <div className="w-full max-w-sm">
+        <div className="w-full max-w-xs">
           <CompareSlider
             originalImage="/garden-before.jpg"
             resultImage="/garden-after.jpg"
+            aspectRatio="aspect-[9/16]"
+            objectFit="cover"
           />
           <p className="text-center text-[10px] text-neutral-400 -mt-4 mb-2">
             👆 Drag to compare before &amp; after
