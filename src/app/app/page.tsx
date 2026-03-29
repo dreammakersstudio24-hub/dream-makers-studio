@@ -45,7 +45,7 @@ export default async function AppSalesPage() {
             href="/login?mode=signup&next=/app/dashboard"
             className="flex-1 flex items-center justify-center gap-1 bg-black text-white py-3 rounded-2xl text-xs font-bold hover:bg-neutral-800 active:scale-95 transition-all shadow-md"
           >
-            Get Started · $20 <ArrowRight className="w-3.5 h-3.5" />
+            Get Started · from $10 <ArrowRight className="w-3.5 h-3.5" />
           </Link>
           <Link
             href="/login?next=/app/dashboard"
@@ -58,7 +58,7 @@ export default async function AppSalesPage() {
         {/* Price + Trust hint */}
         <div className="flex items-center justify-center gap-2 text-xs font-semibold text-neutral-600 mb-8">
           <span>🔒</span>
-          <span>40 designs for $20 · One-time · Secure via <span className="font-black text-neutral-800">Stripe</span></span>
+          <span>from $10 · 15–40 AI designs · One-time · Secure via <span className="font-black text-neutral-800">Stripe</span></span>
         </div>
         {/* Interactive Before/After Garden Slider */}
         <div className="w-full max-w-xs">
@@ -95,36 +95,72 @@ export default async function AppSalesPage() {
       </section>
 
       {/* ── WORKS FOR ─────────────────────────── */}
-      <section className="px-5 pb-10 max-w-sm mx-auto space-y-4">
-        <h2 className="text-center text-xs font-black uppercase tracking-widest text-neutral-400 mb-4">What you can redesign</h2>
+      <section className="px-5 pb-10 max-w-sm mx-auto space-y-5">
+        <h2 className="text-center text-xs font-black uppercase tracking-widest text-neutral-400">What you can redesign</h2>
 
         {/* Interior Card */}
-        <div className="relative rounded-3xl overflow-hidden shadow-md aspect-[16/9] bg-neutral-200">
-          <img src="/dashboard-interior.png" alt="Interior redesign" className="absolute inset-0 w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-          <div className="absolute bottom-0 left-0 p-4 flex items-center gap-2">
-            <div className="w-8 h-8 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
-              <Home className="w-4 h-4 text-white" />
+        <div className="rounded-3xl overflow-hidden shadow-md bg-neutral-100">
+          <div className="relative aspect-[16/9] bg-neutral-200">
+            <img src="/dashboard-interior.png" alt="Interior redesign" className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+            <div className="absolute bottom-0 left-0 p-4 flex items-center gap-2">
+              <div className="w-8 h-8 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
+                <Home className="w-4 h-4 text-white" />
+              </div>
+              <p className="text-white font-black text-sm leading-tight">Interior Redesign</p>
+            </div>
+          </div>
+          <div className="p-4 space-y-3">
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-widest text-neutral-400 mb-1.5">Rooms</p>
+              <div className="flex flex-wrap gap-1.5">
+                {['Living Room','Bedroom','Kitchen','Bathroom','Home Office','Dining Room','Kids Room'].map(r => (
+                  <span key={r} className="bg-neutral-100 border border-neutral-200 text-neutral-600 text-[9px] font-bold px-2 py-1 rounded-full">{r}</span>
+                ))}
+              </div>
             </div>
             <div>
-              <p className="text-white font-black text-sm leading-tight">Interior Redesign</p>
-              <p className="text-white/60 text-[10px]">Living room, bedroom, kitchen & more</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-neutral-400 mb-1.5">Styles (10+)</p>
+              <div className="flex flex-wrap gap-1.5">
+                {['Modern','Scandinavian','Bohemian','Industrial','Japandi','Mid-Century','Luxury','Minimalist','Classic','Cozy'].map(s => (
+                  <span key={s} className="bg-neutral-100 border border-neutral-200 text-neutral-600 text-[9px] font-bold px-2 py-1 rounded-full">{s}</span>
+                ))}
+              </div>
             </div>
+            <p className="text-[11px] text-neutral-500 leading-relaxed">Upload any room photo → pick a style → get a professional redesign in 15–30 seconds. Download and share instantly.</p>
           </div>
         </div>
 
         {/* Garden Card */}
-        <div className="relative rounded-3xl overflow-hidden shadow-md aspect-[16/9] bg-neutral-200">
-          <img src="/dashboard-garden.png" alt="Garden redesign" className="absolute inset-0 w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-          <div className="absolute bottom-0 left-0 p-4 flex items-center gap-2">
-            <div className="w-8 h-8 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
-              <TreePine className="w-4 h-4 text-white" />
+        <div className="rounded-3xl overflow-hidden shadow-md bg-neutral-100">
+          <div className="relative aspect-[16/9] bg-neutral-200">
+            <img src="/dashboard-garden.png" alt="Garden redesign" className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+            <div className="absolute bottom-0 left-0 p-4 flex items-center gap-2">
+              <div className="w-8 h-8 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
+                <TreePine className="w-4 h-4 text-white" />
+              </div>
+              <p className="text-white font-black text-sm leading-tight">Garden & Outdoor</p>
+            </div>
+          </div>
+          <div className="p-4 space-y-3">
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-widest text-neutral-400 mb-1.5">Spaces</p>
+              <div className="flex flex-wrap gap-1.5">
+                {['Backyard','Patio','Front Yard','Balcony','Pool Area','Rooftop','Side Garden'].map(r => (
+                  <span key={r} className="bg-neutral-100 border border-neutral-200 text-neutral-600 text-[9px] font-bold px-2 py-1 rounded-full">{r}</span>
+                ))}
+              </div>
             </div>
             <div>
-              <p className="text-white font-black text-sm leading-tight">Garden & Outdoor</p>
-              <p className="text-white/60 text-[10px]">Patios, gardens, backyards & more</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-neutral-400 mb-1.5">Add-ons & Upgrades</p>
+              <div className="flex flex-wrap gap-1.5">
+                {['Fire Pit Lounge','Pergola','Outdoor Kitchen','Infinity Pool','Flower Garden','Water Feature','Lighting','Seating Area'].map(s => (
+                  <span key={s} className="bg-green-50 border border-green-200 text-green-700 text-[9px] font-bold px-2 py-1 rounded-full">{s}</span>
+                ))}
+              </div>
             </div>
+            <p className="text-[11px] text-neutral-500 leading-relaxed">Transform any outdoor space into your dream garden. Choose a style, add features like fire pits or pergolas, and see your vision come to life.</p>
           </div>
         </div>
       </section>
